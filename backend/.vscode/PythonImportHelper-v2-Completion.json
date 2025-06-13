@@ -1,0 +1,317 @@
+[
+    {
+        "label": "BaseSettings",
+        "importPath": "pydantic_settings",
+        "description": "pydantic_settings",
+        "isExtraImport": true,
+        "detail": "pydantic_settings",
+        "documentation": {}
+    },
+    {
+        "label": "SettingsConfigDict",
+        "importPath": "pydantic_settings",
+        "description": "pydantic_settings",
+        "isExtraImport": true,
+        "detail": "pydantic_settings",
+        "documentation": {}
+    },
+    {
+        "label": "BaseSettings",
+        "importPath": "pydantic_settings",
+        "description": "pydantic_settings",
+        "isExtraImport": true,
+        "detail": "pydantic_settings",
+        "documentation": {}
+    },
+    {
+        "label": "SettingsConfigDict",
+        "importPath": "pydantic_settings",
+        "description": "pydantic_settings",
+        "isExtraImport": true,
+        "detail": "pydantic_settings",
+        "documentation": {}
+    },
+    {
+        "label": "SecretStr",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "SQLModel",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "SQLModel",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "Settings",
+        "kind": 6,
+        "importPath": "src.core.config",
+        "description": "src.core.config",
+        "peekOfCode": "class Settings(BaseSettings):\n    admin_email: str\n    db_url: str\n    model_config = SettingsConfigDict(\n        env_file=\".env\",\n        extra=\"ignore\",        # ignore les variables .env non définies dans Settings\n        case_sensitive=False, # variables non sensibles à la casse\n    )",
+        "detail": "src.core.config",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentBase",
+        "kind": 6,
+        "importPath": "src.models.document",
+        "description": "src.models.document",
+        "peekOfCode": "class DocumentBase(SQLModel, table = True):\n    __tablename__ = \"Documents\"\n    id: UUID = Field(primary_key=True, default_factory=uuid4)\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\n    upload_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))",
+        "detail": "src.models.document",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "kind": 6,
+        "importPath": "src.models.user",
+        "description": "src.models.user",
+        "peekOfCode": "class User(SQLModel, table=True):\n    __tablename__ = \"Users\"\n    id : UUID = Field(default_factory=uuid4, primary_key= True)\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))\n    updated_at: datetime = Field(\n        default_factory=lambda: datetime.now(timezone.utc),",
+        "detail": "src.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentBase",
+        "kind": 6,
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "peekOfCode": "class DocumentBase(BaseModel):\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\nclass DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentOut",
+        "kind": 6,
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "peekOfCode": "class DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentIn",
+        "kind": 6,
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "peekOfCode": "class DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "UserBase",
+        "kind": 6,
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "peekOfCode": "class UserBase(BaseModel):\n    nom: str\n    prenom: str\n    email: str\n    password: str\n    classe: str\nclass UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass",
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserUpdate",
+        "kind": 6,
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "peekOfCode": "class UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str",
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "kind": 6,
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "peekOfCode": "class UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserOut",
+        "kind": 6,
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "peekOfCode": "class UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "app = FastAPI()",
+        "detail": "main",
+        "documentation": {}
+    }
+]
