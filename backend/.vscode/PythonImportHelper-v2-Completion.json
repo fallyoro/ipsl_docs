@@ -104,6 +104,22 @@
         "documentation": {}
     },
     {
+        "label": "select",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
         "label": "AsyncSession",
         "importPath": "sqlmodel.ext.asyncio.session",
         "description": "sqlmodel.ext.asyncio.session",
@@ -385,27 +401,11 @@
         "documentation": {}
     },
     {
-        "label": "asynccontextmanager",
-        "importPath": "contextlib",
-        "description": "contextlib",
+        "label": "generate_passord_hash",
+        "importPath": "src.utils",
+        "description": "src.utils",
         "isExtraImport": true,
-        "detail": "contextlib",
-        "documentation": {}
-    },
-    {
-        "label": "FastAPI",
-        "importPath": "fastapi",
-        "description": "fastapi",
-        "isExtraImport": true,
-        "detail": "fastapi",
-        "documentation": {}
-    },
-    {
-        "label": "init_db",
-        "importPath": "src.database.database",
-        "description": "src.database.database",
-        "isExtraImport": true,
-        "detail": "src.database.database",
+        "detail": "src.utils",
         "documentation": {}
     },
     {
@@ -432,6 +432,30 @@
         "importPath": "logging",
         "description": "logging",
         "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "asynccontextmanager",
+        "importPath": "contextlib",
+        "description": "contextlib",
+        "isExtraImport": true,
+        "detail": "contextlib",
+        "documentation": {}
+    },
+    {
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "init_db",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
         "documentation": {}
     },
     {
@@ -543,66 +567,75 @@
         "documentation": {}
     },
     {
+        "label": "UserService",
+        "kind": 6,
+        "importPath": "src.services.user",
+        "description": "src.services.user",
+        "peekOfCode": "class UserService:\n    async def get_user_by_email(self, email: str, session: AsyncSession) -> User | None:\n        statement = select(User).where(User.email == email)\n        result = await session.exec(statement)\n        user = result.first()\n        return user\n    async def user_exist(self, email: str, session: AsyncSession) -> bool:\n        user = await self.get_user_by_email(email, session)\n        return True if user else False\n    async def create_user(self, user_data: UserCreate, session: AsyncSession):",
+        "detail": "src.services.user",
+        "documentation": {}
+    },
+    {
+        "label": "generate_passord_hash",
+        "kind": 2,
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "peekOfCode": "def generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(",
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "verify_password",
+        "kind": 2,
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "peekOfCode": "def verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=playload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO",
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "create_acess_token",
+        "kind": 2,
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "peekOfCode": "def create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=playload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO\n    )\n    playload['jti'] = str(uuid4())",
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "decode_token",
+        "kind": 2,
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "peekOfCode": "def decode_token(token: str):\n    try:\n        token_data = jwt.decode(\n            jwt=token,\n            algorithms=settings.JWT_ALGO,\n            key= settings.JWT_SECRET\n        )\n        return token_data\n    except jwt.PyJWKSetError as e:\n        logging.exception(e)",
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "passwd_context",
+        "kind": 5,
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "peekOfCode": "passwd_context = CryptContext(schemes=['bcrypt'])\nACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data",
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "ACCES_TOKEN_EXPIRY",
+        "kind": 5,
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "peekOfCode": "ACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))",
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
         "label": "app",
         "kind": 5,
         "importPath": "main",
         "description": "main",
         "peekOfCode": "app = FastAPI(lifespan=life_span)",
         "detail": "main",
-        "documentation": {}
-    },
-    {
-        "label": "generate_passord_hash",
-        "kind": 2,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "def generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "verify_password",
-        "kind": 2,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "def verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=playload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "create_acess_token",
-        "kind": 2,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "def create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=playload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO\n    )\n    playload['jti'] = str(uuid4())",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "decode_token",
-        "kind": 2,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "def decode_token(token: str):\n    try:\n        token_data = jwt.decode(\n            jwt=token,\n            algorithms=settings.JWT_ALGO,\n            key= settings.JWT_SECRET\n        )\n        return token_data\n    except jwt.PyJWKSetError as e:\n        logging.exception(e)",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "passwd_context",
-        "kind": 5,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "passwd_context = CryptContext(schemes=['bcrypt'])\nACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "ACCES_TOKEN_EXPIRY",
-        "kind": 5,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "ACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))",
-        "detail": "utils",
         "documentation": {}
     }
 ]
