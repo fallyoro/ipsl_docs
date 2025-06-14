@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from uuid import uuid
+from uuid import UUID
 from datetime import datetime
 
 class UserBase(BaseModel):
@@ -8,6 +8,13 @@ class UserBase(BaseModel):
     email: str
     password: str
     classe: str
+    
+'''class User(BaseModel):
+    nom: str
+    prenom: str
+    email: str
+    password: str
+    classe: str'''
 
     
     
@@ -18,11 +25,16 @@ class UserCreate(UserBase):
     pass
     
 class UserOut(BaseModel):
-    id: uuid
+    id: UUID
     nom: str
     prenom: str
     email: str
     password_hash: str
     created_at: datetime
     updated_at: datetime
+    
+    
+class UserLogin(BaseModel):
+    password: str
+    email: str
     

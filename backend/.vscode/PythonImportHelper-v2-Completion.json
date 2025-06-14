@@ -1,5 +1,359 @@
 [
     {
+        "label": "datetime",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "datetime",
+        "description": "datetime",
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "Depends",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "HTTPException",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "status",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "APIRouter",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "JSONResponse",
+        "importPath": "fastapi.responses",
+        "description": "fastapi.responses",
+        "isExtraImport": true,
+        "detail": "fastapi.responses",
+        "documentation": {}
+    },
+    {
+        "label": "uuid",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "uuid",
+        "description": "uuid",
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "isExtraImport": true,
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserOut",
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "isExtraImport": true,
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserLogin",
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "isExtraImport": true,
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "isExtraImport": true,
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserOut",
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "isExtraImport": true,
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserBase",
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "isExtraImport": true,
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserService",
+        "importPath": "src.services.user",
+        "description": "src.services.user",
+        "isExtraImport": true,
+        "detail": "src.services.user",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "create_session",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "init_db",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "create_acess_token",
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "isExtraImport": true,
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "decode_token",
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "isExtraImport": true,
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "passwd_context",
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "isExtraImport": true,
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "verify_password",
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "isExtraImport": true,
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
+        "label": "generate_passord_hash",
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "isExtraImport": true,
+        "detail": "src.utils",
+        "documentation": {}
+    },
+    {
         "label": "BaseSettings",
         "importPath": "pydantic_settings",
         "description": "pydantic_settings",
@@ -112,38 +466,6 @@
         "documentation": {}
     },
     {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
         "label": "sessionmaker",
         "importPath": "sqlalchemy.orm",
         "description": "sqlalchemy.orm",
@@ -216,140 +538,11 @@
         "documentation": {}
     },
     {
-        "label": "datetime",
-        "kind": 6,
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
         "isExtraImport": true,
-        "importPath": "datetime",
-        "description": "datetime",
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "timezone",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "timezone",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "timedelta",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "uuid4",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "UUID",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "uuid4",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "UUID",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "UUID",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "uuid4",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "uuid",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "uuid4",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
+        "detail": "typing",
         "documentation": {}
     },
     {
@@ -374,38 +567,6 @@
         "description": "src.schemas.document",
         "isExtraImport": true,
         "detail": "src.schemas.document",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
-        "isExtraImport": true,
-        "detail": "src.schemas.user",
-        "documentation": {}
-    },
-    {
-        "label": "UserCreate",
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
-        "isExtraImport": true,
-        "detail": "src.schemas.user",
-        "documentation": {}
-    },
-    {
-        "label": "UserOut",
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
-        "isExtraImport": true,
-        "detail": "src.schemas.user",
-        "documentation": {}
-    },
-    {
-        "label": "generate_passord_hash",
-        "importPath": "src.utils",
-        "description": "src.utils",
-        "isExtraImport": true,
-        "detail": "src.utils",
         "documentation": {}
     },
     {
@@ -443,19 +604,29 @@
         "documentation": {}
     },
     {
-        "label": "FastAPI",
-        "importPath": "fastapi",
-        "description": "fastapi",
+        "label": "user_router",
+        "importPath": "src.api.user",
+        "description": "src.api.user",
         "isExtraImport": true,
-        "detail": "fastapi",
+        "detail": "src.api.user",
         "documentation": {}
     },
     {
-        "label": "init_db",
-        "importPath": "src.database.database",
-        "description": "src.database.database",
-        "isExtraImport": true,
-        "detail": "src.database.database",
+        "label": "user_router",
+        "kind": 5,
+        "importPath": "src.api.user",
+        "description": "src.api.user",
+        "peekOfCode": "user_router = APIRouter()\nuser_service = UserService()\n@user_router.post(\"/sign-up\", response_model=UserOut)\nasync def create_user(\n    user_data: UserCreate, session: AsyncSession = Depends(create_session)\n):\n    email = user_data.email\n    user_exist = await user_service.user_exist(email, session)\n    if user_exist:\n        raise HTTPException(",
+        "detail": "src.api.user",
+        "documentation": {}
+    },
+    {
+        "label": "user_service",
+        "kind": 5,
+        "importPath": "src.api.user",
+        "description": "src.api.user",
+        "peekOfCode": "user_service = UserService()\n@user_router.post(\"/sign-up\", response_model=UserOut)\nasync def create_user(\n    user_data: UserCreate, session: AsyncSession = Depends(create_session)\n):\n    email = user_data.email\n    user_exist = await user_service.user_exist(email, session)\n    if user_exist:\n        raise HTTPException(\n            status_code=status.HTTP_403_FORBIDDEN,",
+        "detail": "src.api.user",
         "documentation": {}
     },
     {
@@ -535,7 +706,7 @@
         "kind": 6,
         "importPath": "src.schemas.user",
         "description": "src.schemas.user",
-        "peekOfCode": "class UserBase(BaseModel):\n    nom: str\n    prenom: str\n    email: str\n    password: str\n    classe: str\nclass UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass",
+        "peekOfCode": "class UserBase(BaseModel):\n    nom: str\n    prenom: str\n    email: str\n    password: str\n    classe: str\n'''class User(BaseModel):\n    nom: str\n    prenom: str\n    email: str",
         "detail": "src.schemas.user",
         "documentation": {}
     },
@@ -544,7 +715,7 @@
         "kind": 6,
         "importPath": "src.schemas.user",
         "description": "src.schemas.user",
-        "peekOfCode": "class UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str",
+        "peekOfCode": "class UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: UUID\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str",
         "detail": "src.schemas.user",
         "documentation": {}
     },
@@ -553,7 +724,7 @@
         "kind": 6,
         "importPath": "src.schemas.user",
         "description": "src.schemas.user",
-        "peekOfCode": "class UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
+        "peekOfCode": "class UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: UUID\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
         "detail": "src.schemas.user",
         "documentation": {}
     },
@@ -562,7 +733,16 @@
         "kind": 6,
         "importPath": "src.schemas.user",
         "description": "src.schemas.user",
-        "peekOfCode": "class UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
+        "peekOfCode": "class UserOut(BaseModel):\n    id: UUID\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime\nclass UserLogin(BaseModel):\n    password: str",
+        "detail": "src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserLogin",
+        "kind": 6,
+        "importPath": "src.schemas.user",
+        "description": "src.schemas.user",
+        "peekOfCode": "class UserLogin(BaseModel):\n    password: str\n    email: str",
         "detail": "src.schemas.user",
         "documentation": {}
     },
@@ -634,7 +814,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "app = FastAPI(lifespan=life_span)",
+        "peekOfCode": "app = FastAPI(lifespan=life_span)\napp.include_router(router=user_router, prefix=\"/auth\")",
         "detail": "main",
         "documentation": {}
     }

@@ -1,6 +1,6 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
+from src.schemas.user import UserCreate, UserOut, UserBase
 from src.models.user import User
-from src.schemas.user import User, UserCreate, UserOut
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
