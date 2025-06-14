@@ -1,10 +1,10 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime, timezone
 from uuid import uuid4, UUID
 
 
 class User(SQLModel, table=True):
-    __tablename__ = "Users"
+    __tablename__ = "users"
     id : UUID = Field(default_factory=uuid4, primary_key= True)
     nom: str
     prenom: str

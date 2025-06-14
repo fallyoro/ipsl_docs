@@ -112,22 +112,6 @@
         "documentation": {}
     },
     {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
         "label": "sessionmaker",
         "importPath": "sqlalchemy.orm",
         "description": "sqlalchemy.orm",
@@ -144,11 +128,19 @@
         "documentation": {}
     },
     {
-        "label": "settings",
-        "importPath": "src.core.config",
-        "description": "src.core.config",
+        "label": "sett",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
         "isExtraImport": true,
-        "detail": "src.core.config",
+        "detail": "src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "init_db",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
         "documentation": {}
     },
     {
@@ -168,14 +160,6 @@
         "documentation": {}
     },
     {
-        "label": "Document",
-        "importPath": "src.models.document",
-        "description": "src.models.document",
-        "isExtraImport": true,
-        "detail": "src.models.document",
-        "documentation": {}
-    },
-    {
         "label": "User",
         "importPath": "src.models.user",
         "description": "src.models.user",
@@ -189,23 +173,6 @@
         "description": "src.models.user",
         "isExtraImport": true,
         "detail": "src.models.user",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.models.user",
-        "description": "src.models.user",
-        "isExtraImport": true,
-        "detail": "src.models.user",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "datetime",
-        "description": "datetime",
-        "detail": "datetime",
         "documentation": {}
     },
     {
@@ -250,22 +217,6 @@
     },
     {
         "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "timedelta",
         "importPath": "datetime",
         "description": "datetime",
         "isExtraImport": true,
@@ -329,59 +280,11 @@
         "documentation": {}
     },
     {
-        "label": "uuid4",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
         "label": "Optional",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
         "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "DocumentIn",
-        "importPath": "src.schemas.document",
-        "description": "src.schemas.document",
-        "isExtraImport": true,
-        "detail": "src.schemas.document",
-        "documentation": {}
-    },
-    {
-        "label": "DocumentOut",
-        "importPath": "src.schemas.document",
-        "description": "src.schemas.document",
-        "isExtraImport": true,
-        "detail": "src.schemas.document",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
-        "isExtraImport": true,
-        "detail": "src.schemas.user",
-        "documentation": {}
-    },
-    {
-        "label": "UserCreate",
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
-        "isExtraImport": true,
-        "detail": "src.schemas.user",
-        "documentation": {}
-    },
-    {
-        "label": "UserOut",
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
-        "isExtraImport": true,
-        "detail": "src.schemas.user",
         "documentation": {}
     },
     {
@@ -401,208 +304,120 @@
         "documentation": {}
     },
     {
-        "label": "init_db",
-        "importPath": "src.database.database",
-        "description": "src.database.database",
-        "isExtraImport": true,
-        "detail": "src.database.database",
-        "documentation": {}
-    },
-    {
-        "label": "CryptContext",
-        "importPath": "passlib.context",
-        "description": "passlib.context",
-        "isExtraImport": true,
-        "detail": "passlib.context",
-        "documentation": {}
-    },
-    {
-        "label": "jwt",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "jwt",
-        "description": "jwt",
-        "detail": "jwt",
-        "documentation": {}
-    },
-    {
-        "label": "logging",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "logging",
-        "description": "logging",
-        "detail": "logging",
-        "documentation": {}
-    },
-    {
         "label": "Settings",
         "kind": 6,
-        "importPath": "src.core.config",
-        "description": "src.core.config",
+        "importPath": "backend.src.core.config",
+        "description": "backend.src.core.config",
         "peekOfCode": "class Settings(BaseSettings):\n    admin_email: str\n    DATABASE_URL: str\n    model_config = SettingsConfigDict(\n        env_file=\".env\",\n        extra=\"ignore\",        # ignore les variables .env non définies dans Settings\n        case_sensitive=False, # variables non sensibles à la casse\n    )\nsettings = Settings()",
-        "detail": "src.core.config",
+        "detail": "backend.src.core.config",
         "documentation": {}
     },
     {
         "label": "settings",
         "kind": 5,
-        "importPath": "src.core.config",
-        "description": "src.core.config",
+        "importPath": "backend.src.core.config",
+        "description": "backend.src.core.config",
         "peekOfCode": "settings = Settings()",
-        "detail": "src.core.config",
+        "detail": "backend.src.core.config",
         "documentation": {}
     },
     {
         "label": "SessionLocal",
         "kind": 5,
-        "importPath": "src.database.database",
-        "description": "src.database.database",
+        "importPath": "backend.src.database.database",
+        "description": "backend.src.database.database",
         "peekOfCode": "SessionLocal = sessionmaker(\n    bind=engine, # type: ignore\n    class_=AsyncSession,\n    expire_on_commit=False,\n) # type: ignore\nasync def init_db():\n    async with engine.begin() as conn:\n        await conn.run_sync(SQLModel.metadata.create_all)\nasync def create_session():\n    async with SessionLocal() as session: # type: ignore",
-        "detail": "src.database.database",
+        "detail": "backend.src.database.database",
         "documentation": {}
     },
     {
         "label": "Document",
         "kind": 6,
-        "importPath": "src.models.document",
-        "description": "src.models.document",
+        "importPath": "backend.src.models.document",
+        "description": "backend.src.models.document",
         "peekOfCode": "class Document(SQLModel, table = True):\n    __tablename__ = \"documents\"\n    id: UUID = Field(primary_key=True, default_factory=uuid4)\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\n    upload_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))\n    user_id: UUID = Field(foreign_key=\"users.id\")\n    user: \"User\" = Relationship(back_populates=\"documents\")",
-        "detail": "src.models.document",
+        "detail": "backend.src.models.document",
         "documentation": {}
     },
     {
         "label": "User",
         "kind": 6,
-        "importPath": "src.models.user",
-        "description": "src.models.user",
+        "importPath": "backend.src.models.user",
+        "description": "backend.src.models.user",
         "peekOfCode": "class User(SQLModel, table=True):\n    __tablename__ = \"users\"\n    id : UUID = Field(default_factory=uuid4, primary_key= True)\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))\n    updated_at: datetime = Field(\n        default_factory=lambda: datetime.now(timezone.utc),",
-        "detail": "src.models.user",
+        "detail": "backend.src.models.user",
         "documentation": {}
     },
     {
         "label": "DocumentBase",
         "kind": 6,
-        "importPath": "src.schemas.document",
-        "description": "src.schemas.document",
+        "importPath": "backend.src.schemas.document",
+        "description": "backend.src.schemas.document",
         "peekOfCode": "class DocumentBase(BaseModel):\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\nclass DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
-        "detail": "src.schemas.document",
+        "detail": "backend.src.schemas.document",
         "documentation": {}
     },
     {
         "label": "DocumentOut",
         "kind": 6,
-        "importPath": "src.schemas.document",
-        "description": "src.schemas.document",
+        "importPath": "backend.src.schemas.document",
+        "description": "backend.src.schemas.document",
         "peekOfCode": "class DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
-        "detail": "src.schemas.document",
+        "detail": "backend.src.schemas.document",
         "documentation": {}
     },
     {
         "label": "DocumentIn",
         "kind": 6,
-        "importPath": "src.schemas.document",
-        "description": "src.schemas.document",
+        "importPath": "backend.src.schemas.document",
+        "description": "backend.src.schemas.document",
         "peekOfCode": "class DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
-        "detail": "src.schemas.document",
+        "detail": "backend.src.schemas.document",
         "documentation": {}
     },
     {
         "label": "UserBase",
         "kind": 6,
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
+        "importPath": "backend.src.schemas.user",
+        "description": "backend.src.schemas.user",
         "peekOfCode": "class UserBase(BaseModel):\n    nom: str\n    prenom: str\n    email: str\n    password: str\n    classe: str\nclass UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass",
-        "detail": "src.schemas.user",
+        "detail": "backend.src.schemas.user",
         "documentation": {}
     },
     {
         "label": "UserUpdate",
         "kind": 6,
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
+        "importPath": "backend.src.schemas.user",
+        "description": "backend.src.schemas.user",
         "peekOfCode": "class UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str",
-        "detail": "src.schemas.user",
+        "detail": "backend.src.schemas.user",
         "documentation": {}
     },
     {
         "label": "UserCreate",
         "kind": 6,
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
+        "importPath": "backend.src.schemas.user",
+        "description": "backend.src.schemas.user",
         "peekOfCode": "class UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
-        "detail": "src.schemas.user",
+        "detail": "backend.src.schemas.user",
         "documentation": {}
     },
     {
         "label": "UserOut",
         "kind": 6,
-        "importPath": "src.schemas.user",
-        "description": "src.schemas.user",
+        "importPath": "backend.src.schemas.user",
+        "description": "backend.src.schemas.user",
         "peekOfCode": "class UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
-        "detail": "src.schemas.user",
+        "detail": "backend.src.schemas.user",
         "documentation": {}
     },
     {
         "label": "app",
         "kind": 5,
-        "importPath": "main",
-        "description": "main",
+        "importPath": "backend.main",
+        "description": "backend.main",
         "peekOfCode": "app = FastAPI(lifespan=life_span)",
-        "detail": "main",
-        "documentation": {}
-    },
-    {
-        "label": "generate_passord_hash",
-        "kind": 2,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "def generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "verify_password",
-        "kind": 2,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "def verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=playload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "create_acess_token",
-        "kind": 2,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "def create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=playload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO\n    )\n    playload['jti'] = str(uuid4())",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "decode_token",
-        "kind": 2,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "def decode_token(token: str):\n    try:\n        token_data = jwt.decode(\n            jwt=token,\n            algorithms=settings.JWT_ALGO,\n            key= settings.JWT_SECRET\n        )\n        return token_data\n    except jwt.PyJWKSetError as e:\n        logging.exception(e)",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "passwd_context",
-        "kind": 5,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "passwd_context = CryptContext(schemes=['bcrypt'])\nACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data",
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "ACCES_TOKEN_EXPIRY",
-        "kind": 5,
-        "importPath": "utils",
-        "description": "utils",
-        "peekOfCode": "ACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))",
-        "detail": "utils",
+        "detail": "backend.main",
         "documentation": {}
     }
 ]
