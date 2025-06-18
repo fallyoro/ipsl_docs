@@ -36,6 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   font_awesome_flutter: ^10.8.0
   salomon_bottom_bar: ^3.3.2
+  path_provider: ^2.1.5
+  sqlite3: ^2.7.6
+  sqlite3_flutter_libs: ^0.5.34
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:

@@ -7,7 +7,7 @@ class AppTheme {
       primaryColor: AppColors.primaryColor,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryColor,
-        
+
         brightness: Brightness.light,
       ),
 
@@ -18,12 +18,11 @@ class AppTheme {
 
   static ThemeData get darkTheme {
     return ThemeData(
-      primaryColor: AppColors.primaryColor,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryColor,
         brightness: Brightness.dark,
       ),
-      // scaffoldBackgroundColor: AppColors.darkSystemBackground,
+      scaffoldBackgroundColor: AppColors.darkSystemBackground,
       textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
     );
   }
