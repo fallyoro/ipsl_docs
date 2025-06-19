@@ -6,9 +6,7 @@ import 'package:sqlite3/sqlite3.dart';
 class SQLiteService {
   late final Database db;
 
-   SQLiteService._(); // constructeur privé
-
-   
+  SQLiteService._(); // constructeur privé
 
   static Future<SQLiteService> init() async {
     final instance = SQLiteService._();
@@ -25,6 +23,14 @@ class SQLiteService {
         filePath TEXT,
         categorie TEXT,
         isDownload INTEGER DEFAULT 1
+      );
+    ''');
+    instance.db.execute('''
+      CREATE TABLE IF NOT EXISTS user (
+        id INTEGER,
+        nom TEXT,
+        prenom TEXT,
+        email TEXT
       );
     ''');
 
@@ -79,8 +85,37 @@ class SQLiteService {
         .toList();
   }
 
+  List<Map<String, dynamic>> getUser() {
+    final result = db.select("SELECT * FROM user");
+    return result
+        .map(
+          (row) => {
+            'id': row['id'],
+            'nom': row['nom'],
+            'prenom': row['prenom'],
+            'email': row['email'],
+          },
+        )
+        .toList();
+  }
+
   void close() {
     db.dispose();
+  }
+
+  void insertUser(Map<String, dynamic> user) {
+    db.execute(
+      '''
+      INSERT INTO user (id, nom, prenom, email)
+      VALUES (?, ?, ?, ?);
+      ''',
+      [
+        user['id'],
+        user['nom'],
+        user['prenom'],
+        user['email'],
+      ],
+    );
   }
 
   void insertDocument(Map<String, dynamic> doc) {

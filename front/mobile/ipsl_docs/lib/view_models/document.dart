@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 
-import 'package:flutter/material.dart';
+
 
 
 class DocumentViewModel {
@@ -27,6 +27,13 @@ class DocumentViewModel {
   List<String> getRootFolders() {
     return documents.value
         .map((doc) => doc.filePath.split('/').first)
+        .toSet()
+        .toList();
+  }
+
+  List<String> getsubFolders() {
+    return documents.value
+        .map((doc) => doc.filePath.split('/')[1])
         .toSet()
         .toList();
   }

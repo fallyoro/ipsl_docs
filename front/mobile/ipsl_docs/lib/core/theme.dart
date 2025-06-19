@@ -4,6 +4,8 @@ import 'package:ipsl_docs/core/constant.dart';
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
+      cardColor: AppColors.lightSecondarySystemBackground,
+      appBarTheme: AppBarTheme(color: AppColors.lightSystemBackground),
       primaryColor: AppColors.primaryColor,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryColor,
@@ -18,6 +20,8 @@ class AppTheme {
 
   static ThemeData get darkTheme {
     return ThemeData(
+      cardColor: AppColors.darkSecondarySystemBackground,
+      appBarTheme: AppBarTheme(color: AppColors.darkSystemBackground),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryColor,
         brightness: Brightness.dark,

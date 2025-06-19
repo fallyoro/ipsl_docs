@@ -1,83 +1,58 @@
 [
     {
-        "label": "datetime",
-        "kind": 6,
+        "label": "APIRouter",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "importPath": "datetime",
-        "description": "datetime",
-        "detail": "datetime",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "timedelta",
-        "importPath": "datetime",
-        "description": "datetime",
+        "label": "File",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "datetime",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
+        "label": "Form",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "datetime",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "timezone",
-        "importPath": "datetime",
-        "description": "datetime",
+        "label": "HTTPException",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "datetime",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
+        "label": "UploadFile",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "datetime",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "timezone",
-        "importPath": "datetime",
-        "description": "datetime",
+        "label": "Depends",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "datetime",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
+        "label": "status",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "timedelta",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
@@ -121,11 +96,213 @@
         "documentation": {}
     },
     {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "create_session",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "create_session",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "init_db",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentService",
+        "importPath": "src.services.document",
+        "description": "src.services.document",
+        "isExtraImport": true,
+        "detail": "src.services.document",
+        "documentation": {}
+    },
+    {
+        "label": "FileResponse",
+        "importPath": "fastapi.responses",
+        "description": "fastapi.responses",
+        "isExtraImport": true,
+        "detail": "fastapi.responses",
+        "documentation": {}
+    },
+    {
         "label": "JSONResponse",
         "importPath": "fastapi.responses",
         "description": "fastapi.responses",
         "isExtraImport": true,
         "detail": "fastapi.responses",
+        "documentation": {}
+    },
+    {
+        "label": "shutil",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "shutil",
+        "description": "shutil",
+        "detail": "shutil",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentBase",
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "isExtraImport": true,
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentDownload",
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "isExtraImport": true,
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentIn",
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "isExtraImport": true,
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentOut",
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "isExtraImport": true,
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentIn",
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "isExtraImport": true,
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentOut",
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "isExtraImport": true,
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentDownload",
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "isExtraImport": true,
+        "detail": "src.schemas.document",
         "documentation": {}
     },
     {
@@ -138,7 +315,39 @@
         "documentation": {}
     },
     {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
         "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
         "importPath": "uuid",
         "description": "uuid",
         "isExtraImport": true,
@@ -186,19 +395,84 @@
         "documentation": {}
     },
     {
-        "label": "UUID",
-        "importPath": "uuid",
-        "description": "uuid",
+        "label": "datetime",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "uuid",
+        "importPath": "datetime",
+        "description": "datetime",
+        "detail": "datetime",
         "documentation": {}
     },
     {
-        "label": "uuid4",
-        "importPath": "uuid",
-        "description": "uuid",
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
         "isExtraImport": true,
-        "detail": "uuid",
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
         "documentation": {}
     },
     {
@@ -255,62 +529,6 @@
         "description": "src.services.user",
         "isExtraImport": true,
         "detail": "src.services.user",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "AsyncSession",
-        "importPath": "sqlmodel.ext.asyncio.session",
-        "description": "sqlmodel.ext.asyncio.session",
-        "isExtraImport": true,
-        "detail": "sqlmodel.ext.asyncio.session",
-        "documentation": {}
-    },
-    {
-        "label": "create_session",
-        "importPath": "src.database.database",
-        "description": "src.database.database",
-        "isExtraImport": true,
-        "detail": "src.database.database",
-        "documentation": {}
-    },
-    {
-        "label": "init_db",
-        "importPath": "src.database.database",
-        "description": "src.database.database",
-        "isExtraImport": true,
-        "detail": "src.database.database",
         "documentation": {}
     },
     {
@@ -466,6 +684,14 @@
         "documentation": {}
     },
     {
+        "label": "select",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
         "label": "sessionmaker",
         "importPath": "sqlalchemy.orm",
         "description": "sqlalchemy.orm",
@@ -514,11 +740,19 @@
         "documentation": {}
     },
     {
-        "label": "User",
-        "importPath": "src.models.user",
-        "description": "src.models.user",
+        "label": "Document",
+        "importPath": "src.models.document",
+        "description": "src.models.document",
         "isExtraImport": true,
-        "detail": "src.models.user",
+        "detail": "src.models.document",
+        "documentation": {}
+    },
+    {
+        "label": "Document",
+        "importPath": "src.models.document",
+        "description": "src.models.document",
+        "isExtraImport": true,
+        "detail": "src.models.document",
         "documentation": {}
     },
     {
@@ -535,38 +769,6 @@
         "description": "src.models.user",
         "isExtraImport": true,
         "detail": "src.models.user",
-        "documentation": {}
-    },
-    {
-        "label": "List",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Optional",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "DocumentIn",
-        "importPath": "src.schemas.document",
-        "description": "src.schemas.document",
-        "isExtraImport": true,
-        "detail": "src.schemas.document",
-        "documentation": {}
-    },
-    {
-        "label": "DocumentOut",
-        "importPath": "src.schemas.document",
-        "description": "src.schemas.document",
-        "isExtraImport": true,
-        "detail": "src.schemas.document",
         "documentation": {}
     },
     {
@@ -609,6 +811,32 @@
         "description": "src.api.user",
         "isExtraImport": true,
         "detail": "src.api.user",
+        "documentation": {}
+    },
+    {
+        "label": "doc_router",
+        "importPath": "src.api.document",
+        "description": "src.api.document",
+        "isExtraImport": true,
+        "detail": "src.api.document",
+        "documentation": {}
+    },
+    {
+        "label": "service",
+        "kind": 5,
+        "importPath": "src.api.document",
+        "description": "src.api.document",
+        "peekOfCode": "service = DocumentService()\ndoc_router = APIRouter()\n@doc_router.get(\"/documents\")\nasync def get_all_documents( session: AsyncSession = Depends(create_session)):\n    try:\n        documents = await service.get_all_documents(session=session)\n    except:\n        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=\"Faild to fetch document from database\")\n    return documents\n@doc_router.post(\"/upload\")",
+        "detail": "src.api.document",
+        "documentation": {}
+    },
+    {
+        "label": "doc_router",
+        "kind": 5,
+        "importPath": "src.api.document",
+        "description": "src.api.document",
+        "peekOfCode": "doc_router = APIRouter()\n@doc_router.get(\"/documents\")\nasync def get_all_documents( session: AsyncSession = Depends(create_session)):\n    try:\n        documents = await service.get_all_documents(session=session)\n    except:\n        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=\"Faild to fetch document from database\")\n    return documents\n@doc_router.post(\"/upload\")\nasync def upload_doc(",
+        "detail": "src.api.document",
         "documentation": {}
     },
     {
@@ -661,7 +889,7 @@
         "kind": 6,
         "importPath": "src.models.document",
         "description": "src.models.document",
-        "peekOfCode": "class Document(SQLModel, table = True):\n    __tablename__ = \"documents\"\n    id: UUID = Field(primary_key=True, default_factory=uuid4)\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\n    upload_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))\n    user_id: UUID = Field(foreign_key=\"users.id\")\n    user: \"User\" = Relationship(back_populates=\"documents\")",
+        "peekOfCode": "class Document(SQLModel, table = True):\n    __tablename__ = \"documents\"\n    id: UUID = Field(primary_key=True, default_factory=uuid4)\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\n    upload_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))\n    user_id: UUID = Field(foreign_key=\"users.id\")\n    # user: \"User\" = Relationship(back_populates=\"documents\")",
         "detail": "src.models.document",
         "documentation": {}
     },
@@ -679,7 +907,16 @@
         "kind": 6,
         "importPath": "src.schemas.document",
         "description": "src.schemas.document",
-        "peekOfCode": "class DocumentBase(BaseModel):\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\nclass DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "peekOfCode": "class DocumentBase(BaseModel):\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\n    user_id: UUID\nclass DocumentDownload(BaseModel):\n    id: UUID \nclass DocumentOut(DocumentBase):\n    id: UUID ",
+        "detail": "src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentDownload",
+        "kind": 6,
+        "importPath": "src.schemas.document",
+        "description": "src.schemas.document",
+        "peekOfCode": "class DocumentDownload(BaseModel):\n    id: UUID \nclass DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    pass",
         "detail": "src.schemas.document",
         "documentation": {}
     },
@@ -688,7 +925,7 @@
         "kind": 6,
         "importPath": "src.schemas.document",
         "description": "src.schemas.document",
-        "peekOfCode": "class DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "peekOfCode": "class DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    pass",
         "detail": "src.schemas.document",
         "documentation": {}
     },
@@ -697,7 +934,7 @@
         "kind": 6,
         "importPath": "src.schemas.document",
         "description": "src.schemas.document",
-        "peekOfCode": "class DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "peekOfCode": "class DocumentIn(DocumentBase):\n    pass",
         "detail": "src.schemas.document",
         "documentation": {}
     },
@@ -747,6 +984,15 @@
         "documentation": {}
     },
     {
+        "label": "DocumentService",
+        "kind": 6,
+        "importPath": "src.services.document",
+        "description": "src.services.document",
+        "peekOfCode": "class DocumentService:\n    async def get_document_path(self, id: UUID, session: AsyncSession ):\n        statement = select(Document.filename).where(Document.id == id)\n        result = await session.exec(statement)\n        return result\n    async def get_all_documents(self, session: AsyncSession ):\n        statement = select(Document)\n        result = await session.exec(statement)\n        return result.all()\n    async def upload_doc(self, session: AsyncSession, doc_data : DocumentIn):",
+        "detail": "src.services.document",
+        "documentation": {}
+    },
+    {
         "label": "UserService",
         "kind": 6,
         "importPath": "src.services.user",
@@ -760,7 +1006,7 @@
         "kind": 2,
         "importPath": "src.utils",
         "description": "src.utils",
-        "peekOfCode": "def generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(",
+        "peekOfCode": "def generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    payload = {}\n    payload['user'] = user_data\n    payload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(",
         "detail": "src.utils",
         "documentation": {}
     },
@@ -769,7 +1015,7 @@
         "kind": 2,
         "importPath": "src.utils",
         "description": "src.utils",
-        "peekOfCode": "def verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=playload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO",
+        "peekOfCode": "def verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    payload = {}\n    payload['user'] = user_data\n    payload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=payload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO",
         "detail": "src.utils",
         "documentation": {}
     },
@@ -778,7 +1024,7 @@
         "kind": 2,
         "importPath": "src.utils",
         "description": "src.utils",
-        "peekOfCode": "def create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=playload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO\n    )\n    playload['jti'] = str(uuid4())",
+        "peekOfCode": "def create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    payload = {}\n    payload['user'] = user_data\n    payload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))\n    token = jwt.encode(\n        payload=payload,\n        key=settings.JWT_SECRET,\n        algorithm=settings.JWT_ALGO\n    )\n    payload['jti'] = str(uuid4())",
         "detail": "src.utils",
         "documentation": {}
     },
@@ -796,7 +1042,7 @@
         "kind": 5,
         "importPath": "src.utils",
         "description": "src.utils",
-        "peekOfCode": "passwd_context = CryptContext(schemes=['bcrypt'])\nACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data",
+        "peekOfCode": "passwd_context = CryptContext(schemes=['bcrypt'])\nACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    payload = {}\n    payload['user'] = user_data",
         "detail": "src.utils",
         "documentation": {}
     },
@@ -805,7 +1051,7 @@
         "kind": 5,
         "importPath": "src.utils",
         "description": "src.utils",
-        "peekOfCode": "ACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    playload = {}\n    playload['user'] = user_data\n    playload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))",
+        "peekOfCode": "ACCES_TOKEN_EXPIRY = 3600\ndef generate_passord_hash(password: str):\n    hash = passwd_context.hash(password)\n    return hash\ndef verify_password(password: str, hash: str) -> bool:\n    return passwd_context.verify(secret=password, hash=hash)\ndef create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore\n    payload = {}\n    payload['user'] = user_data\n    payload[\"exp\"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))",
         "detail": "src.utils",
         "documentation": {}
     },
@@ -814,7 +1060,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "app = FastAPI(lifespan=life_span)\napp.include_router(router=user_router, prefix=\"/auth\")",
+        "peekOfCode": "app = FastAPI(lifespan=life_span)\napp.include_router(router=user_router, prefix=\"/auth\", tags=[\"auth\"])\napp.include_router(router=doc_router, prefix=\"/document\", tags=[\"documents\"])",
         "detail": "main",
         "documentation": {}
     }

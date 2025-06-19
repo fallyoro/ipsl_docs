@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:ipsl_docs/database/database.dart';
+import 'package:ipsl_docs/core/constant.dart';
+import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
 
-//final viewModel = DocumentViewModel(sqlite);
 late final DocumentViewModel viewModel;
-//final bool isLoding;
 
 class Home extends StatefulWidget {
-  //final DocumentViewModel viewModel;
-
   const Home({super.key});
 
   @override
@@ -18,75 +15,170 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool isLoading = true;
+  bool isLoading = false;
+
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    //_setup();
-  }
-
-  Future<void> _setup() async {
-    final sqlite = await SQLiteService.init(); // 🔄 instance prête
-    viewModel = DocumentViewModel(sqlite);
-    await viewModel.loadDocuments();
-
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  /* Future<void> _setup() async {
-    final sqlite = SQLiteService();
-    await sqlite.init();
-    final dir = await getApplicationDocumentsDirectory();
-
-    logInfo('📁 DB path: ${dir.path}/ipsl_docs.db');
-
-    print("===========================================================");
-    sqlite.insertMockData();
-    await viewModel.loadDocuments();
-  }*/
-
   Widget build(BuildContext context) {
-    /*if (isLoading) {
-      // ✅ Affichage d’un loader pendant l’init
+    if (isLoading) {
       return const Center(child: CircularProgressIndicator());
-    }*/
+    }
 
     return ValueListenableBuilder<List<Document>>(
       valueListenable: viewModel.documents,
       builder: (context, docs, _) {
         final folders = viewModel.getRootFolders();
-        return ListView.builder(
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1.2,
+          ),
           itemCount: folders.length,
           itemBuilder: (context, index) {
             final folder = folders[index];
-            return ListTile(
-              leading: const Icon(Icons.folder),
-              title: Text(folder),
+            return GestureDetector(
               onTap: () {
-                final docsInFolder =
-                    docs
-                        .where((doc) => doc.filePath.split('/').first == folder)
-                        .toList();
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (context) => DocumentListView(
-                          folderPath: folder,
-                          documents: docsInFolder,
-                        ),
+                    builder: (_) => SubfoldersPage(folder: folder),
                   ),
                 );
               },
+              child: ValueListenableBuilder(
+                valueListenable: ThemeController.isDarkModeNotifier,
+                builder: (context, isDark, child) {
+                  return Card(
+                    color:
+                        isDark
+                            ? AppColors.darkSecondarySystemBackground
+                            : AppColors.lightSecondarySystemBackground,
+                    elevation: 2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.folder, size: 48, color: Colors.amber),
+                        const SizedBox(height: 12),
+                        Text(
+                          folder,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             );
           },
         );
       },
+    );
+  }
+}
+
+class SubfoldersPage extends StatelessWidget {
+  final String folder;
+  const SubfoldersPage({super.key, required this.folder});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(folder)),
+      body: ValueListenableBuilder<List<Document>>(
+        valueListenable: viewModel.documents,
+        builder: (context, docs, _) {
+          final subfolders =
+              docs
+                  .where((doc) => doc.filePath.startsWith('$folder/'))
+                  .map((doc) => doc.filePath.split('/')[1])
+                  .toSet()
+                  .toList();
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1.2,
+            ),
+            itemCount: subfolders.length,
+            itemBuilder: (context, index) {
+              final subfolder = subfolders[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => DocumentsPage(
+                            folder: folder,
+                            subfolder: subfolder,
+                          ),
+                    ),
+                  );
+                },
+                child: Card(
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkSecondarySystemBackground
+                          : AppColors.lightSecondarySystemBackground,
+                  elevation: 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.folder, size: 48, color: Colors.amber),
+                      const SizedBox(height: 12),
+                      Text(
+                        subfolder,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class DocumentsPage extends StatelessWidget {
+  final String folder;
+  final String subfolder;
+  const DocumentsPage({
+    super.key,
+    required this.folder,
+    required this.subfolder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      //appBar: AppBar(title: Text('$folder/$subfolder')),
+      body: ValueListenableBuilder<List<Document>>(
+        valueListenable: viewModel.documents,
+        builder: (context, docs, _) {
+          final docsInSubfolder =
+              docs.where((doc) {
+                final parts = doc.filePath.split('/');
+                return parts.length > 1 &&
+                    parts[0] == folder &&
+                    parts[1] == subfolder;
+              }).toList();
+
+          return DocumentListView(
+            folderPath: '$folder/$subfolder',
+            documents: docsInSubfolder,
+          );
+        },
+      ),
     );
   }
 }

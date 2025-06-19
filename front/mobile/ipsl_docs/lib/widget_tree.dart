@@ -10,7 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
 import 'package:ipsl_docs/database/database.dart';
 
-
 //final sqlite = SQLiteService();
 //final viewModel = DocumentViewModel(sqlite);
 
@@ -168,7 +167,7 @@ class _WidgetTreeState extends State<WidgetTree> {
 
           // ✅ Bottom bar uniquement pour mobile
           bottomNavigationBar:
-              isMobile || isTablet
+              isMobile
                   ? SalomonBottomBar(
                     backgroundColor: isDark ? Colors.black : Colors.white,
                     currentIndex: _selectedPage,
@@ -185,17 +184,18 @@ class _WidgetTreeState extends State<WidgetTree> {
                       SalomonBottomBarItem(
                         icon: const Icon(FontAwesomeIcons.house, size: 30),
                         title: const Text('Accueil'),
-                        selectedColor: AppColors.primaryColor,
+                        selectedColor: isDark ? Colors.white : Colors.black,
+                        //unselectedColor: isDark ? Colors.grey : Colors.grey,
                       ),
                       SalomonBottomBarItem(
                         icon: const Icon(FontAwesomeIcons.userLarge),
                         title: const Text('Profil'),
-                        selectedColor: AppColors.primaryColor,
+                        selectedColor: isDark ? Colors.white : Colors.black,
                       ),
                       SalomonBottomBarItem(
                         icon: const Icon(FontAwesomeIcons.gear),
                         title: const Text('Paramètres'),
-                        selectedColor: AppColors.primaryColor,
+                        selectedColor: isDark ? Colors.white : Colors.black,
                       ),
                     ],
                   )

@@ -22,17 +22,17 @@ def verify_password(password: str, hash: str) -> bool:
 
 
 def create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore
-    playload = {}
-    playload['user'] = user_data
-    playload["exp"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))
+    payload = {}
+    payload['user'] = user_data
+    payload["exp"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))
 
     token = jwt.encode(
-        payload=playload,
+        payload=payload,
         key=settings.JWT_SECRET,
         algorithm=settings.JWT_ALGO
     )
-    playload['jti'] = str(uuid4())
-    playload['refresh'] = refresh
+    payload['jti'] = str(uuid4())
+    payload['refresh'] = refresh
 
     return token
 

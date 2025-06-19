@@ -1,8 +1,9 @@
+# from src.models.user import User
+
 from sqlmodel import Relationship, SQLModel, Field
 from datetime import datetime, timezone
 from uuid import uuid4, UUID
 
-from src.models.user import User
 
 
 
@@ -15,4 +16,4 @@ class Document(SQLModel, table = True):
     categorie: str
     upload_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))
     user_id: UUID = Field(foreign_key="users.id")
-    user: "User" = Relationship(back_populates="documents")
+    # user: "User" = Relationship(back_populates="documents")
