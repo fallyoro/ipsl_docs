@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ipsl_docs/services/document.dart';
 
 class ThemeController {
-  ThemeController._(); // Constructeur privé
+  ThemeController._(); 
 
   static final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier(false);
   static void toggleTheme() {

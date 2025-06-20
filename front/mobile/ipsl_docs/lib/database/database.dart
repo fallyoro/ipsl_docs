@@ -7,7 +7,7 @@ import 'package:sqlite3/sqlite3.dart';
 class SQLiteService {
   late final Database db;
 
-  SQLiteService._(); // constructeur privé
+  SQLiteService._(); 
 
   static Future<SQLiteService> init() async {
     final instance = SQLiteService._();
@@ -135,7 +135,7 @@ class SQLiteService {
         doc['filename'],
         doc['filePath'],
         doc['categorie'],
-        doc['isDownload'] ?? 0, // ✅ Défaut à 0 si non fourni
+        doc['isDownload'] ?? 0, 
       ],
     );
   }

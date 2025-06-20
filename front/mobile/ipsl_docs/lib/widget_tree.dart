@@ -7,8 +7,7 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
 
-//final sqlite = SQLiteService();
-//final viewModel = DocumentViewModel(sqlite);
+
 
 List<Widget> pages = [
   Home(),
@@ -60,7 +59,7 @@ class _WidgetTreeState extends State<WidgetTree> {
             ],
           ),
 
-          // ✅ Drawer uniquement sur mobile
+      
           drawer:
               isMobile || isTablet
                   ? Drawer(
@@ -162,11 +161,14 @@ class _WidgetTreeState extends State<WidgetTree> {
                     ],
                   ),
 
-          // ✅ Bottom bar uniquement pour mobile
+          
           bottomNavigationBar:
               isMobile
                   ? SalomonBottomBar(
-                    backgroundColor: isDark ? Colors.black : Colors.white,
+                    backgroundColor:
+                        isDark
+                            ? AppColors.darkSecondarySystemBackground
+                            : Colors.white,
                     currentIndex: _selectedPage,
 
                     onTap: (value) {

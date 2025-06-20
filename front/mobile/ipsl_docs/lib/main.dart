@@ -9,19 +9,14 @@ import 'package:path_provider/path_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-
   final dir = await getApplicationDocumentsDirectory();
 
   logInfo('📁 DB path: ${dir.path}/ipsl_docs.db');
-  // _setup();
- await setupDependencies();
- 
 
+  await setupDependencies();
 
   runApp(const MyApp());
 }
-
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

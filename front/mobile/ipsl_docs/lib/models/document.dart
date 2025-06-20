@@ -16,15 +16,7 @@ class Document {
     this.isDownload = 0,
     this.isLoding = false
   });
-  /*    __tablename__ = "documents"
-    id: UUID = Field(primary_key=True, default_factory=uuid4)
-    filename: str
-    file_path: str
-    file_type: str
-    categorie: str
-    upload_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))
-    user_id: UUID = Field(foreign_key="users.id")
-    # user: "User" = Relationship(back_populates="documents")*/
+ 
 
   factory Document.fromJson(Map<String, dynamic> json) => Document(
   id: json['id'] ?? '',
@@ -44,13 +36,7 @@ factory Document.fromJsonForDatabase(Map<String, dynamic> json) => Document(
   isDownload: json['isDownload'] ?? 0
 );
 
-  /*{
-    "filename": "thermo",
-    "file_path": "cpi1/thermo/devoirs",
-    "file_type": "string",
-    "categorie": "string",
-    "user_id": "276909f2-4df1-45f7-8681-2bec01d284ac"
-  },*/
+
 
   Map<String, dynamic> toJson() => {
     'id': id,

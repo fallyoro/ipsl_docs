@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/constant.dart';
-import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
 
-// late final DocumentViewModel viewModel;
+
 final viewModel = GetIt.I<DocumentViewModel>();
 
 class Home extends StatefulWidget {

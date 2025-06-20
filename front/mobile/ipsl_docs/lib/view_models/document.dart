@@ -6,7 +6,7 @@ import 'package:ipsl_docs/models/document.dart';
 class DocumentViewModel {
   final SQLiteService _db;
 
-  /// Liste complète des documents
+
   final ValueNotifier<List<Document>> documents = ValueNotifier([]);
 
   DocumentViewModel(this._db);
@@ -30,7 +30,7 @@ class DocumentViewModel {
     await loadDocuments();
   }
 
-  /// Obtenir les chemins de répertoire de premier niveau (ex: cpi1, ing2...)
+
   List<String> getRootFolders() {
     return documents.value
         .map((doc) => doc.filePath.split('/').first)
@@ -45,7 +45,7 @@ class DocumentViewModel {
         .toList();
   }
 
-  /// Obtenir les documents par chemin exact
+
   List<Document> getDocumentsByPath(String path) {
     return documents.value.where((d) => d.filePath == path).toList();
   }
