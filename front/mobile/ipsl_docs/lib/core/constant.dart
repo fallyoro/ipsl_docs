@@ -70,3 +70,6 @@ class AppColors {
   static const Color darkSystemGray = Color.fromARGB(255, 142, 142, 147);
   static const Color darkSystemGray6 = Color.fromARGB(255, 28, 28, 30);
 }
+
+final String host = "192.168.138.213";
+final int port = 8000;

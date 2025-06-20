@@ -49,12 +49,14 @@ class _DocumentListViewState extends State<DocumentListView> {
             child: ValueListenableBuilder(
               valueListenable: ThemeController.isDarkModeNotifier,
               builder: (context, isDark, child) {
-                return Card(
-                  color:
-                      isDark
-                          ? AppColors.darkSecondarySystemBackground
-                          : AppColors.lightSecondarySystemBackground,
-                  elevation: 2,
+                return Container(
+                  decoration: BoxDecoration(
+                    color:
+                        isDark
+                            ? AppColors.darkSecondarySystemBackground
+                            : AppColors.lightSecondarySystemBackground,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -75,6 +77,7 @@ class _DocumentListViewState extends State<DocumentListView> {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
+                        //SpinKitRotatingCircle(color: Colors.white, size: 50.0),
                       ],
                     ),
                   ),
@@ -101,8 +104,6 @@ class _DocumentListViewState extends State<DocumentListView> {
       final String completePath = "$dirPath/$path";
       logInfo("fixed completepath : $completePath");
       await Process.start('xdg-open', [completePath]);
-
-      
     } else {
       logError("Platforme non supporte");
     }

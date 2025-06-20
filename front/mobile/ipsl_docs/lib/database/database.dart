@@ -1,4 +1,5 @@
-//import 'dart:io';
+import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:ipsl_docs/core/utils.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -17,17 +18,17 @@ class SQLiteService {
 
     instance.db.execute('''
       CREATE TABLE IF NOT EXISTS documents (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_Uploader TEXT,
+        id TEXT PRIMARY KEY,
+        idUploader TEXT,
         filename TEXT,
         filePath TEXT,
         categorie TEXT,
-        isDownload INTEGER DEFAULT 1
+        isDownload INTEGER DEFAULT 0
       );
     ''');
     instance.db.execute('''
       CREATE TABLE IF NOT EXISTS user (
-        id INTEGER,
+        id TEXT PRIMARY KEY,
         nom TEXT,
         prenom TEXT,
         email TEXT
@@ -37,8 +38,8 @@ class SQLiteService {
     return instance;
   }
 
-  void insertMockData() {
-    final data = [
+  Future<void> insertMockData() async {
+    /*final data = [
       [1, "ex1.pdf", "cpi1/maths/devoirs", "devoirs", 1],
       [2, "td1.pdf", "cpi1/maths/td", "td", 1],
       [3, "tp1.docx", "cpi1/physique/tp", "tp", 1],
@@ -59,23 +60,32 @@ class SQLiteService {
       [3, "td5.pdf", "ing3/economie/td", "td", 1],
       [1, "tp5.docx", "ing3/droit/tp", "tp", 0],
       [2, "utils_notes.pdf", "ing3/droit/utils", "utils", 1],
-    ];
+    ];*/
+    final data = await document_service.fetchDocuments();
 
-    for (var row in data) {
-      db.execute('''
-        INSERT INTO documents (id_Uploader, filename, filePath, categorie, isDownload)
-        VALUES (?, ?, ?, ?, ?);
-      ''', row);
+    for (var doc in data) {
+      db.execute(
+        '''
+    INSERT INTO documents (id, idUploader, filename, filePath, categorie, isDownload)
+    VALUES (?, ?, ?, ?, ?, ?);
+  ''',
+        [doc.id, doc.idUploader, doc.filename, doc.filePath, doc.categorie, 0],
+      );
+    
+      logInfo( 
+        "The insrtion of data $doc.id, $doc.idUploader, $doc.filename, $doc.filePath, $doc.categorie, 0"
+      );
     }
   }
 
   List<Map<String, dynamic>> getDocuments() {
     final result = db.select('SELECT * FROM documents;');
+
     return result
         .map(
           (row) => {
             'id': row['id'],
-            'id_Uploader': row['id_Uploader'],
+            'idUploader': row['idUploader'],
             'filename': row['filename'],
             'filePath': row['filePath'],
             'categorie': row['categorie'],
@@ -109,27 +119,23 @@ class SQLiteService {
       INSERT INTO user (id, nom, prenom, email)
       VALUES (?, ?, ?, ?);
       ''',
-      [
-        user['id'],
-        user['nom'],
-        user['prenom'],
-        user['email'],
-      ],
+      [user['id'], user['nom'], user['prenom'], user['email']],
     );
   }
 
   void insertDocument(Map<String, dynamic> doc) {
     db.execute(
       '''
-      INSERT INTO documents (id_Uploader, filename, filePath, categorie, isDownload)
-      VALUES (?, ?, ?, ?, ?);
+    INSERT INTO documents (id, idUploader, filename, filePath, categorie, isDownload)
+    VALUES (?, ?, ?, ?, ?, ?);
     ''',
       [
-        doc['id_Uploader'],
+        doc['id'],
+        doc['idUploader'],
         doc['filename'],
         doc['filePath'],
         doc['categorie'],
-        doc['isDownload'] ?? 0, // valeur par défaut
+        doc['isDownload'] ?? 0, // ✅ Défaut à 0 si non fourni
       ],
     );
   }

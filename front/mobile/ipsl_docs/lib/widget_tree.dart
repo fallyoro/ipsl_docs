@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
-import 'package:ipsl_docs/view_models/document.dart';
-import 'package:ipsl_docs/view_models/model_views.dart';
 import 'package:ipsl_docs/views/home.dart';
 import 'package:ipsl_docs/views/profile.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
-import 'package:ipsl_docs/database/database.dart';
 
 //final sqlite = SQLiteService();
 //final viewModel = DocumentViewModel(sqlite);

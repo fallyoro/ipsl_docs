@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
-
-
-
 
 class DocumentViewModel {
   final SQLiteService _db;
@@ -15,7 +13,16 @@ class DocumentViewModel {
 
   Future<void> loadDocuments() async {
     final rawDocs = _db.getDocuments();
-    documents.value = rawDocs.map((row) => Document.fromJson(row)).toList();
+    logInfo("The documents");
+
+    documents.value = rawDocs.map((row) => Document.fromJsonForDatabase(row)).toList();
+    logInfo("Info of first document");
+    for (int i = 0; i < 3; i++) {
+      logInfo("File path");
+      logInfo(documents.value[i].filePath);
+      logInfo("File name");
+      logInfo(documents.value[i].filename);
+    }
   }
 
   Future<void> addDocument(Document doc) async {
@@ -43,4 +50,3 @@ class DocumentViewModel {
     return documents.value.where((d) => d.filePath == path).toList();
   }
 }
-
