@@ -11,7 +11,7 @@ class DocumentBase(BaseModel):
     categorie: str
     user_id: UUID
 
-class DocumentDownload(BaseModel):
+class DocumentDownload(DocumentBase):
     id: UUID 
 
 class DocumentOut(DocumentBase):

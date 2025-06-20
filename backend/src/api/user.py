@@ -6,7 +6,6 @@ from src.schemas.user import UserCreate, UserOut, UserLogin
 from src.services.user import UserService
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.database.database import create_session
-#from src.api.user import user_service
 from src.utils import create_acess_token, decode_token, passwd_context, verify_password
 
 

@@ -16,7 +16,7 @@ service = DocumentService()
 doc_router = APIRouter()
 
 
-@doc_router.get("/documents")
+@doc_router.get("/documents", response_model= List[DocumentDownload])
 async def get_all_documents( session: AsyncSession = Depends(create_session)):
     try:
         documents = await service.get_all_documents(session=session)
@@ -35,7 +35,7 @@ async def upload_doc(
     doc: UploadFile = File(...),
     session: AsyncSession = Depends(create_session)
 ):
-    # Reconstituer l'objet DocumentBase si tu en as besoin
+
     doc_data = DocumentIn(
         filename=filename,
         file_path=file_path,
@@ -45,10 +45,9 @@ async def upload_doc(
     )
     
 
-    # Corriger documents_path_path -> documents_path
     documents_path = Path(__file__).resolve().parent.parents[0] / "documents"
 
-    # s'assurer que le dossier existe
+
     documents_path.mkdir(parents=True, exist_ok=True)
     complete_path = documents_path / doc.filename
 
@@ -101,15 +100,4 @@ async def download_doc(
         "file_path" : f'{complete_path}'
     })
 
-    '''if os.path.exists(complete_path):
-
-        # print(f"Path :  {doc_path}")
-        return FileResponse(
-            path=complete_path,
-            media_type="application/pdf"
-        )
-
-    raise HTTPException(status_code=404, detail={
-        "error" : "file not found",
-        "file_path" : complete_path
-    })'''
+ 
