@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/core/Responsive.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
+import 'package:ipsl_docs/views/subfolder_page.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
-
 
 final viewModel = GetIt.I<DocumentViewModel>();
 
@@ -18,9 +19,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool isLoading = false;
+  Responsive responsive = Responsive();
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -29,13 +32,16 @@ class _HomeState extends State<Home> {
       valueListenable: viewModel.documents,
       builder: (context, docs, _) {
         final folders = viewModel.getRootFolders();
+        // Use a responsive crossAxisCount based on screen width
+
         return GridView.builder(
           padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.2,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 250,
+
+            crossAxisSpacing: 24,
+            mainAxisSpacing: 24,
+            childAspectRatio: 1.1,
           ),
           itemCount: folders.length,
           itemBuilder: (context, index) {
@@ -52,21 +58,33 @@ class _HomeState extends State<Home> {
               child: ValueListenableBuilder(
                 valueListenable: ThemeController.isDarkModeNotifier,
                 builder: (context, isDark, child) {
-                  return Card(
-                    color:
-                        isDark
-                            ? AppColors.darkSecondarySystemBackground
-                            : AppColors.lightSecondarySystemBackground,
-                    elevation: 2,
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+
+                      color:
+                          isDark
+                              ? AppColors.darkSecondarySystemBackground
+                              : AppColors.lightSecondarySystemBackground,
+                    ),
+
+                    // elevation: 2,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.folder, size: 48, color: Colors.amber),
+                        Icon(
+                          Icons.folder,
+                          size: screenWidth < 600 ? 60 : 76,
+                          color: Colors.amber,
+                        ),
                         const SizedBox(height: 12),
                         Text(
                           folder,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenWidth < 600 ? 14 : 20,
+                          ),
                         ),
                       ],
                     ),
@@ -77,76 +95,6 @@ class _HomeState extends State<Home> {
           },
         );
       },
-    );
-  }
-}
-
-class SubfoldersPage extends StatelessWidget {
-  final String folder;
-  const SubfoldersPage({super.key, required this.folder});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(folder)),
-      body: ValueListenableBuilder<List<Document>>(
-        valueListenable: viewModel.documents,
-        builder: (context, docs, _) {
-          final subfolders =
-              docs
-                  .where((doc) => doc.filePath.startsWith('$folder/'))
-                  .map((doc) => doc.filePath.split('/')[1])
-                  .toSet()
-                  .toList();
-
-          return GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.2,
-            ),
-            itemCount: subfolders.length,
-            itemBuilder: (context, index) {
-              final subfolder = subfolders[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => DocumentsPage(
-                            folder: folder,
-                            subfolder: subfolder,
-                          ),
-                    ),
-                  );
-                },
-                child: Card(
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.darkSecondarySystemBackground
-                          : AppColors.lightSecondarySystemBackground,
-                  elevation: 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.folder, size: 48, color: Colors.amber),
-                      const SizedBox(height: 12),
-                      Text(
-                        subfolder,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
     );
   }
 }

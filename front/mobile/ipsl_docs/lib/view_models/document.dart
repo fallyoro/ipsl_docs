@@ -6,7 +6,6 @@ import 'package:ipsl_docs/models/document.dart';
 class DocumentViewModel {
   final SQLiteService _db;
 
-
   final ValueNotifier<List<Document>> documents = ValueNotifier([]);
 
   DocumentViewModel(this._db);
@@ -15,7 +14,8 @@ class DocumentViewModel {
     final rawDocs = _db.getDocuments();
     logInfo("The documents");
 
-    documents.value = rawDocs.map((row) => Document.fromJsonForDatabase(row)).toList();
+    documents.value =
+        rawDocs.map((row) => Document.fromJsonForDatabase(row)).toList();
     logInfo("Info of first document");
     for (int i = 0; i < 3; i++) {
       logInfo("File path");
@@ -30,6 +30,9 @@ class DocumentViewModel {
     await loadDocuments();
   }
 
+  void setDocument(Document doc) {
+    _db.setDocument(doc);
+  }
 
   List<String> getRootFolders() {
     return documents.value
@@ -44,7 +47,6 @@ class DocumentViewModel {
         .toSet()
         .toList();
   }
-
 
   List<Document> getDocumentsByPath(String path) {
     return documents.value.where((d) => d.filePath == path).toList();

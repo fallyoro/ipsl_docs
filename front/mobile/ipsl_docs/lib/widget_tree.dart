@@ -3,11 +3,10 @@ import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/views/home.dart';
 import 'package:ipsl_docs/views/profile.dart';
+import 'package:ipsl_docs/views/widgets/sidebar.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
-
-
 
 List<Widget> pages = [
   Home(),
@@ -25,7 +24,18 @@ class WidgetTree extends StatefulWidget {
 class _WidgetTreeState extends State<WidgetTree> {
   final PageController _pageController = PageController();
   int _selectedPage = 0;
-  bool isRailExtended = true;
+  // bool isRailExtended = true;
+
+  void _onItemSelected(int index) {
+    setState(() => _selectedPage = index);
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.decelerate,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +55,9 @@ class _WidgetTreeState extends State<WidgetTree> {
                 isDark
                     ? AppColors.darkSystemBackground
                     : AppColors.lightSystemBackground,
-
             actions: [
               IconButton(
-                onPressed: () {
-                  ThemeController.toggleTheme();
-                },
+                onPressed: () => ThemeController.toggleTheme(),
                 icon:
                     isDark
                         ? const Icon(Icons.light_mode)
@@ -59,9 +66,8 @@ class _WidgetTreeState extends State<WidgetTree> {
             ],
           ),
 
-      
           drawer:
-              isMobile || isTablet
+              (isMobile || isTablet)
                   ? Drawer(
                     backgroundColor:
                         isDark
@@ -75,24 +81,27 @@ class _WidgetTreeState extends State<WidgetTree> {
                         ListTile(
                           leading: const Icon(FontAwesomeIcons.house),
                           title: const Text("Accueil"),
+                          selected: _selectedPage == 0,
                           onTap: () {
-                            setState(() => _selectedPage = 0);
+                            _onItemSelected(0);
                             Navigator.pop(context);
                           },
                         ),
                         ListTile(
                           leading: const Icon(FontAwesomeIcons.userLarge),
                           title: const Text("Profil"),
+                          selected: _selectedPage == 1,
                           onTap: () {
-                            setState(() => _selectedPage = 1);
+                            _onItemSelected(1);
                             Navigator.pop(context);
                           },
                         ),
                         ListTile(
                           leading: const Icon(FontAwesomeIcons.gear),
                           title: const Text("Paramètres"),
+                          selected: _selectedPage == 2,
                           onTap: () {
-                            setState(() => _selectedPage = 2);
+                            _onItemSelected(2);
                             Navigator.pop(context);
                           },
                         ),
@@ -102,89 +111,46 @@ class _WidgetTreeState extends State<WidgetTree> {
                   : null,
 
           body:
-              isMobile || isTablet
+              (isMobile)
                   ? PageView(
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() => _selectedPage = index);
-                    },
+                    onPageChanged:
+                        (index) => setState(() => _selectedPage = index),
                     children: pages,
                   )
                   : Row(
                     children: [
-                      NavigationRail(
-                        extended: isRailExtended,
+                      SideBar(
                         selectedIndex: _selectedPage,
-                        onDestinationSelected: (index) {
-                          setState(() => _selectedPage = index);
-                        },
-                        labelType: NavigationRailLabelType.none,
-                        backgroundColor:
-                            isDark
-                                ? AppColors.darkSystemBackground
-                                : AppColors.lightSystemBackground,
-                        elevation: 4,
-                        selectedIconTheme: IconThemeData(
-                          color: isDark ? Colors.white : Colors.black,
-                          size: 28,
-                        ),
-                        unselectedIconTheme: IconThemeData(
-                          color: Colors.grey,
-                          size: 24,
-                        ),
-                        selectedLabelTextStyle: TextStyle(
-                          fontSize: 20,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        unselectedLabelTextStyle: TextStyle(
-                          fontSize: 16,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        destinations: const [
-                          NavigationRailDestination(
-                            icon: Icon(FontAwesomeIcons.house, size: 30),
-                            label: Text('Accueil'),
-                          ),
-                          NavigationRailDestination(
-                            icon: Icon(FontAwesomeIcons.userLarge),
-                            label: Text('Profil'),
-                          ),
-                          NavigationRailDestination(
-                            icon: Icon(FontAwesomeIcons.gear),
-                            label: Text('Paramètres'),
-                          ),
-                        ],
+                        onItemSelected: _onItemSelected,
+                        width: isTablet ? 200.0 : 250.0,
                       ),
                       const VerticalDivider(thickness: 1, width: 1),
-                      Expanded(child: pages[_selectedPage]),
+                      Expanded(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 150),
+                          child: pages[_selectedPage],
+                        ),
+                      ),
                     ],
                   ),
 
-          
           bottomNavigationBar:
-              isMobile
+              ((Theme.of(context).platform == TargetPlatform.android ||
+                      Theme.of(context).platform == TargetPlatform.iOS))
                   ? SalomonBottomBar(
                     backgroundColor:
                         isDark
                             ? AppColors.darkSecondarySystemBackground
                             : Colors.white,
                     currentIndex: _selectedPage,
-
-                    onTap: (value) {
-                      setState(() => _selectedPage = value);
-                      _pageController.animateToPage(
-                        value,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.decelerate,
-                      );
-                    },
+                    onTap: _onItemSelected,
                     items: [
                       SalomonBottomBarItem(
                         icon: const Icon(FontAwesomeIcons.house, size: 30),
                         title: const Text('Accueil'),
                         selectedColor: isDark ? Colors.white : Colors.black,
-                        //unselectedColor: isDark ? Colors.grey : Colors.grey,
                       ),
                       SalomonBottomBarItem(
                         icon: const Icon(FontAwesomeIcons.userLarge),

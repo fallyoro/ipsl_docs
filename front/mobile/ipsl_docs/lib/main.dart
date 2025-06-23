@@ -3,7 +3,7 @@ import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/theme.dart';
 import 'package:ipsl_docs/core/utils.dart';
-import 'package:ipsl_docs/widget_tree.dart';
+import 'package:ipsl_docs/views/sign_up.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
@@ -11,7 +11,7 @@ Future<void> main() async {
 
   final dir = await getApplicationDocumentsDirectory();
 
-  logInfo('📁 DB path: ${dir.path}/ipsl_docs.db');
+  logInfo('DB path: ${dir.path}/ipsl_docs.db');
 
   await setupDependencies();
 
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: theme,
-            home: WidgetTree(),
+            home: SignUpPage(),
           ),
         );
       },

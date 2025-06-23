@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color primaryColor = Color(0x00b85c34);
+  // Returns the same primary color regardless of brightness (light/dark mode)
+  static const Color primaryColor = Color.fromARGB(255, 184, 92, 52);
 
   // Backgrounds Dark
   static const Color darkSystemBackground = Color.fromARGB(255, 28, 28, 30);
@@ -19,13 +20,8 @@ class AppColors {
   );
 
   // Backgrounds Light
-  static const Color lightSystemBackground = Color(0xFFF5F5F5);
-  static const Color lightSecondarySystemBackground = Color.fromARGB(
-    255,
-    242,
-    242,
-    247,
-  ); // Gris très clair
+  static const Color lightSystemBackground = Color.fromARGB(255, 242, 242, 247);
+  static const Color lightSecondarySystemBackground = Colors.white;
   static const Color lightTertiarySystemBackground = Color.fromARGB(
     255,
     229,
@@ -71,5 +67,7 @@ class AppColors {
   static const Color darkSystemGray6 = Color.fromARGB(255, 28, 28, 30);
 }
 
-final String host = "192.168.138.213";
+// final String host = "192.168.1.153";
+final String host = "192.168.1.153";
 final int port = 8000;
+

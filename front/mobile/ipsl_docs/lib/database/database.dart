@@ -1,5 +1,6 @@
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/utils.dart';
+import 'package:ipsl_docs/models/document.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -7,11 +8,13 @@ import 'package:sqlite3/sqlite3.dart';
 class SQLiteService {
   late final Database db;
 
-  SQLiteService._(); 
+  SQLiteService._();
 
   static Future<SQLiteService> init() async {
     final instance = SQLiteService._();
     final dir = await getApplicationDocumentsDirectory();
+    // logInfo(p.join(dir.path, 'ipsl_docs', 'ipsl_docs.db'));
+    // final dbPath = p.join(dir.path, 'ipsl_docs', 'ipsl_docs.db');
     final dbPath = p.join(dir.path, 'ipsl_docs.db');
 
     instance.db = sqlite3.open(dbPath);
@@ -29,8 +32,7 @@ class SQLiteService {
     instance.db.execute('''
       CREATE TABLE IF NOT EXISTS user (
         id TEXT PRIMARY KEY,
-        nom TEXT,
-        prenom TEXT,
+        user_name TEXT,
         email TEXT
       );
     ''');
@@ -71,10 +73,6 @@ class SQLiteService {
   ''',
         [doc.id, doc.idUploader, doc.filename, doc.filePath, doc.categorie, 0],
       );
-    
-      logInfo( 
-        "The insrtion of data $doc.id, $doc.idUploader, $doc.filename, $doc.filePath, $doc.categorie, 0"
-      );
     }
   }
 
@@ -101,8 +99,7 @@ class SQLiteService {
         .map(
           (row) => {
             'id': row['id'],
-            'nom': row['nom'],
-            'prenom': row['prenom'],
+            'user_name': row['user_name'],
             'email': row['email'],
           },
         )
@@ -116,10 +113,10 @@ class SQLiteService {
   void insertUser(Map<String, dynamic> user) {
     db.execute(
       '''
-      INSERT INTO user (id, nom, prenom, email)
-      VALUES (?, ?, ?, ?);
+      INSERT INTO user (id, user_name, email)
+      VALUES (?, ?, ?);
       ''',
-      [user['id'], user['nom'], user['prenom'], user['email']],
+      [user['id'], user['user_name'], user['email']],
     );
   }
 
@@ -135,90 +132,17 @@ class SQLiteService {
         doc['filename'],
         doc['filePath'],
         doc['categorie'],
-        doc['isDownload'] ?? 0, 
+        doc['isDownload'] ?? 0,
       ],
     );
   }
-}
 
-
-
-
-
-/*Document({
-    required this.id,
-    required this.idUploader,
-    required this.filename,
-    required this.filePath,
-    required this.categorie,
-  });*/
-
-  /// Ajouter un Todo avec gestion correcte de l'auto-incrément
-  /*static Future<Todo> addTodo(Todo todo) async {
-    final db = await database;
-    int id = await db.insert(
-      'todos',
-      todo.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+  void setDocument(Document doc) {
+    db.execute(
+      '''
+UPDATE documents SET isDownload = 1 WHERE id = ?;
+''',
+      [doc.id],
     );
-
-    print('Tâche ajoutée avec ID : $id');
-    
-
-    return Todo(
-      id: id, // ID généré automatiquement par SQLite
-      title: todo.title,
-      description: todo.description,
-      date: todo.date,
-      isComplete: todo.isComplete,
-    );
-  }
-
-  /// Récupérer tous les Todos
-  static Future<List<Todo>> getTodos() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('todos');
-
-    print("Tâches récupérées: $maps");
-
-    return List.generate(maps.length, (i) => Todo.fromMap(maps[i]));
-  }
-
-  /// Supprimer un Todo avec vérification
-  static Future<void> deleteTodo(int id) async {
-    final db = await database;
-    final int result =
-        await db.delete('todos', where: 'id = ?', whereArgs: [id]);
-
-    if (result == 0) {
-      print('Aucune tâche trouvée pour être supprimée.');
-    } else {
-      print('Tâche supprimée.');
-    }
-  }
-
-  /// Supprimer tous les Todos (correction de la fonction)
-  static Future<void> deleteAllTodos() async {
-    final db = await database;
-    await db.delete('todos');
-    print("Toutes les tâches ont été supprimées.");
-  }
-
-  /// Mettre à jour un Todo
-  static Future<void> updateTodo(Todo todo) async {
-    final db = await database;
-    int result = await db.update(
-      'todos',
-      todo.toMap(),
-      where: 'id = ?',
-      whereArgs: [todo.id],
-    );
-
-    if (result == 0) {
-      print("Erreur : Aucune tâche mise à jour.");
-    } else {
-      print("Tâche mise à jour avec succès.");
-    }
   }
 }
-*/

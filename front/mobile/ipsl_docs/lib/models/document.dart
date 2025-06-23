@@ -4,7 +4,7 @@ class Document {
   final String filename;
   final String filePath;
   final String categorie;
-  final int isDownload;
+  int isDownload;
   final bool isLoding;
 
   Document({

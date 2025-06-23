@@ -3,11 +3,11 @@ import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/document.dart';
+import 'package:ipsl_docs/services/document.dart';
+import 'package:ipsl_docs/views/home.dart';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
-
-// Directory will be initialized in the state class
 
 class DocumentListView extends StatefulWidget {
   final String folderPath;
@@ -24,6 +24,7 @@ class DocumentListView extends StatefulWidget {
 }
 
 class _DocumentListViewState extends State<DocumentListView> {
+  DocumentServive service = DocumentServive();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,10 +41,25 @@ class _DocumentListViewState extends State<DocumentListView> {
         itemBuilder: (context, index) {
           final doc = widget.documents[index];
           return GestureDetector(
-            onTap: () {
+            onTap: () async {
               // Action future : ouvrir fichier, prévisualiser, etc.
+              if (widget.documents[index].isDownload == 0) {
+                await service.downloadFile(widget.documents[index]);
+                setState(() {
+                  widget.documents[index].isDownload = 1;
+                });
+                viewModel.setDocument(doc);
+              }
+              final dir = await getApplicationDocumentsDirectory();
               final String goodPath =
-                  "${widget.documents[index].filePath}/${widget.documents[index].filename}";
+                  "ipsl_docs/${widget.documents[index].filePath}/${widget.documents[index].filename}";
+              final String fullDirPath =
+                  "${dir.path}/ipsl_docs/${widget.documents[index].filePath}";
+              final directory = Directory(fullDirPath);
+              if (!await directory.exists()) {
+                await directory.create(recursive: true);
+              }
+              logInfo(goodPath);
               openDocument(goodPath);
             },
             child: ValueListenableBuilder(
