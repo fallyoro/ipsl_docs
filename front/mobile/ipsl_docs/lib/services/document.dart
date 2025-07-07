@@ -1,15 +1,42 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:ipsl_docs/core/constant.dart';
+import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'dart:typed_data';
 
 import 'package:path_provider/path_provider.dart';
 
+final options = BaseOptions(
+  baseUrl: 'http://$host:$port/document',
+  connectTimeout: Duration(minutes: 1),
+  receiveTimeout: Duration(minutes: 1),
+);
+final dio = Dio(options);
+
 class DocumentServive {
   Future<List<Document>> fetchDocuments() async {
+    try {
+      final response = await dio.get('/documents');
+
+      if (response.statusCode == 200) {
+        final data = response.data as List;
+        return data
+            .map((json) => Document.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception("Faild to load documents");
+      }
+    } on DioException catch (e) {
+      throw Exception(" Failed to fetch document. Error: $e");
+    } catch (e) {
+      throw Exception("Error unexpected: $e");
+    }
+  }
+
+  /*Future<List<Document>> fetchDocuments() async {
     try {
       final uri = Uri(
         scheme: 'http',
@@ -32,27 +59,90 @@ class DocumentServive {
     } catch (e) {
       throw Exception('Failed to fetch documents: $e');
     }
+  }*/
+  Future<void> downloadFile(
+    Document doc,
+    void Function(int, int)? onProgress,
+  ) async {
+    final baseDir = await getApplicationDocumentsDirectory();
+    final docDir = Directory(
+      p.join(
+        baseDir.path,
+        "ipsl_docs",
+        doc.classe,
+        doc.year.toString(),
+        doc.subject,
+        doc.categorie,
+      ),
+    );
+    if (!await docDir.exists()) {
+      await docDir.create(recursive: true);
+    }
+    final savePath = p.join(docDir.path, doc.filename);
+    logInfo("Where the do is supposed to be saved $savePath");
+
+    try {
+      await dio.download(
+        "/download/${doc.id}",
+        savePath,
+        onReceiveProgress: onProgress,
+        options: Options(
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+        ),
+      );
+    } on DioException catch (e) {
+      throw Exception("Failed to download the document: $e");
+    } catch (e) {
+      throw Exception("Erreur unexpected: $e");
+    }
   }
 
-  Future<void> downloadFile(Document doc) async {
+  Future<String?> uploadDocument({
+    required File file,
+    required String filename,
+    required String classe,
+    required String subject,
+    required int year,
+    required String categorie,
+    required String userId,
+  }) async {
     final uri = Uri(
       scheme: 'http',
       host: host,
       port: port,
-      path: '/document/download/${doc.id}',
+      path: '/document/upload',
     );
-    final response = await http.get(uri);
-    final bytes = response.bodyBytes;
-    final dir = await getApplicationDocumentsDirectory();
+    var request = http.MultipartRequest('POST', uri);
 
-    final docPath = p.join(dir.path, 'ipsl_docs', doc.filePath, doc.filename);
-    final docDir = p.join(dir.path, 'ipsl_docs', doc.filePath);
-    final directory = Directory(docDir);
-              if (!await directory.exists()) {
-                await directory.create(recursive: true);
-              }
-    final file = File(docPath);
-    await file.writeAsBytes(bytes);
+    // Champs du formulaire
+    request.fields['filename'] = filename;
+    request.fields['classe'] = classe;
+    request.fields['subject'] = subject;
+    request.fields['year'] = year.toString();
+    request.fields['categorie'] = categorie;
+    request.fields['user_id'] = userId;
+
+    // Fichier à uploader
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'doc', // DOIT correspondre au paramètre `doc: UploadFile = File(...)`
+        file.path,
+        filename: p.basename(file.path),
+      ),
+    );
+
+    var response = await request.send();
+    final respStr = await http.Response.fromStream(response);
+
+    if (response.statusCode == 200) {
+      logInfo('Success: ${respStr.body}');
+      final Map<String, dynamic> jsonResp = jsonDecode(respStr.body);
+      return jsonResp['id']?.toString();
+    } else {
+      logInfo('Error ${response.statusCode}: ${respStr.body}');
+      return null;
+    }
   }
 }
 

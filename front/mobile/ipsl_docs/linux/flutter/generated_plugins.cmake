@@ -3,6 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  flutter_secure_storage_linux
+  open_file_linux
   sqlite3_flutter_libs
 )
 

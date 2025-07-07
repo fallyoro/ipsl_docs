@@ -27,10 +27,9 @@ class MyApp extends StatelessWidget {
       valueListenable: ThemeController.isDarkModeNotifier,
       builder: (context, isDark, child) {
         final theme = isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
-
         return AnimatedTheme(
           data: theme,
-          curve: Curves.bounceOut,
+          curve: Curves.decelerate,
           duration: const Duration(seconds: 1),
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

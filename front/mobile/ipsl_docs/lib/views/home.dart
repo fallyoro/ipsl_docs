@@ -3,9 +3,10 @@ import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
-import 'package:ipsl_docs/views/subfolder_page.dart';
+import 'package:ipsl_docs/views/year_folder_page.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
 
 final viewModel = GetIt.I<DocumentViewModel>();
@@ -19,7 +20,19 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool isLoading = false;
+  String userName = "hello";
   Responsive responsive = Responsive();
+  final fruits = [];
+
+  @override
+  void initState() {
+    super.initState();
+    var userData = SQLiteService.instance.getUser();
+    String userNameq = userData['user_name'];
+    setState(() {
+      userName = userNameq;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,101 +44,362 @@ class _HomeState extends State<Home> {
     return ValueListenableBuilder<List<Document>>(
       valueListenable: viewModel.documents,
       builder: (context, docs, _) {
-        final folders = viewModel.getRootFolders();
-        // Use a responsive crossAxisCount based on screen width
+        final classe = viewModel.getClasseFolders();
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 250,
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
 
-            crossAxisSpacing: 24,
-            mainAxisSpacing: 24,
-            childAspectRatio: 1.1,
-          ),
-          itemCount: folders.length,
-          itemBuilder: (context, index) {
-            final folder = folders[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SubfoldersPage(folder: folder),
-                  ),
-                );
-              },
-              child: ValueListenableBuilder(
-                valueListenable: ThemeController.isDarkModeNotifier,
-                builder: (context, isDark, child) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-                      color:
-                          isDark
-                              ? AppColors.darkSecondarySystemBackground
-                              : AppColors.lightSecondarySystemBackground,
+            // mainAxisSize: MainAxisSize.min,
+            children: [
+              Text.rich(
+                TextSpan(
+                  text: 'Salut, ',
+                  style: TextStyle(fontSize: 22),
+                  children: [
+                    TextSpan(
+                      text: userName,
+                      style: TextStyle(fontWeight: FontWeight.w700),
                     ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              SearchAnchor.bar(
+                suggestionsBuilder: (context, controller) {
+                  final input = controller.text.toLowerCase();
+                  final results =
+                      fruits
+                          .where((fruit) => fruit.toLowerCase().contains(input))
+                          .toList();
 
-                    // elevation: 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.folder,
-                          size: screenWidth < 600 ? 60 : 76,
-                          color: Colors.amber,
+                  return results.map((fruit) {
+                    return ListTile(
+                      title: Text(fruit),
+                      onTap: () {
+                        controller.text = fruit;
+                        //SearchAnchor.of(context).close();
+                        //FocusScope.of(context).unfocus();
+                      },
+                    );
+                  });
+                },
+                barBackgroundColor: WidgetStateProperty.all(
+                  Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkSecondarySystemBackground
+                      : Colors.white,
+                ),
+                barElevation: WidgetStateProperty.all(0.5),
+                barHintText: "chercher",
+              ),
+              GridView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(16),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 250,
+
+                  crossAxisSpacing: 24,
+                  mainAxisSpacing: 24,
+                  childAspectRatio: 1.1,
+                ),
+                itemCount: classe.length,
+                itemBuilder: (context, index) {
+                  final folder = classe[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => YearPage(classe: folder),
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          folder,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: screenWidth < 600 ? 14 : 20,
-                          ),
-                        ),
-                      ],
+                      );
+                    },
+                    child: ValueListenableBuilder(
+                      valueListenable: ThemeController.isDarkModeNotifier,
+                      builder: (context, isDark, child) {
+                        return CardFolder(
+                          screenWidth: screenWidth,
+                          folder: folder,
+                          isDark: isDark,
+                        );
+                      },
                     ),
                   );
                 },
               ),
-            );
-          },
+            ],
+          ),
         );
       },
     );
   }
 }
 
-class DocumentsPage extends StatelessWidget {
-  final String folder;
-  final String subfolder;
-  const DocumentsPage({
+class CardFolder extends StatefulWidget {
+  const CardFolder({
     super.key,
+    required this.screenWidth,
     required this.folder,
-    required this.subfolder,
+    required this.isDark,
+  });
+
+  final double screenWidth;
+  final String folder;
+  final bool isDark;
+
+  @override
+  State<CardFolder> createState() => _CardFolderState();
+}
+
+class _CardFolderState extends State<CardFolder> {
+  bool isHover = false;
+  @override
+  Widget build(BuildContext context) {
+    Color backgroundColor;
+
+    if (widget.isDark) {
+      backgroundColor =
+          isHover
+              ? AppColors.darkTertiarySystemBackground
+              : AppColors.darkSecondarySystemBackground;
+    } else {
+      backgroundColor =
+          isHover
+              ? AppColors.lightTertiarySystemBackground
+              : AppColors.lightSecondarySystemBackground;
+    }
+    return MouseRegion(
+      onEnter: (_) => setState(() => isHover = true),
+      onExit: (_) => setState(() => isHover = false),
+      child: Card(
+        elevation: widget.isDark ? 0 : 2,
+
+        color: backgroundColor,
+
+        // elevation: 2,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.folder,
+              size: widget.screenWidth < 600 ? 60 : 76,
+              color: Colors.amber,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              widget.folder,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: widget.screenWidth < 600 ? 14 : 20,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SubjectPage extends StatefulWidget {
+  final String classFolder;
+  final String yearFolder;
+
+  const SubjectPage({
+    super.key,
+    required this.classFolder,
+    required this.yearFolder,
   });
 
   @override
+  State<SubjectPage> createState() => _SubjectPageState();
+}
+
+class _SubjectPageState extends State<SubjectPage> {
+  @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      //appBar: AppBar(title: Text('$folder/$subfolder')),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Icon(Icons.folder_special, color: Colors.amber, size: 28),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '${widget.classFolder} / ${widget.yearFolder}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
       body: ValueListenableBuilder<List<Document>>(
         valueListenable: viewModel.documents,
         builder: (context, docs, _) {
-          final docsInSubfolder =
-              docs.where((doc) {
-                final parts = doc.filePath.split('/');
-                return parts.length > 1 &&
-                    parts[0] == folder &&
-                    parts[1] == subfolder;
-              }).toList();
+          final subjectFolder =
+              docs
+                  .where((doc) {
+                    return doc.classe == widget.classFolder &&
+                        doc.year.toString() == widget.yearFolder;
+                  })
+                  .map((e) => e.subject)
+                  .toSet()
+                  .toList();
 
-          return DocumentListView(
-            folderPath: '$folder/$subfolder',
-            documents: docsInSubfolder,
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 250,
+
+              crossAxisSpacing: 24,
+              mainAxisSpacing: 24,
+              childAspectRatio: 1.1,
+            ),
+            itemCount: subjectFolder.length,
+            itemBuilder: (context, index) {
+              final folder = subjectFolder[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => CategoryPage(
+                            classFolder: widget.classFolder,
+                            yearFolder: widget.yearFolder,
+                            subjectFolder: folder,
+                          ),
+                    ),
+                  );
+                },
+                child: ValueListenableBuilder(
+                  valueListenable: ThemeController.isDarkModeNotifier,
+                  builder: (context, isDark, child) {
+                    return CardFolder(
+                      screenWidth: screenWidth,
+                      folder: folder,
+                      isDark: ThemeController.isDarkModeNotifier.value,
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class CategoryPage extends StatefulWidget {
+  final String classFolder;
+  final String yearFolder;
+  final String subjectFolder;
+
+  const CategoryPage({
+    super.key,
+    required this.classFolder,
+    required this.yearFolder,
+    required this.subjectFolder,
+  });
+
+  @override
+  State<CategoryPage> createState() => _CategoryPageState();
+}
+
+class _CategoryPageState extends State<CategoryPage> {
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Icon(Icons.folder_special, color: Colors.amber, size: 28),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '${widget.classFolder} / ${widget.yearFolder} / ${widget.subjectFolder}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      body: ValueListenableBuilder<List<Document>>(
+        valueListenable: viewModel.documents,
+        builder: (context, docs, _) {
+          final categoryFolder =
+              docs
+                  .where((doc) {
+                    return doc.classe == widget.classFolder &&
+                        doc.year.toString() == widget.yearFolder &&
+                        doc.subject == widget.subjectFolder;
+                  })
+                  .map((doc) => doc.categorie)
+                  .toSet()
+                  .toList();
+
+          /* docs
+                  .where((doc) => doc.classe == classe)
+                  .map((doc) => doc.year)
+                  .toSet()
+                  .toList();*/
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 250,
+
+              crossAxisSpacing: 24,
+              mainAxisSpacing: 24,
+              childAspectRatio: 1.1,
+            ),
+            itemCount: categoryFolder.length,
+            itemBuilder: (context, index) {
+              final folder = categoryFolder[index];
+              final documents =
+                  docs.where((doc) {
+                    return doc.classe == widget.classFolder &&
+                        doc.year.toString() == widget.yearFolder &&
+                        doc.subject == widget.subjectFolder &&
+                        doc.categorie == folder;
+                  }).toList();
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DocumentListView(documents: documents),
+                    ),
+                  );
+                },
+                child: ValueListenableBuilder(
+                  valueListenable: ThemeController.isDarkModeNotifier,
+                  builder: (context, isDark, child) {
+                    return CardFolder(
+                      screenWidth: screenWidth,
+                      folder: folder,
+                      isDark: ThemeController.isDarkModeNotifier.value,
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),

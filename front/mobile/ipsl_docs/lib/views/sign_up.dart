@@ -1,12 +1,26 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:ipsl_docs/models/user.dart';
+import 'package:ipsl_docs/services/auth_service.dart';
+import 'package:ipsl_docs/services/token_service.dart';
 import 'package:ipsl_docs/view_models/user.dart';
 import 'package:ipsl_docs/views/login_page.dart';
 import 'package:ipsl_docs/widget_tree.dart';
+import 'package:page_transition/page_transition.dart';
 
-final userViewModel = getIt<UserViewModel>();
+// final userViewModel = getIt<UserViewModel>();
+TokenService tokens = TokenService();
+
+final options = BaseOptions(
+  baseUrl: 'http://$host:$port/auth',
+  connectTimeout: Duration(minutes: 1),
+  receiveTimeout: Duration(minutes: 1),
+);
+final dio = Dio(options);
+final auth = AuthService(dio: dio, tokens: tokens);
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -16,11 +30,24 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<SignUpPage> {
+  bool isLoding = false;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
-  String? selectedClasse = 'cpi1';
-  final List<String> classe = ['cpi1', 'cpi2', 'ing1', 'ing2', 'ing3'];
+  String? selectedClasse = 'Cpi1';
+  final List<String> classe = [
+    'Cpi1',
+    'Cpi2',
+    'GeIT1',
+    'GeIT2',
+    'GeIT3',
+    'GeM1',
+    'GeM2',
+    'GeM3',
+    'GeC1',
+    'GeC2',
+    'GeC3',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -107,29 +134,83 @@ class _LoginPageState extends State<SignUpPage> {
 
                         backgroundColor: AppColors.primaryColor,
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => WidgetTree()),
+                      onPressed: () async {
+                        setState(() {
+                          isLoding = true;
+                        });
+                        final userData = await auth.signUp(
+                          userNameController.text,
+                          emailController.text,
+                          passwordController.text,
+                          selectedClasse!,
                         );
+                        setState(() {
+                          isLoding = false;
+                        });
+                        if (userData!.isNotEmpty) {
+                          auth.login(
+                            emailController.text,
+                            passwordController.text,
+                          );
+                          User user = User(
+                            id: userData['id'],
+                            userName: userNameController.text,
+                            email: emailController.text,
+                          );
+                          userViewModel.addUser(user);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WidgetTree(),
+                            ),
+                          );
+
+                          if (userData.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Creation de compte echouer",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor:
+                                    AppColors.darkSecondarySystemBackground,
+                              ),
+                            );
+                          }
+                        }
                       },
-                      child: const Text(
-                        "Suivant",
-                        style: TextStyle(color: Colors.white, fontSize: 26),
-                      ),
+                      child:
+                          isLoding
+                              ? CircularProgressIndicator()
+                              : Text(
+                                "Suivant",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                ),
+                              ),
                     ),
                     SizedBox(height: 20),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
-                      },
-                      child: Text(
-                        "Se connecter",
-                        style: TextStyle(color: AppColors.primaryColor),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Vous avez deja un compte?  "),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.fade,
+                                child: LoginPage(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Se connecter",
+                            style: TextStyle(color: AppColors.primaryColor),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

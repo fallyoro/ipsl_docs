@@ -9,7 +9,7 @@ enum SidebarItemStatus { active, hovered, inactive }
 class SideBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemSelected;
-  final width;
+  final double width;
 
   const SideBar({
     super.key,

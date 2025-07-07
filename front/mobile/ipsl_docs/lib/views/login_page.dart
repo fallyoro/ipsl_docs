@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:ipsl_docs/models/user.dart';
 import 'package:ipsl_docs/view_models/user.dart';
 import 'package:ipsl_docs/views/sign_up.dart';
 import 'package:ipsl_docs/widget_tree.dart';
+import 'package:page_transition/page_transition.dart';
 
 final userViewModel = getIt<UserViewModel>();
 
@@ -18,6 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool isLoding = false;
 
   @override
   Widget build(BuildContext context) {
@@ -77,29 +80,76 @@ class _LoginPageState extends State<LoginPage> {
 
                         backgroundColor: AppColors.primaryColor,
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => WidgetTree()),
+                      onPressed: () async {
+                        setState(() {
+                          isLoding = true;
+                        });
+                        var userInfo = await auth.login(
+                          emailController.text,
+                          passwordController.text,
                         );
+                        setState(() {
+                          isLoding = false;
+                        });
+                        User user = User(
+                          id: userInfo?['id'],
+                          userName: userInfo?['user_name'],
+                          email: userInfo?['email'],
+                        );
+                        if (userInfo!.isNotEmpty) {
+                          userViewModel.addUser(user);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WidgetTree(),
+                            ),
+                          );
+                          if (userInfo.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Login echoue echouer",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor:
+                                    AppColors.darkSecondarySystemBackground,
+                              ),
+                            );
+                          }
+                        }
                       },
-                      child: const Text(
-                        "Suivant",
-                        style: TextStyle(color: Colors.white, fontSize: 26),
-                      ),
+                      child:
+                          isLoding
+                              ? CircularProgressIndicator()
+                              : Text(
+                                "Suivant",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                ),
+                              ),
                     ),
                     SizedBox(height: 20),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignUpPage()),
-                        );
-                      },
-                      child: Text(
-                        "S'inscrire",
-                        style: TextStyle(color: AppColors.primaryColor),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Vous n'avez pas de compte?  "),
+                        InkWell(
+                          onTap: () async {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.fade,
+                                child: SignUpPage(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "S'inscrire",
+                            style: TextStyle(color: AppColors.primaryColor),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
