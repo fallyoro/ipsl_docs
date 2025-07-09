@@ -36,30 +36,7 @@ class DocumentServive {
     }
   }
 
-  /*Future<List<Document>> fetchDocuments() async {
-    try {
-      final uri = Uri(
-        scheme: 'http',
-        host: host,
-        port: port,
-        path: '/document/documents',
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List<dynamic>;
-
-        return data
-            .map((json) => Document.fromJson(json as Map<String, dynamic>))
-            .toList();
-      } else {
-        throw Exception('Failed to load documents');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch documents: $e');
-    }
-  }*/
+  
   Future<void> downloadFile(
     Document doc,
     void Function(int, int)? onProgress,

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -7,7 +8,10 @@ import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/services/document.dart';
+import 'package:ipsl_docs/views/widgets/folder_home.dart';
+import 'package:ipsl_docs/widget_tree.dart';
 import 'package:open_file/open_file.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:path/path.dart' as p;
 import 'package:ipsl_docs/views/home.dart';
 import 'dart:io';
@@ -30,6 +34,7 @@ class DocumentListView extends StatefulWidget {
 
 class _DocumentListViewState extends State<DocumentListView> {
   DocumentServive service = DocumentServive();
+  bool isDownloading = false;
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -39,7 +44,18 @@ class _DocumentListViewState extends State<DocumentListView> {
           appBar: AppBar(
             title: Row(
               children: [
-                Icon(Icons.folder_special, color: Colors.amber, size: 28),
+                IconButton(
+                  icon: folderHomeIcon(),
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      PageTransition(
+                        child: WidgetTree(),
+                        type: PageTransitionType.fade,
+                      ),
+                      (route) => false,
+                    );
+                  },
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -70,15 +86,20 @@ class _DocumentListViewState extends State<DocumentListView> {
               return GestureDetector(
                 onTap: () async {
                   if (widget.documents[index].isDownload == 0) {
+                    widget.documents[index].isDownloading = true;
                     await service.downloadFile(widget.documents[index], (
-                      int sent,
-                      int total,
+                      received,
+                      total,
                     ) {
-                      logInfo('$sent $total');
+                      setState(() {
+                        widget.documents[index].progress =
+                            total != -1 ? received / total : 0;
+                      });
                     });
                     setState(() {
                       widget.documents[index].isDownload = 1;
                     });
+                    widget.documents[index].isDownloading = false;
                     viewModel.setDocument(doc);
                   }
 
@@ -98,12 +119,9 @@ class _DocumentListViewState extends State<DocumentListView> {
                   }
                   final savePath = p.join(docDir.path, doc.filename);
 
-                  /*  final directory = Directory(documentDirectory);
-              if (!await directory.exists()) {
-                await directory.create(recursive: true);
-              }*/
+           
                   await OpenFile.open(savePath);
-                  // openDocument(savePath);
+              
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -115,29 +133,33 @@ class _DocumentListViewState extends State<DocumentListView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FutureBuilder<Widget>(
-                          future: _buildDocumentPreview(doc),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox(
-                                height: 100,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              );
-                            } else if (snapshot.hasError || !snapshot.hasData) {
-                              return const Icon(
-                                Icons.insert_drive_file,
-                                size: 64,
-                              );
-                            } else {
-                              return snapshot.data!;
-                            }
-                          },
-                        ),
+                        doc.isDownloading
+                            ? CustomCircularProgress(doc)
+                            : FutureBuilder<Widget>(
+                              future: _buildDocumentPreview(doc),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const SizedBox(
+                                    height: 100,
+                                    width: 100,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  );
+                                } else if (snapshot.hasError ||
+                                    !snapshot.hasData) {
+                                  return const Icon(
+                                    Icons.insert_drive_file,
+                                    size: 64,
+                                  );
+                                } else {
+                                  return snapshot.data!;
+                                }
+                              },
+                            ),
                         const SizedBox(height: 8),
                         Text(
                           doc.filename,
@@ -155,6 +177,51 @@ class _DocumentListViewState extends State<DocumentListView> {
       },
     );
   }
+
+  Stack CustomCircularProgress(Document doc) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          width: 48,
+          height: 48,
+          child: CircularProgressIndicator(
+            value: doc.progress, // entre 0.0 et 1.0
+            strokeWidth: 4,
+            color: AppColors.primaryColor,
+          ),
+        ),
+        Text(
+          '${(doc.progress * 100).toStringAsFixed(0)}%',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+Stack CustomLinearProgress(Document doc) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          width: 48,
+          height: 48,
+          child: LinearProgressIndicator(
+            value: doc.progress, // entre 0.0 et 1.0
+          
+            color: AppColors.primaryColor,
+          ),
+        ),
+        Text(
+          '${(doc.progress * 100).toStringAsFixed(0)}%',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+
+
 
   void openDocument(String path) async {
     logInfo('Platform.isLinux: ${Platform.isLinux}');
@@ -187,6 +254,12 @@ Future<Widget> _buildDocumentPreview(Document doc) async {
 
   final savePath = p.join(docDir.path, doc.filename);
   final ext = getFileExtension(doc.filename);
+  final fichier = File(savePath);
+
+  if (!await fichier.exists()) {
+    return Icon(Icons.download);
+  }
+
   if (['jpg', 'jpeg', 'png'].contains(ext)) {
     final file = File(savePath);
     if (!file.existsSync()) {
@@ -198,7 +271,7 @@ Future<Widget> _buildDocumentPreview(Document doc) async {
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
     );
-  } else if (ext == 'pdf') {
+  } else if (await isPDF(savePath)) {
     return FutureBuilder<Uint8List>(
       future: _generatePdfPreview(savePath),
       builder: (context, snapshot) {
@@ -208,7 +281,25 @@ Future<Widget> _buildDocumentPreview(Document doc) async {
             child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           );
         } else if (snapshot.hasError || !snapshot.hasData) {
-          return const Icon(Icons.picture_as_pdf, size: 64);
+          // return const Icon(Icons.picture_as_pdf, size: 64);
+          return const Icon(Icons.error, size: 64);
+        } else {
+          return Image.memory(snapshot.data!, height: 100, fit: BoxFit.cover);
+        }
+      },
+    );
+  } else if (await isPPTFile(savePath)) {
+    return FutureBuilder<Uint8List>(
+      future: buildPptPreview(savePath),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 100,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          );
+        } else if (snapshot.hasError || !snapshot.hasData) {
+          // return const Icon(Icons.picture_as_pdf, size: 64);
+          return const Icon(Icons.error, size: 64);
         } else {
           return Image.memory(snapshot.data!, height: 100, fit: BoxFit.cover);
         }
@@ -229,7 +320,7 @@ Future<Uint8List> _generatePdfPreview(String pdfPath) async {
   final outputBase =
       '${tmpDir.path}/preview_${DateTime.now().millisecondsSinceEpoch}';
 
-  final result = await Process.run('pdftoppm', [
+  /*final result = await Process.run('pdftoppm', [
     '-png',
     '-f',
     '1',
@@ -237,7 +328,19 @@ Future<Uint8List> _generatePdfPreview(String pdfPath) async {
     '1',
     pdfPath,
     outputBase,
+  ]);*/
+  final result = await Process.run('pdftoppm', [
+    '-png',
+    '-singlefile',
+    '-f',
+    '1',
+    '-l',
+    '1',
+    pdfPath,
+    outputBase,
   ]);
+  logInfo(result.stderr);
+  logInfo(result.stdout);
 
   if (result.exitCode != 0) {
     throw Exception("Erreur pdftoppm : ${result.stderr}");
@@ -245,8 +348,67 @@ Future<Uint8List> _generatePdfPreview(String pdfPath) async {
 
   final imageFile = File('$outputBase-1.png');
   if (!await imageFile.exists()) {
+    // return Icon(Icons.exit_to_app);
     throw Exception("Image non trouvée après conversion.");
   }
 
   return await imageFile.readAsBytes();
+}
+
+Future<Uint8List> buildPptPreview(String pptPath) async {
+  final tmpDir = Directory.systemTemp;
+  final outputDir = Directory(
+    '${tmpDir.path}/ppt_preview_${DateTime.now().millisecondsSinceEpoch}',
+  );
+  await outputDir.create();
+
+  // Convertir le PPT(X) en images PNG
+  final result = await Process.run('soffice', [
+    '--headless',
+    '--convert-to',
+    'png',
+    '--outdir',
+    outputDir.path,
+    pptPath,
+  ]);
+  logWarning(result.stderr);
+  logWarning(result.stdout);
+
+  if (result.exitCode != 0) {
+    throw Exception(
+      'Erreur lors de la conversion PowerPoint : ${result.stderr}',
+    );
+  }
+
+  // Chercher la première image générée
+  final outputFiles = outputDir.listSync().whereType<File>().toList();
+  if (outputFiles.isEmpty) {
+    throw Exception('Aucune image générée depuis le PowerPoint.');
+  }
+
+  // Trier les fichiers pour prendre la première slide
+  outputFiles.sort((a, b) => a.path.compareTo(b.path));
+  final firstImage = outputFiles.first;
+
+  return await firstImage.readAsBytes();
+}
+
+Future<bool> isPDF(String path) async {
+  final fichier = File(path);
+  if (!await fichier.exists()) return false;
+
+  final bytes = await fichier.openRead(0, 5).first;
+  final signature = utf8.decode(bytes);
+
+  return signature.startsWith('%PDF-');
+}
+
+Future<bool> isPPTFile(String chemin) async {
+  final fichier = File(chemin);
+  if (!await fichier.exists()) return false;
+
+  final bytes = await fichier.openRead(0, 4).first;
+  final signature = utf8.decode(bytes, allowMalformed: true);
+
+  return signature.startsWith('PK'); // Indice d’un .pptx (ou autre .zip)
 }

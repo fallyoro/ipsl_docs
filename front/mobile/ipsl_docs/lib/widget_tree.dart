@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/services/document.dart';
@@ -14,6 +15,7 @@ import 'package:ipsl_docs/views/widgets/sidebar.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 List<Widget> pages = [
   Home(),
@@ -33,9 +35,7 @@ class _WidgetTreeState extends State<WidgetTree> {
   TextEditingController filenameController = TextEditingController();
   TextEditingController classeController = TextEditingController();
   TextEditingController subjectController = TextEditingController();
-  // Controller for year input, expecting integer values
   TextEditingController yearController = TextEditingController();
-  // int? get yearValue => int.tryParse(yearController.text);
   String? selectedClasse = 'Cpi1';
   final List<String> classe = [
     'Cpi1',
@@ -64,7 +64,6 @@ class _WidgetTreeState extends State<WidgetTree> {
   int _selectedPage = 0;
   String? fileName;
   DocumentServive service = DocumentServive();
-  // bool isRailExtended = true;
 
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -101,6 +100,7 @@ class _WidgetTreeState extends State<WidgetTree> {
 
         return Scaffold(
           floatingActionButton: FloatingActionButton(
+            backgroundColor: AppColors.primaryColor,
             shape: CircleBorder(),
             onPressed: () {
               showDialog(
@@ -275,6 +275,13 @@ class _WidgetTreeState extends State<WidgetTree> {
                                     );
                                     return;
                                   }
+                                  final bool isConnected =
+                                      await isConnectedToInternet();
+                                  if (isConnected == false) {
+                                    if (!context.mounted) return;
+                                    showNoConnectionMessage(context);
+                                    return;
+                                  }
                                   var userData =
                                       SQLiteService.instance.getUser();
                                   String? idDocument = await service
@@ -305,7 +312,7 @@ class _WidgetTreeState extends State<WidgetTree> {
                                     ...documentViewModel.documents.value,
                                     doc,
                                   ];
-
+                                  if (!context.mounted) return;
                                   Navigator.pop(context);
                                   if (idDocument.isNotEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -346,7 +353,7 @@ class _WidgetTreeState extends State<WidgetTree> {
                     ),
               );
             },
-            child: Icon(FontAwesomeIcons.plus),
+            child: Icon(FontAwesomeIcons.plus, color: Colors.white),
           ),
           appBar: AppBar(
             title: Text(
@@ -360,6 +367,7 @@ class _WidgetTreeState extends State<WidgetTree> {
             actions: [
               IconButton(
                 onPressed: () => ThemeController.toggleTheme(),
+
                 icon:
                     isDark
                         ? const Icon(Icons.light_mode)

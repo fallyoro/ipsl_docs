@@ -3,11 +3,16 @@ import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/theme.dart';
 import 'package:ipsl_docs/core/utils.dart';
+import 'package:ipsl_docs/stokage_service.dart';
 import 'package:ipsl_docs/views/sign_up.dart';
+import 'package:ipsl_docs/widget_tree.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await StorageService.init();
+  ThemeController.loadTheme();
+  // await StorageService.setBool("isLoged", false); //xdcdcdcdcd
 
   final dir = await getApplicationDocumentsDirectory();
 
@@ -26,6 +31,7 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: ThemeController.isDarkModeNotifier,
       builder: (context, isDark, child) {
+        bool isLoged = StorageService.getBool("isLoged");
         final theme = isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
         return AnimatedTheme(
           data: theme,
@@ -35,10 +41,12 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: theme,
-            home: SignUpPage(),
+
+            home: isLoged ? WidgetTree() : SignUpPage(),
           ),
         );
       },
     );
   }
 }
+

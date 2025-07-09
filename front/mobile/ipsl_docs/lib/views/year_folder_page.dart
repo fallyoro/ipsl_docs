@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/views/home.dart';
+import 'package:ipsl_docs/views/widgets/folder_home.dart';
+import 'package:ipsl_docs/widget_tree.dart';
+import 'package:page_transition/page_transition.dart';
 
 class YearPage extends StatelessWidget {
   final String classe;
@@ -14,7 +17,18 @@ class YearPage extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(Icons.folder_special, color: Colors.amber, size: 28),
+            IconButton(
+              icon: folderHomeIcon(),
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  PageTransition(
+                    child: WidgetTree(),
+                    type: PageTransitionType.fade,
+                  ),
+                  (route) => false,
+                );
+              },
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(

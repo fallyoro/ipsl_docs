@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/user.dart';
+import 'package:ipsl_docs/stokage_service.dart';
 import 'package:ipsl_docs/view_models/user.dart';
 import 'package:ipsl_docs/views/sign_up.dart';
 import 'package:ipsl_docs/widget_tree.dart';
@@ -81,6 +83,33 @@ class _LoginPageState extends State<LoginPage> {
                         backgroundColor: AppColors.primaryColor,
                       ),
                       onPressed: () async {
+                        final bool isConnected = await isConnectedToInternet();
+                        if (isConnected == false) {
+                          if (!context.mounted) return;
+                          showNoConnectionMessage(context);
+                          return;
+                        }
+                        if (emailController.text.isEmpty) {
+                          if (!context.mounted) return;
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: Text('Champs manquants'),
+                                  content: Text(
+                                    'Veuillez remplir tous les champs',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                          return;
+                        }
                         setState(() {
                           isLoding = true;
                         });
@@ -91,6 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                         setState(() {
                           isLoding = false;
                         });
+                        await StorageService.setBool("isLoged", true);
                         User user = User(
                           id: userInfo?['id'],
                           userName: userInfo?['user_name'],
@@ -98,6 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                         if (userInfo!.isNotEmpty) {
                           userViewModel.addUser(user);
+                          if (!context.mounted) return;
                           Navigator.push(
                             context,
                             MaterialPageRoute(

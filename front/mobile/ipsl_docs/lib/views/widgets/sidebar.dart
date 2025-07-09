@@ -28,7 +28,7 @@ class SideBar extends StatelessWidget {
         children: [
           const SizedBox(height: 32),
           SideBarCategory(
-            category: 'MAIN',
+            category: '',
             items: [
               SideBarCategoryItem2(
                 icon: FontAwesomeIcons.house,

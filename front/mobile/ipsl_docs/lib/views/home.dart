@@ -6,8 +6,11 @@ import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
+import 'package:ipsl_docs/views/widgets/folder_home.dart';
 import 'package:ipsl_docs/views/year_folder_page.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
+import 'package:ipsl_docs/widget_tree.dart';
+import 'package:page_transition/page_transition.dart';
 
 final viewModel = GetIt.I<DocumentViewModel>();
 
@@ -22,7 +25,7 @@ class _HomeState extends State<Home> {
   bool isLoading = false;
   String userName = "hello";
   Responsive responsive = Responsive();
-  final fruits = [];
+  final files = [];
 
   @override
   void initState() {
@@ -47,12 +50,11 @@ class _HomeState extends State<Home> {
         final classe = viewModel.getClasseFolders();
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-
+          padding: EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
 
-            // mainAxisSize: MainAxisSize.min,
             children: [
               Text.rich(
                 TextSpan(
@@ -68,18 +70,22 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 20),
               SearchAnchor.bar(
+                constraints: BoxConstraints(maxWidth: 600, minHeight: 55),
                 suggestionsBuilder: (context, controller) {
                   final input = controller.text.toLowerCase();
                   final results =
-                      fruits
-                          .where((fruit) => fruit.toLowerCase().contains(input))
+                      files
+                          .where(
+                            (filename) =>
+                                filename.toLowerCase().contains(input),
+                          )
                           .toList();
 
-                  return results.map((fruit) {
+                  return results.map((filename) {
                     return ListTile(
-                      title: Text(fruit),
+                      title: Text(filename),
                       onTap: () {
-                        controller.text = fruit;
+                        controller.text = filename;
                         //SearchAnchor.of(context).close();
                         //FocusScope.of(context).unfocus();
                       },
@@ -96,9 +102,10 @@ class _HomeState extends State<Home> {
               ),
               GridView.builder(
                 shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 250,
+                  maxCrossAxisExtent: 280,
 
                   crossAxisSpacing: 24,
                   mainAxisSpacing: 24,
@@ -184,7 +191,7 @@ class _CardFolderState extends State<CardFolder> {
           children: [
             Icon(
               Icons.folder,
-              size: widget.screenWidth < 600 ? 60 : 76,
+              size: widget.screenWidth < 600 ? 60 : 80,
               color: Colors.amber,
             ),
             const SizedBox(height: 12),
@@ -225,7 +232,18 @@ class _SubjectPageState extends State<SubjectPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(Icons.folder_special, color: Colors.amber, size: 28),
+            IconButton(
+              icon: folderHomeIcon(),
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  PageTransition(
+                    child: WidgetTree(),
+                    type: PageTransitionType.fade,
+                  ),
+                  (route) => false,
+                );
+              },
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -323,7 +341,18 @@ class _CategoryPageState extends State<CategoryPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(Icons.folder_special, color: Colors.amber, size: 28),
+            IconButton(
+              icon: folderHomeIcon(),
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  PageTransition(
+                    child: WidgetTree(),
+                    type: PageTransitionType.fade,
+                  ),
+                  (route) => false,
+                );
+              },
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -353,12 +382,6 @@ class _CategoryPageState extends State<CategoryPage> {
                   .map((doc) => doc.categorie)
                   .toSet()
                   .toList();
-
-          /* docs
-                  .where((doc) => doc.classe == classe)
-                  .map((doc) => doc.year)
-                  .toSet()
-                  .toList();*/
 
           return GridView.builder(
             padding: const EdgeInsets.all(16),

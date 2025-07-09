@@ -8,6 +8,8 @@ class Document {
   final String classe;
   int isDownload;
   final bool isLoding;
+  bool isDownloading;
+  double progress;
 
   Document({
     required this.id,
@@ -19,6 +21,8 @@ class Document {
     required this.categorie,
     this.isDownload = 0,
     this.isLoding = false,
+    this.isDownloading = false,
+    this.progress = 0,
   });
 
   factory Document.fromJson(Map<String, dynamic> json) => Document(
@@ -52,5 +56,3 @@ class Document {
     //'isDownload': isDownload,
   };
 }
-
-

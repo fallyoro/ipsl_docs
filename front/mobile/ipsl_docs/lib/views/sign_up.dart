@@ -1,17 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
-import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/user.dart';
 import 'package:ipsl_docs/services/auth_service.dart';
 import 'package:ipsl_docs/services/token_service.dart';
-import 'package:ipsl_docs/view_models/user.dart';
+import 'package:ipsl_docs/stokage_service.dart';
 import 'package:ipsl_docs/views/login_page.dart';
 import 'package:ipsl_docs/widget_tree.dart';
 import 'package:page_transition/page_transition.dart';
 
-// final userViewModel = getIt<UserViewModel>();
 TokenService tokens = TokenService();
 
 final options = BaseOptions(
@@ -135,6 +134,34 @@ class _LoginPageState extends State<SignUpPage> {
                         backgroundColor: AppColors.primaryColor,
                       ),
                       onPressed: () async {
+                        final bool isConnected = await isConnectedToInternet();
+                        if (isConnected == false) {
+                          if (!context.mounted) return;
+                          showNoConnectionMessage(context);
+                          return;
+                        }
+                        if (userNameController.text.isEmpty ||
+                            emailController.text.isEmpty) {
+                          if (!context.mounted) return;
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: Text('Champs manquants'),
+                                  content: Text(
+                                    'Veuillez remplir tous les champs',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                          return;
+                        }
                         setState(() {
                           isLoding = true;
                         });
@@ -158,6 +185,8 @@ class _LoginPageState extends State<SignUpPage> {
                             email: emailController.text,
                           );
                           userViewModel.addUser(user);
+                          StorageService.setBool("isLoged", true);
+                          if (!context.mounted) return;
                           Navigator.push(
                             context,
                             MaterialPageRoute(

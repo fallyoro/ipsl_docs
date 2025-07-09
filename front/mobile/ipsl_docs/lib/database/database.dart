@@ -82,14 +82,20 @@ class SQLiteService {
         .toList();
   }
 
+  // Todo add .first
   Map<String, dynamic> getUser() {
     final result = db.select("SELECT * FROM user");
+
+    if (result.isEmpty) {
+      return {'id': 'id', 'user_name': 'user_name', 'email': 'email'};
+    }
+
     return result
         .map(
           (row) => {
-            'id': row['id'] ?? 'nonid',
-            'user_name': row['user_name'] ?? 'noname',
-            'email': row['email'] ?? 'noemail',
+            'id': row['id'],
+            'user_name': row['user_name'],
+            'email': row['email'],
           },
         )
         .first;
