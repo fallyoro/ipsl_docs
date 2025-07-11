@@ -25,8 +25,7 @@ class SQLiteService {
         subject TEXT,
         classe TEXT,
         categorie TEXT,
-        year INTEGER,
-        is_download INTEGER DEFAULT 0
+        year INTEGER
       );
     ''');
     instance.db.execute('''
@@ -46,8 +45,8 @@ class SQLiteService {
     for (var doc in data) {
       db.execute(
         '''
-    INSERT OR REPLACE INTO documents (id, user_id, filename, classe, year,  categorie, subject, is_download)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    INSERT OR REPLACE INTO documents (id, user_id, filename, classe, year,  categorie, subject)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
   ''',
         [
           doc.id,
@@ -57,7 +56,6 @@ class SQLiteService {
           doc.year,
           doc.categorie,
           doc.subject,
-          0,
         ],
       );
     }
@@ -76,18 +74,17 @@ class SQLiteService {
             'year': row['year'],
             'subject': row['subject'],
             'categorie': row['categorie'],
-            'is_download': row['is_download'],
           },
         )
         .toList();
   }
 
   // Todo add .first
-  Map<String, dynamic> getUser() {
+  Map<String, dynamic>? getUser() {
     final result = db.select("SELECT * FROM user");
 
     if (result.isEmpty) {
-      return {'id': 'id', 'user_name': 'user_name', 'email': 'email'};
+      return null;
     }
 
     return result
@@ -125,8 +122,8 @@ class SQLiteService {
   void insertDocument(Map<String, dynamic> doc) {
     db.execute(
       '''
-    INSERT OR REPLACE INTO documents (id, user_id, filename, classe, year, categorie, subject, is_download)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    INSERT OR REPLACE INTO documents (id, user_id, filename, classe, year, categorie, subject)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
     ''',
       [
         doc['id'],
@@ -136,17 +133,7 @@ class SQLiteService {
         doc['year'],
         doc['categorie'],
         doc['subject'],
-        doc['is_download'] ?? 0,
       ],
-    );
-  }
-
-  void setDocument(Document doc) {
-    db.execute(
-      '''
-UPDATE documents SET is_download = 1 WHERE id = ?;
-''',
-      [doc.id],
     );
   }
 }

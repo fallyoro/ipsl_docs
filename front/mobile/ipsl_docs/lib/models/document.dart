@@ -6,7 +6,6 @@ class Document {
   final int year;
   final String subject;
   final String classe;
-  int isDownload;
   final bool isLoding;
   bool isDownloading;
   double progress;
@@ -19,7 +18,6 @@ class Document {
     required this.classe,
     required this.subject,
     required this.categorie,
-    this.isDownload = 0,
     this.isLoding = false,
     this.isDownloading = false,
     this.progress = 0,
@@ -33,7 +31,7 @@ class Document {
     year: json['year'] ?? 'pas/de',
     subject: json['subject'] ?? 'pas/de',
     categorie: json['categorie'] ?? '',
-    isDownload: json['is_download'] ?? 0,
+
   );
 
   /*factory Document.fromJsonForDatabase(Map<String, dynamic> json) => Document(

@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/document.dart';
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
 import 'package:path_provider/path_provider.dart';
@@ -12,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 final options = BaseOptions(
   baseUrl: 'http://$host:$port/document',
   connectTimeout: Duration(minutes: 1),
-  receiveTimeout: Duration(minutes: 1),
+  receiveTimeout: Duration(minutes: 10),
 );
 final dio = Dio(options);
 
@@ -36,7 +34,6 @@ class DocumentServive {
     }
   }
 
-  
   Future<void> downloadFile(
     Document doc,
     void Function(int, int)? onProgress,
@@ -83,127 +80,48 @@ class DocumentServive {
     required int year,
     required String categorie,
     required String userId,
+    void Function(int, int)? onProgress,
   }) async {
-    final uri = Uri(
-      scheme: 'http',
-      host: host,
-      port: port,
-      path: '/document/upload',
-    );
-    var request = http.MultipartRequest('POST', uri);
+    final dio = Dio();
 
-    // Champs du formulaire
-    request.fields['filename'] = filename;
-    request.fields['classe'] = classe;
-    request.fields['subject'] = subject;
-    request.fields['year'] = year.toString();
-    request.fields['categorie'] = categorie;
-    request.fields['user_id'] = userId;
-
-    // Fichier à uploader
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        'doc', // DOIT correspondre au paramètre `doc: UploadFile = File(...)`
+    final formData = FormData.fromMap({
+      'filename': filename,
+      'classe': classe,
+      'subject': subject,
+      'year': year.toString(),
+      'categorie': categorie,
+      'user_id': userId,
+      'doc': await MultipartFile.fromFile(
         file.path,
         filename: p.basename(file.path),
       ),
-    );
+    });
 
-    var response = await request.send();
-    final respStr = await http.Response.fromStream(response);
+    try {
+      final response = await dio.post(
+        'http://$host:$port/document/upload',
+        data: formData,
+        onSendProgress: onProgress,
+      );
 
-    if (response.statusCode == 200) {
-      logInfo('Success: ${respStr.body}');
-      final Map<String, dynamic> jsonResp = jsonDecode(respStr.body);
-      return jsonResp['id']?.toString();
-    } else {
-      logInfo('Error ${response.statusCode}: ${respStr.body}');
-      return null;
-    }
-  }
-}
-
-
-
-
-
-
-
-
-/*Future<File?> downloadPdf(String docId, {Function(double)? onProgress}) async {
-  try {
-    final uri = Uri(
-      scheme: 'http',
-      host: host,
-      port: port,
-      path: '/document/download/$docId', 
-    );
-
-    final client = http.Client();
-    final request = http.Request('GET', uri);
-    final streamed = await client.send(request);
-
-    if (streamed.statusCode != 200) {
-      return null;
-    }
-
-    final contentLength = streamed.contentLength ?? 0;
-    int received = 0;
-
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/$docId.pdf');
-    final sink = file.openWrite();
-
-    await for (var chunk in streamed.stream) {
-      received += chunk.length;
-      sink.add(chunk);
-      if (onProgress != null && contentLength > 0) {
-        onProgress(received / contentLength);
+      if (response.statusCode == 200 && response.data is Map) {
+        final data = response.data as Map<String, dynamic>;
+        logInfo('Success: ${response.data}');
+        return data['id']?.toString();
+      } else {
+        logInfo('Erreur ${response.statusCode}: ${response.data}');
+        return null;
       }
+    } catch (e) {
+      logInfo('Exception: $e');
+      return null;
     }
-
-    await sink.close();
-    client.close();
-    return file;
-  } catch (e) {
-    return null;
-  }
-}
-*/
-
-
-
-
-/*
-Future<File?> downloadPdf(String docId, {Function(double)? onProgress}) async {
-  // ... le code que tu as partagé ...
-}
-
-// Dans un StatefulWidget :
-double progress = 0.0;
-
-void startDownload() async {
-  final file = await downloadPdf(docId,
-    onProgress: (p) {
-      setState(() {
-        progress = p; // p est entre 0.0 et 1.0
-      });
-    }
-  );
-  if (file != null) {
-    // téléchargement terminé
   }
 }
 
-@override
-Widget build(BuildContext context) {
-  return Column(
-    children: [
-      ElevatedButton(onPressed: startDownload, child: Text("Télécharger PDF")),
-      LinearProgressIndicator(value: progress),
-      Text('${(progress * 100).toStringAsFixed(0)} %'),
-    ],
-  );
-}
-*/
+
+
+
+
+
 

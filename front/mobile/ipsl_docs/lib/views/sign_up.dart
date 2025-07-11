@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/utils.dart';
@@ -30,10 +31,12 @@ class SignUpPage extends StatefulWidget {
 
 class _LoginPageState extends State<SignUpPage> {
   bool isLoding = false;
+  final _formKeySign = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
   String? selectedClasse = 'Cpi1';
+  bool _obscurePassword = true;
   final List<String> classe = [
     'Cpi1',
     'Cpi2',
@@ -58,7 +61,7 @@ class _LoginPageState extends State<SignUpPage> {
             child: Container(
               width: 550,
               height: 600,
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(0),
               child: Container(
                 padding: EdgeInsets.all(30),
                 decoration: BoxDecoration(
@@ -67,7 +70,7 @@ class _LoginPageState extends State<SignUpPage> {
                         isDark ? AppColors.darkOpaqueSeparator : Colors.black,
                     width: 2,
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -81,32 +84,69 @@ class _LoginPageState extends State<SignUpPage> {
                       ),
                     ),
                     Container(height: 30),
-                    TextField(
-                      controller: userNameController,
-                      keyboardType: TextInputType.name,
-                      decoration: const InputDecoration(
-                        labelText: "Nom utilisateur",
+                    Form(
+                      key: _formKeySign,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: userNameController,
+                            validator:
+                                (value) =>
+                                    value == null || value.isEmpty
+                                        ? "Veuillez entrer votre nom d'utilisateur"
+                                        : null,
+                            decoration: InputDecoration(
+                              labelText: "Nom utillisateur",
+                              // suffixIcon: Icon(FontAwesomeIcons.word),)
+                            ),
+                          ),
+                          TextFormField(
+                            controller: emailController,
+
+                            validator:
+                                (value) =>
+                                    value == null || value.isEmpty
+                                        ? 'Veuillez entrer votre email'
+                                        : null,
+                            decoration: InputDecoration(
+                              labelText: "Email",
+                              suffixIcon: Icon(FontAwesomeIcons.envelope),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: passwordController,
+                            obscureText: _obscurePassword ? false : true,
+                            validator:
+                                (value) =>
+                                    value == null || value.isEmpty
+                                        ? 'Veuillez entrer votre mot de pasee'
+                                        : null,
+                            decoration: InputDecoration(
+                              labelText: "Mot de passe",
+                              suffixIcon: IconButton(
+                                icon:
+                                    _obscurePassword
+                                        ? Icon(FontAwesomeIcons.eye)
+                                        : Icon(FontAwesomeIcons.eyeSlash),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    TextField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(labelText: "Email"),
-                    ),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: "Mot de passe",
-                      ),
-                    ),
+
                     const SizedBox(height: 20),
                     DropdownButton<String>(
                       style: TextStyle(fontSize: 16),
                       // autofocus: true,
                       borderRadius: BorderRadius.all(Radius.circular(10)),
 
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: EdgeInsets.symmetric(horizontal: 0),
                       value: selectedClasse,
                       onChanged: (value) {
                         setState(() {
@@ -118,12 +158,18 @@ class _LoginPageState extends State<SignUpPage> {
                               .map<DropdownMenuItem<String>>(
                                 (String value) => DropdownMenuItem<String>(
                                   value: value,
-                                  child: Text(value),
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(
+                                      color:
+                                          isDark ? Colors.white : Colors.black,
+                                    ),
+                                  ),
                                 ),
                               )
                               .toList(),
                     ),
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 30),
                     FilledButton(
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(
@@ -140,28 +186,8 @@ class _LoginPageState extends State<SignUpPage> {
                           showNoConnectionMessage(context);
                           return;
                         }
-                        if (userNameController.text.isEmpty ||
-                            emailController.text.isEmpty) {
-                          if (!context.mounted) return;
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: Text('Champs manquants'),
-                                  content: Text(
-                                    'Veuillez remplir tous les champs',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                          );
-                          return;
-                        }
+                        if (!_formKeySign.currentState!.validate()) return;
+
                         setState(() {
                           isLoding = true;
                         });
@@ -174,43 +200,43 @@ class _LoginPageState extends State<SignUpPage> {
                         setState(() {
                           isLoding = false;
                         });
-                        if (userData!.isNotEmpty) {
-                          auth.login(
-                            emailController.text,
-                            passwordController.text,
-                          );
-                          User user = User(
-                            id: userData['id'],
-                            userName: userNameController.text,
-                            email: emailController.text,
-                          );
-                          userViewModel.addUser(user);
-                          StorageService.setBool("isLoged", true);
+
+                        auth.login(
+                          emailController.text,
+                          passwordController.text,
+                        );
+
+                        if (userData['error'] != null) {
                           if (!context.mounted) return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => WidgetTree(),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                userData['error'],
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor:
+                                  AppColors.darkSecondarySystemBackground,
                             ),
                           );
-
-                          if (userData.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "Creation de compte echouer",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                backgroundColor:
-                                    AppColors.darkSecondarySystemBackground,
-                              ),
-                            );
-                          }
+                          return;
                         }
+
+                        User user = User(
+                          id: userData['id'],
+                          userName: userNameController.text,
+                          email: emailController.text,
+                        );
+                        userViewModel.addUser(user);
+                        StorageService.setBool("isLoged", true);
+                        if (!context.mounted) return;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => WidgetTree()),
+                        );
                       },
                       child:
                           isLoding
-                              ? CircularProgressIndicator()
+                              ? CircularProgressIndicator(color: Colors.white)
                               : Text(
                                 "Suivant",
                                 style: TextStyle(

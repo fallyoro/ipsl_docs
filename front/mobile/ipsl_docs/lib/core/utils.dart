@@ -1,6 +1,11 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:io';
+
+
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
+import 'package:ipsl_docs/models/document.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 void logInfo(String message) {
   print('\x1B[32m$message\x1B[0m'); // Vert
@@ -15,17 +20,12 @@ void logWarning(String message) {
 }
 
 Future<bool> isConnectedToInternet() async {
-  final List<ConnectivityResult> connectivityResult =
-      await (Connectivity().checkConnectivity());
-
-  if (connectivityResult.contains(ConnectivityResult.mobile)) {
-    return true;
-  } else if (connectivityResult.contains(ConnectivityResult.wifi)) {
-    return true;
-  } else if (connectivityResult.contains(ConnectivityResult.ethernet)) {
-    return true;
+  try {
+    final result = await InternetAddress.lookup('example.com');
+    return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+  } catch (e) {
+    return false;
   }
-  return false;
 }
 
 void showNoConnectionMessage(BuildContext context) {
@@ -40,3 +40,26 @@ void showNoConnectionMessage(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
+bool isDarkModePrefer(BuildContext context) {
+  return MediaQuery.of(context).platformBrightness == Brightness.dark;
+}
+
+
+ Future<String> getSavePath(Document doc) async {
+    final baseDir = await getApplicationDocumentsDirectory();
+    final docDir = Directory(
+      p.join(
+        baseDir.path,
+        "ipsl_docs",
+        doc.classe,
+        doc.year.toString(),
+        doc.subject,
+        doc.categorie,
+      ),
+    );
+    if (!await docDir.exists()) {
+      await docDir.create(recursive: true);
+    }
+    final savePath = p.join(docDir.path, doc.filename);
+    return savePath;
+  }

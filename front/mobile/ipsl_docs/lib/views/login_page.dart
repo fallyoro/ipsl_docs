@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
@@ -20,9 +21,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKeyLog = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isLoding = false;
+  bool _obscurePassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +37,9 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(
               width: 550,
               height: 600,
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(0),
               child: Container(
-                padding: EdgeInsets.all(30),
+                padding: EdgeInsets.all(35),
                 decoration: BoxDecoration(
                   border: Border.all(
                     color:
@@ -58,16 +61,47 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Container(height: 30),
 
-                    TextField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(labelText: "Email"),
-                    ),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: "Mot de passe",
+                    Form(
+                      key: _formKeyLog,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: emailController,
+
+                            validator:
+                                (value) =>
+                                    value == null || value.isEmpty
+                                        ? 'Veuillez entrer votre email'
+                                        : null,
+                            decoration: InputDecoration(
+                              labelText: "Email",
+                              suffixIcon: Icon(FontAwesomeIcons.envelope),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: passwordController,
+                            obscureText: _obscurePassword ? false : true,
+                            validator:
+                                (value) =>
+                                    value == null || value.isEmpty
+                                        ? 'Veuillez entrer votre mot de pasee'
+                                        : null,
+                            decoration: InputDecoration(
+                              labelText: "Mot de passe",
+                              suffixIcon: IconButton(
+                                icon:
+                                    _obscurePassword
+                                        ? Icon(FontAwesomeIcons.eye)
+                                        : Icon(FontAwesomeIcons.eyeSlash),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -89,27 +123,8 @@ class _LoginPageState extends State<LoginPage> {
                           showNoConnectionMessage(context);
                           return;
                         }
-                        if (emailController.text.isEmpty) {
-                          if (!context.mounted) return;
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: Text('Champs manquants'),
-                                  content: Text(
-                                    'Veuillez remplir tous les champs',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                          );
-                          return;
-                        }
+                        if (!_formKeyLog.currentState!.validate()) return;
+
                         setState(() {
                           isLoding = true;
                         });
@@ -120,38 +135,39 @@ class _LoginPageState extends State<LoginPage> {
                         setState(() {
                           isLoding = false;
                         });
-                        await StorageService.setBool("isLoged", true);
-                        User user = User(
-                          id: userInfo?['id'],
-                          userName: userInfo?['user_name'],
-                          email: userInfo?['email'],
-                        );
-                        if (userInfo!.isNotEmpty) {
-                          userViewModel.addUser(user);
+
+                        if (userInfo['error'] != null) {
                           if (!context.mounted) return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => WidgetTree(),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                userInfo['error'],
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor:
+                                  AppColors.darkSecondarySystemBackground,
                             ),
                           );
-                          if (userInfo.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "Login echoue echouer",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                backgroundColor:
-                                    AppColors.darkSecondarySystemBackground,
-                              ),
-                            );
-                          }
+                          return;
                         }
+
+                        User user = User(
+                          id: userInfo['id'],
+                          userName: userInfo['user_name'],
+                          email: userInfo['email'],
+                        );
+
+                        await StorageService.setBool("isLoged", true);
+                        userViewModel.addUser(user);
+                        if (!context.mounted) return;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => WidgetTree()),
+                        );
                       },
                       child:
                           isLoding
-                              ? CircularProgressIndicator()
+                              ? CircularProgressIndicator(color: Colors.white)
                               : Text(
                                 "Suivant",
                                 style: TextStyle(

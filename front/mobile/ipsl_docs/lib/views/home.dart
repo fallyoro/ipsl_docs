@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
@@ -10,6 +11,7 @@ import 'package:ipsl_docs/views/widgets/folder_home.dart';
 import 'package:ipsl_docs/views/year_folder_page.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
 import 'package:ipsl_docs/widget_tree.dart';
+import 'package:open_file/open_file.dart';
 import 'package:page_transition/page_transition.dart';
 
 final viewModel = GetIt.I<DocumentViewModel>();
@@ -25,13 +27,13 @@ class _HomeState extends State<Home> {
   bool isLoading = false;
   String userName = "hello";
   Responsive responsive = Responsive();
-  final files = [];
+  final documents = viewModel.documents.value;
 
   @override
   void initState() {
     super.initState();
     var userData = SQLiteService.instance.getUser();
-    String userNameq = userData['user_name'];
+    String userNameq = userData!['user_name'];
     setState(() {
       userName = userNameq;
     });
@@ -52,8 +54,9 @@ class _HomeState extends State<Home> {
         return SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 10),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.start,
 
             children: [
               Text.rich(
@@ -74,20 +77,30 @@ class _HomeState extends State<Home> {
                 suggestionsBuilder: (context, controller) {
                   final input = controller.text.toLowerCase();
                   final results =
-                      files
+                      documents
                           .where(
-                            (filename) =>
-                                filename.toLowerCase().contains(input),
+                            (doc) => doc.filename.toLowerCase().contains(input),
                           )
                           .toList();
 
-                  return results.map((filename) {
+                  return results.map((doc) {
                     return ListTile(
-                      title: Text(filename),
-                      onTap: () {
-                        controller.text = filename;
-                        //SearchAnchor.of(context).close();
-                        //FocusScope.of(context).unfocus();
+                      title: Text(doc.filename),
+                      onTap: () async {
+                        controller.text = doc.filename;
+                        String docPath = await getSavePath(doc);
+                        if (await isExistFile(docPath) == false) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Veillez d'abord telecharger ce fichier",
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        await OpenFile.open(docPath);
                       },
                     );
                   });

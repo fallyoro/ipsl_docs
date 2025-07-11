@@ -8,7 +8,7 @@ class AuthService {
 
   AuthService({required this.dio, required this.tokens});
 
-  Future<Map<String, dynamic>?> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await dio.post(
         "/login",
@@ -27,39 +27,58 @@ class AuthService {
         'email': response.data['user']['email'],
       };
     } on DioException catch (e) {
-      if (e.response?.statusCode == 403) {
-        throw Exception("Identifiants incorrects");
+      if (e.response?.statusCode == 401) {
+        return {'error': e.response?.data['detail']};
       } else {
-        throw Exception("Erreur serveur : ${e.response?.statusCode}");
+        return {'error': "Erreur serveur : ${e.response?.statusCode}"};
       }
     } catch (e) {
-      throw Exception("Erreur réseau ou inconnue : $e");
+      return {"error": "Erreur réseau ou inconnue : $e"};
     }
   }
 
-  Future<Map<String, dynamic>?> signUp(
+  Future<Map<String, dynamic>> signUp(
     String userName,
     String email,
     String password,
     String classe,
   ) async {
-    final resp = await dio.post(
-      "/sign-up",
-      data: jsonEncode({
-        'user_name': userName,
-        'email': email,
-        'password': password,
-        'classe': classe,
-      }),
-    );
-    if (resp.statusCode == 200) {
-      // await tokens.saveTokens(resp.data['access'], resp.data['refresh']);
-      return {
-        'id': resp.data['id'],
-        'user_name': resp.data['user_name'],
-        'email': resp.data['email'],
-      };
+    try {
+      final resp = await dio.post(
+        "/sign-up",
+        data: jsonEncode({
+          'user_name': userName,
+          'email': email,
+          'password': password,
+          'classe': classe,
+        }),
+      );
+
+      if (resp.statusCode == 200) {
+        return {
+          'id': resp.data['id'],
+          'user_name': resp.data['user_name'],
+          'email': resp.data['email'],
+        };
+      }
+
+      return {'error': 'Erreur serveur: code ${resp.statusCode}'};
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        return {'error': e.response?.data['detail']};
+      }
+      // Timeout, pas de connexion, etc.
+      /* if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.connectionError) {
+      throw Exception('Problème réseau, réessaye plus tard.');
+    }*/
+      // Autre erreur Dio
+      // throw Exception('Erreur API: ${e.message}');
+      return {'error': 'Erreur API: ${e.message}'};
+    } catch (e) {
+      return {'error': 'Erreur inconnue: $e'};
     }
-    return null;
   }
 }

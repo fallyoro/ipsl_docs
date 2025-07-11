@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/document.dart';
@@ -13,10 +11,9 @@ import 'package:ipsl_docs/widget_tree.dart';
 import 'package:open_file/open_file.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path/path.dart' as p;
-import 'package:ipsl_docs/views/home.dart';
 import 'dart:io';
-
 import 'package:path_provider/path_provider.dart';
+import 'package:pdfrx/pdfrx.dart';
 
 class DocumentListView extends StatefulWidget {
   // final String folderPath;
@@ -34,7 +31,7 @@ class DocumentListView extends StatefulWidget {
 
 class _DocumentListViewState extends State<DocumentListView> {
   DocumentServive service = DocumentServive();
-  bool isDownloading = false;
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -85,43 +82,29 @@ class _DocumentListViewState extends State<DocumentListView> {
 
               return GestureDetector(
                 onTap: () async {
-                  if (widget.documents[index].isDownload == 0) {
-                    widget.documents[index].isDownloading = true;
-                    await service.downloadFile(widget.documents[index], (
-                      received,
-                      total,
-                    ) {
+                  String docPath = await getSavePath(doc);
+                  if (await isExistFile(docPath) == false) {
+                    final bool isConnected = await isConnectedToInternet();
+                    if (isConnected == false) {
+                      if (!context.mounted) return;
+                      showNoConnectionMessage(context);
+                      return;
+                    }
+                    doc.isDownloading = true;
+                    await service.downloadFile(doc, (received, total) {
                       setState(() {
-                        widget.documents[index].progress =
-                            total != -1 ? received / total : 0;
+                        doc.progress = total != -1 ? received / total : 0;
                       });
                     });
+
                     setState(() {
-                      widget.documents[index].isDownload = 1;
+                      doc.isDownloading = false;
                     });
-                    widget.documents[index].isDownloading = false;
-                    viewModel.setDocument(doc);
                   }
 
-                  final baseDir = await getApplicationDocumentsDirectory();
-                  final docDir = Directory(
-                    p.join(
-                      baseDir.path,
-                      "ipsl_docs",
-                      doc.classe,
-                      doc.year.toString(),
-                      doc.subject,
-                      doc.categorie,
-                    ),
-                  );
-                  if (!await docDir.exists()) {
-                    await docDir.create(recursive: true);
-                  }
-                  final savePath = p.join(docDir.path, doc.filename);
+          
 
-           
-                  await OpenFile.open(savePath);
-              
+                  await OpenFile.open(docPath);
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -134,7 +117,7 @@ class _DocumentListViewState extends State<DocumentListView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         doc.isDownloading
-                            ? CustomCircularProgress(doc)
+                            ? customCircularProgress(doc)
                             : FutureBuilder<Widget>(
                               future: _buildDocumentPreview(doc),
                               builder: (context, snapshot) {
@@ -151,6 +134,7 @@ class _DocumentListViewState extends State<DocumentListView> {
                                   );
                                 } else if (snapshot.hasError ||
                                     !snapshot.hasData) {
+                                  logInfo(snapshot.error.toString());
                                   return const Icon(
                                     Icons.insert_drive_file,
                                     size: 64,
@@ -178,7 +162,9 @@ class _DocumentListViewState extends State<DocumentListView> {
     );
   }
 
-  Stack CustomCircularProgress(Document doc) {
+ 
+
+  Stack customCircularProgress(Document doc) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -187,8 +173,9 @@ class _DocumentListViewState extends State<DocumentListView> {
           height: 48,
           child: CircularProgressIndicator(
             value: doc.progress, // entre 0.0 et 1.0
+
             strokeWidth: 4,
-            color: AppColors.primaryColor,
+            color: Colors.green,
           ),
         ),
         Text(
@@ -197,41 +184,6 @@ class _DocumentListViewState extends State<DocumentListView> {
         ),
       ],
     );
-  }
-
-Stack CustomLinearProgress(Document doc) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        SizedBox(
-          width: 48,
-          height: 48,
-          child: LinearProgressIndicator(
-            value: doc.progress, // entre 0.0 et 1.0
-          
-            color: AppColors.primaryColor,
-          ),
-        ),
-        Text(
-          '${(doc.progress * 100).toStringAsFixed(0)}%',
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-
-
-
-
-  void openDocument(String path) async {
-    logInfo('Platform.isLinux: ${Platform.isLinux}');
-    logInfo(path);
-    if (Platform.isLinux) {
-      logInfo("try to open : $path");
-      await Process.start('xdg-open', [path]);
-    } else {
-      logError("Platforme non supporte");
-    }
   }
 }
 
@@ -239,7 +191,7 @@ String getFileExtension(String fileName) {
   return fileName.split('.').last.toLowerCase();
 }
 
-Future<Widget> _buildDocumentPreview(Document doc) async {
+/*Future<Widget> _buildDocumentPreview(Document doc) async {
   final baseDir = await getApplicationDocumentsDirectory();
   final docDir = Directory(
     p.join(
@@ -313,6 +265,69 @@ Future<Widget> _buildDocumentPreview(Document doc) async {
           (_, __, ___) => const Icon(Icons.insert_drive_file, size: 64),
     );
   }
+}*/
+Future<Widget> _buildDocumentPreview(Document doc) async {
+  final baseDir = await getApplicationDocumentsDirectory();
+  final docDir = Directory(
+    p.join(
+      baseDir.path,
+      "ipsl_docs",
+      doc.classe,
+      doc.year.toString(),
+      doc.subject,
+      doc.categorie,
+    ),
+  );
+
+  final savePath = p.join(docDir.path, doc.filename);
+  final ext = getFileExtension(doc.filename);
+  final fichier = File(savePath);
+
+  if (!await fichier.exists()) {
+    return Icon(Icons.download);
+  }
+
+  if (['jpg', 'jpeg', 'png'].contains(ext)) {
+    final file = File(savePath);
+    if (!file.existsSync()) {
+      return Icon(FontAwesomeIcons.image);
+    }
+    return Image.file(
+      file,
+      height: 100,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+    );
+  } else if (ext == 'pdf') {
+    final pdfDocument = await PdfDocument.openFile(savePath);
+    return SizedBox(
+      width: 100,
+      height: 100,
+      child: PdfPageView(
+        document: pdfDocument,
+        pageNumber: 1,
+        alignment: Alignment.center,
+        pageSizeCallback: (widgetSize, page) {
+          // Calcule un aperçu qui tient dans le carré tout en gardant le ratio
+          final pageRatio = page.height / page.width;
+          double previewWidth = widgetSize.width;
+          double previewHeight = previewWidth * pageRatio;
+
+          if (previewHeight > widgetSize.height) {
+            // Ajuste pour que la hauteur rentre dans le carré
+            previewHeight = widgetSize.height;
+            previewWidth = previewHeight / pageRatio;
+          }
+
+          return Size(previewWidth, previewHeight);
+        },
+      ),
+    );
+  }
+
+  // return Icon(Icons.insert_drive_file);
+
+  return Icon(Icons.badge);
 }
 
 Future<Uint8List> _generatePdfPreview(String pdfPath) async {
@@ -320,7 +335,7 @@ Future<Uint8List> _generatePdfPreview(String pdfPath) async {
   final outputBase =
       '${tmpDir.path}/preview_${DateTime.now().millisecondsSinceEpoch}';
 
-  /*final result = await Process.run('pdftoppm', [
+  final result = await Process.run('pdftoppm', [
     '-png',
     '-f',
     '1',
@@ -328,8 +343,8 @@ Future<Uint8List> _generatePdfPreview(String pdfPath) async {
     '1',
     pdfPath,
     outputBase,
-  ]);*/
-  final result = await Process.run('pdftoppm', [
+  ]);
+  /* final result = await Process.run('pdftoppm', [
     '-png',
     '-singlefile',
     '-f',
@@ -338,7 +353,7 @@ Future<Uint8List> _generatePdfPreview(String pdfPath) async {
     '1',
     pdfPath,
     outputBase,
-  ]);
+  ]);*/
   logInfo(result.stderr);
   logInfo(result.stdout);
 
@@ -391,6 +406,11 @@ Future<Uint8List> buildPptPreview(String pptPath) async {
   final firstImage = outputFiles.first;
 
   return await firstImage.readAsBytes();
+}
+
+Future<bool> isExistFile(String path) async {
+  final fichier = File(path);
+  return await fichier.exists();
 }
 
 Future<bool> isPDF(String path) async {

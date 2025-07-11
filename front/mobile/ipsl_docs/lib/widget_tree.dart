@@ -15,7 +15,6 @@ import 'package:ipsl_docs/views/widgets/sidebar.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 List<Widget> pages = [
   Home(),
@@ -36,6 +35,8 @@ class _WidgetTreeState extends State<WidgetTree> {
   TextEditingController classeController = TextEditingController();
   TextEditingController subjectController = TextEditingController();
   TextEditingController yearController = TextEditingController();
+  double progress = 0.0;
+  bool isSending = false;
   String? selectedClasse = 'Cpi1';
   final List<String> classe = [
     'Cpi1',
@@ -103,278 +104,11 @@ class _WidgetTreeState extends State<WidgetTree> {
             backgroundColor: AppColors.primaryColor,
             shape: CircleBorder(),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder:
-                    (context) => StatefulBuilder(
-                      builder:
-                          (context, setState) => AlertDialog(
-                            // alignment: Alignment.topRight,
-                            actionsAlignment: MainAxisAlignment.center,
-
-                            insetPadding: EdgeInsets.symmetric(
-                              horizontal:
-                                  isDestop
-                                      ? screenWidth * 0.3
-                                      : screenWidth * 0.22,
-                              vertical: 24,
-                            ),
-                            actionsPadding: EdgeInsets.all(50),
-                            iconColor: AppColors.primaryColor,
-
-                            backgroundColor:
-                                isDark
-                                    ? AppColors.darkSecondarySystemBackground
-                                    : AppColors.lightSystemBackground,
-                            icon: Icon(FontAwesomeIcons.upload),
-                            title: Text('Envoyer un document'),
-                            actions: [
-                              TextField(
-                                controller: filenameController,
-
-                                decoration: const InputDecoration(
-                                  labelText: "Non du fichier",
-                                  constraints: BoxConstraints(maxWidth: 500),
-                                ),
-                              ),
-                              TextField(
-                                controller: yearController,
-
-                                decoration: const InputDecoration(
-                                  labelText: "annee",
-                                  constraints: BoxConstraints(maxWidth: 500),
-                                ),
-                              ),
-                              TextField(
-                                controller: subjectController,
-
-                                decoration: const InputDecoration(
-                                  labelText: "matiere",
-                                  constraints: BoxConstraints(maxWidth: 500),
-                                ),
-                              ),
-                              Row(
-                                // mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text("Classe"),
-                                  DropdownButton<String>(
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color:
-                                          isDark ? Colors.white : Colors.black,
-                                    ),
-
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10),
-                                    ),
-
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                    ),
-                                    value: selectedClasse,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedClasse = value;
-                                      });
-                                    },
-                                    items:
-                                        classe
-                                            .map<DropdownMenuItem<String>>(
-                                              (String value) =>
-                                                  DropdownMenuItem<String>(
-                                                    value: value,
-                                                    child: Text(value),
-                                                  ),
-                                            )
-                                            .toList(),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text('Categorie'),
-                                  SizedBox(width: 20),
-                                  DropdownButton<String>(
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color:
-                                          isDark ? Colors.white : Colors.black,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                    ),
-                                    value: selectedCategory,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedCategory = value;
-                                      });
-                                    },
-                                    items:
-                                        categories
-                                            .map(
-                                              (e) => DropdownMenuItem<String>(
-                                                value: e,
-                                                child: Text(e),
-                                              ),
-                                            )
-                                            .toList(),
-                                  ),
-                                ],
-                              ),
-
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primaryColor,
-                                ),
-                                onPressed: _pickFile,
-                                child: const Text(
-                                  "Choisir un fichier",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primaryColor,
-                                  // minimumSize: const Size(200, 40),
-                                ),
-
-                                onPressed: () async {
-                                  if (pickedFile == null ||
-                                      fileName == null ||
-                                      selectedClasse == null ||
-                                      selectedCategory == null ||
-                                      subjectController.text.isEmpty ||
-                                      yearController.text.isEmpty) {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (context) => AlertDialog(
-                                            title: Text('Champs manquants'),
-                                            content: Text(
-                                              'Veuillez remplir tous les champs et sélectionner un fichier.',
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed:
-                                                    () =>
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop(),
-                                                child: Text('OK'),
-                                              ),
-                                            ],
-                                          ),
-                                    );
-                                    return;
-                                  }
-                                  final bool isConnected =
-                                      await isConnectedToInternet();
-                                  if (isConnected == false) {
-                                    if (!context.mounted) return;
-                                    showNoConnectionMessage(context);
-                                    return;
-                                  }
-                                  var userData =
-                                      SQLiteService.instance.getUser();
-                                  String? idDocument = await service
-                                      .uploadDocument(
-                                        file: File(pickedFile!.path!),
-                                        filename: fileName!,
-                                        classe: selectedClasse!,
-                                        subject: subjectController.text,
-                                        year:
-                                            int.tryParse(yearController.text) ??
-                                            0,
-                                        categorie: selectedCategory!,
-                                        userId: userData['id'],
-                                      );
-
-                                  Document doc = Document(
-                                    id: idDocument!,
-                                    idUploader: userData['id'],
-                                    filename: fileName!,
-                                    year:
-                                        int.tryParse(yearController.text) ?? 0,
-                                    classe: selectedClasse!,
-                                    subject: subjectController.text,
-                                    categorie: selectedCategory!,
-                                  );
-                                  documentViewModel.addDocument(doc);
-                                  documentViewModel.documents.value = [
-                                    ...documentViewModel.documents.value,
-                                    doc,
-                                  ];
-                                  if (!context.mounted) return;
-                                  Navigator.pop(context);
-                                  if (idDocument.isNotEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          "Fichier envoyer avec succes. Merci de votre contribution",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        backgroundColor:
-                                            AppColors
-                                                .darkSecondarySystemBackground,
-                                      ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          "Envoie echoue. Veillez verifier votre connexion internet",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        backgroundColor:
-                                            AppColors
-                                                .darkSecondarySystemBackground,
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: Text(
-                                  "Envoyer",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                    ),
-              );
+              submitDialog(context, isDestop, screenWidth, isDark);
             },
             child: Icon(FontAwesomeIcons.plus, color: Colors.white),
           ),
-          appBar: AppBar(
-            title: Text(
-              'Ipsl Docs',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-            ),
-            backgroundColor:
-                isDark
-                    ? AppColors.darkSystemBackground
-                    : AppColors.lightSystemBackground,
-            actions: [
-              IconButton(
-                onPressed: () => ThemeController.toggleTheme(),
-
-                icon:
-                    isDark
-                        ? const Icon(Icons.light_mode)
-                        : const Icon(Icons.dark_mode),
-              ),
-            ],
-          ),
+          appBar: buildAppbarWidgetTree(isDark),
 
           drawer:
               (isMobile)
@@ -430,6 +164,7 @@ class _WidgetTreeState extends State<WidgetTree> {
                     children: pages,
                   )
                   : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SideBar(
                         selectedIndex: _selectedPage,
@@ -479,4 +214,300 @@ class _WidgetTreeState extends State<WidgetTree> {
       },
     );
   }
+
+  AppBar buildAppbarWidgetTree(bool isDark) {
+    return AppBar(
+      title: Text(
+        'Ipsl Docs',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+      ),
+      backgroundColor:
+          isDark
+              ? AppColors.darkSystemBackground
+              : AppColors.lightSystemBackground,
+      actions: [
+        IconButton(
+          onPressed: () => ThemeController.toggleTheme(),
+
+          icon:
+              isDark
+                  ? const Icon(Icons.light_mode)
+                  : const Icon(Icons.dark_mode),
+        ),
+      ],
+    );
+  }
+
+  Future<dynamic> submitDialog(
+    BuildContext context,
+    bool isDestop,
+    double screenWidth,
+    bool isDark,
+  ) {
+    return showDialog(
+      context: context,
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setState) => AlertDialog(
+                  // alignment: Alignment.topRight,
+                  actionsAlignment: MainAxisAlignment.center,
+
+                  insetPadding: EdgeInsets.symmetric(
+                    horizontal:
+                        isDestop ? screenWidth * 0.3 : screenWidth * 0.22,
+                    vertical: 24,
+                  ),
+                  actionsPadding: EdgeInsets.all(50),
+                  iconColor: AppColors.primaryColor,
+
+                  backgroundColor:
+                      isDark
+                          ? AppColors.darkSecondarySystemBackground
+                          : AppColors.lightSystemBackground,
+                  icon: Icon(FontAwesomeIcons.upload),
+                  title: Text('Envoyer un document'),
+                  actions: [
+                    TextField(
+                      controller: filenameController,
+
+                      decoration: const InputDecoration(
+                        labelText: "Non du fichier",
+                        constraints: BoxConstraints(maxWidth: 500),
+                      ),
+                    ),
+                    TextField(
+                      controller: yearController,
+
+                      decoration: const InputDecoration(
+                        labelText: "annee",
+                        constraints: BoxConstraints(maxWidth: 500),
+                      ),
+                    ),
+                    TextField(
+                      controller: subjectController,
+
+                      decoration: const InputDecoration(
+                        labelText: "matiere",
+                        constraints: BoxConstraints(maxWidth: 500),
+                      ),
+                    ),
+                    Row(
+                      // mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text("Classe"),
+                        DropdownButton<String>(
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          value: selectedClasse,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedClasse = value;
+                            });
+                          },
+                          items:
+                              classe
+                                  .map<DropdownMenuItem<String>>(
+                                    (String value) => DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Categorie'),
+                        SizedBox(width: 20),
+                        DropdownButton<String>(
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          value: selectedCategory,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedCategory = value;
+                            });
+                          },
+                          items:
+                              categories
+                                  .map(
+                                    (e) => DropdownMenuItem<String>(
+                                      value: e,
+                                      child: Text(e),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                      ],
+                    ),
+
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                      ),
+                      onPressed: _pickFile,
+                      child: const Text(
+                        "Choisir un fichier",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        // minimumSize: const Size(200, 40),
+                      ),
+
+                      onPressed: () async {
+                        if (pickedFile == null ||
+                            fileName == null ||
+                            selectedClasse == null ||
+                            selectedCategory == null ||
+                            subjectController.text.isEmpty ||
+                            yearController.text.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: Text('Champs manquants'),
+                                  content: Text(
+                                    'Veuillez remplir tous les champs et sélectionner un fichier.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                          return;
+                        }
+                        final bool isConnected = await isConnectedToInternet();
+                        if (isConnected == false) {
+                          if (!context.mounted) return;
+                          showNoConnectionMessage(context);
+                          return;
+                        }
+                        var userData = SQLiteService.instance.getUser();
+                        setState(() {
+                          isSending = true;
+                        });
+                        String? idDocument = await service.uploadDocument(
+                          file: File(pickedFile!.path!),
+                          filename: fileName!,
+                          classe: selectedClasse!,
+                          subject: subjectController.text,
+                          year: int.tryParse(yearController.text) ?? 0,
+                          categorie: selectedCategory!,
+                          userId: userData!['id'],
+                          onProgress: (received, total) {
+                            logInfo('RECU: $received / TOTAL: $total');
+                            logInfo("Progression : $received / $total");
+                            setState(() {
+                              progress = total != -1 ? received / total : 0.0;
+                            });
+                          },
+                        );
+
+                        Document doc = Document(
+                          id: idDocument!,
+                          idUploader: userData['id'],
+                          filename: fileName!,
+                          year: int.tryParse(yearController.text) ?? 0,
+                          classe: selectedClasse!,
+                          subject: subjectController.text,
+                          categorie: selectedCategory!,
+                        );
+                        documentViewModel.addDocument(doc);
+                        documentViewModel.documents.value = [
+                          ...documentViewModel.documents.value,
+                          doc,
+                        ];
+                        setState(() {
+                          isSending = false;
+                        });
+                        if (!context.mounted) return;
+                        Navigator.pop(context);
+                        if (idDocument.isNotEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Fichier envoyer avec succes. Merci de votre contribution",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor:
+                                  AppColors.darkSecondarySystemBackground,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Envoie echoue. Veillez verifier votre connexion internet",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor:
+                                  AppColors.darkSecondarySystemBackground,
+                            ),
+                          );
+                        }
+                      },
+                      child: Text(
+                        "Envoyer",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    if (isSending) customLinearProgressSending(progress),
+                  ],
+                ),
+          ),
+    );
+  }
+}
+
+Row customLinearProgressSending(double progress) {
+  return Row(
+    children: [
+      // Barre de progression
+      Expanded(
+        child: LinearProgressIndicator(
+          value: progress,
+          borderRadius: BorderRadius.circular(50),
+          minHeight: 6,
+          color: Colors.green,
+          backgroundColor: Colors.grey.shade300,
+        ),
+      ),
+      const SizedBox(width: 10),
+
+      // Pourcentage
+      Text(
+        '${(progress * 100).toStringAsFixed(0)}%',
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+      ),
+    ],
+  );
 }
