@@ -13,33 +13,14 @@ class DocumentViewModel {
     final rawDocs = _db.getDocuments();
 
     documents.value = rawDocs.map((row) => Document.fromJson(row)).toList();
-    // logInfo("Info of first document");
-    /* for (int i = 0; i < 3; i++) {
-      logInfo("File path");
-      // logInfo(documents.value[i].filePath);
-      logInfo("File name");
-      logInfo(documents.value[i].filename);
-    }*/
   }
 
   Future<void> addDocument(Document doc) async {
     _db.insertDocument(doc.toJson());
-    // await loadDocuments();
+    // documents.value.add(doc);
   }
-
- 
 
   List<String> getClasseFolders() {
     return documents.value.map((doc) => doc.classe).toSet().toList();
   }
 }
-
- /* List<Map<String, dynamic>> getAll
-
- final documents =
-                  docs.where((doc) {
-                    return doc.classe == widget.classFolder &&
-                        doc.year.toString() == widget.yearFolder &&
-                        doc.subject == widget.subjectFolder &&
-                        doc.categorie == folder;
-                  }).toList();*/

@@ -3,18 +3,11 @@ from uuid import UUID
 from datetime import datetime
 
 class UserBase(BaseModel):
-    nom: str
-    prenom: str
+    user_name: str
     email: str
     password: str
     classe: str
     
-'''class User(BaseModel):
-    nom: str
-    prenom: str
-    email: str
-    password: str
-    classe: str'''
 
     
     
@@ -24,14 +17,14 @@ class UserUpdate(UserBase):
 class UserCreate(UserBase):
     pass
     
-class UserOut(BaseModel):
+class UserOut(UserBase):
     id: UUID
-    nom: str
-    prenom: str
+    user_name: str
     email: str
-    password_hash: str
-    created_at: datetime
-    updated_at: datetime
+    classe: str
+    
+    class Config:
+        orm_mode = True
     
     
 class UserLogin(BaseModel):

@@ -1,4 +1,3 @@
-import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -39,8 +38,10 @@ class SQLiteService {
     return instance;
   }
 
-  Future<void> insertMockData() async {
-    final data = await document_service.fetchDocuments();
+  Future<void> insertAllDoc(List<Document> data) async {
+ 
+    // final data = await document_service.fetchDocuments();
+      //  deleteAlldoc();
 
     for (var doc in data) {
       db.execute(
@@ -106,6 +107,12 @@ class SQLiteService {
     db.execute('''
     DELETE FROM user;
     ''');
+  }
+
+  void deleteAlldoc() {
+    db.execute('''
+  DELETE FROM documents
+''');
   }
 
   void insertUser(Map<String, dynamic> user) {

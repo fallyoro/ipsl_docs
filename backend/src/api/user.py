@@ -13,7 +13,8 @@ user_router = APIRouter()
 user_service = UserService()
 
 
-@user_router.post("/sign-up", response_model=UserOut)
+# @user_router.post("/sign-up", response_model=UserOut)
+@user_router.post("/sign-up")
 async def create_user(
     user_data: UserCreate, session: AsyncSession = Depends(create_session)
 ):
@@ -21,8 +22,8 @@ async def create_user(
     user_exist = await user_service.user_exist(email, session)
     if user_exist:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User with this email already exist",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Un utilisateur avec cet email existe deja",
         )
     new_user = await user_service.create_user(user_data, session)
     
@@ -57,16 +58,17 @@ async def login_user(login_data: UserLogin, session: AsyncSession = Depends(crea
             return JSONResponse(
                 content= {
                     "message": "Login susseful",
-                    "acess_token": acess_token,
+                    "access_token": acess_token,
                     "refresh_token": refresh_token,
                     "user" : {
                         'email': user.email, 
-                        'id': str(user.id) 
+                        'id': str(user.id) ,
+                        'user_name' : user.user_name
                     }
                 }
             )
     raise HTTPException(
-        status_code= status.HTTP_403_FORBIDDEN,
-        detail="Login faild. Invalid email or password"
+        status_code= status.HTTP_401_UNAUTHORIZED,
+        detail="Identifiant invalide"
     )
     

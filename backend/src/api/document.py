@@ -3,13 +3,12 @@ from pathlib import Path as FilePath
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.database.database import create_session
 from typing import List
-
 from src.services.document import DocumentService
 from fastapi.responses import FileResponse
 import shutil
 import os
 from pathlib import Path
-from src.schemas.document import DocumentBase, DocumentDownload, DocumentIn, DocumentOut
+from src.schemas.document import DocumentDownload, DocumentIn, DocumentOut
 from uuid import UUID
 
 service = DocumentService()
@@ -25,11 +24,13 @@ async def get_all_documents( session: AsyncSession = Depends(create_session)):
     return documents
 
 
+
 @doc_router.post("/upload")
 async def upload_doc(
     filename: str = Form(...),
-    file_path: str = Form(...),
-    file_type: str = Form(...),
+    classe: str = Form(...),
+    subject: str = Form(...),
+    year: int  = Form(...),
     categorie: str = Form(...),
     user_id: str = Form(...),
     doc: UploadFile = File(...),
@@ -38,66 +39,92 @@ async def upload_doc(
 
     doc_data = DocumentIn(
         filename=filename,
-        file_path=file_path,
-        file_type=file_type,
+        year=year,
+        classe=classe,
         categorie=categorie,
+        subject=subject,
         user_id=user_id
     )
     
 
-    documents_path = Path(__file__).resolve().parent.parents[0] / "documents"
 
-
+    documents_path = Path(__file__).resolve().parent.parents[1] / "documents"
     documents_path.mkdir(parents=True, exist_ok=True)
-    complete_path = documents_path / doc.filename
 
-    if complete_path.is_file() == False:
-        await service.upload_doc(doc_data=doc_data, session=session)
+    complete_path = documents_path / doc_data.classe / str(doc_data.year) / doc_data.subject / doc_data.categorie / doc_data.filename
 
+    # Crée uniquement le dossier parent, pas le fichier
+    complete_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Vérifie que ce n’est pas un dossier
+    if complete_path.exists() and complete_path.is_dir():
+        raise HTTPException(status_code=500, detail=f"{complete_path} est déjà un dossier")
+
+    # Upload si nécessaire
+    # if not complete_path.is_file():
+        # await service.upload_doc(doc_data=doc_data, session=session)
+    document =  await service.upload_doc(doc_data=doc_data, session=session)
+# Warning Vefrfkelvfe jv 
+    # Copie le contenu du fichier entrant
     with open(complete_path, "wb") as buffer:
         shutil.copyfileobj(doc.file, buffer)
+        
+
+
 
     return {
-        "filename": doc.filename,
-        "path": complete_path
+        "filename": document.filename,
+        "id": document.id,
+        "path": str(complete_path)
     }
 
 
 
 
-@doc_router.get("/download/{doc_id}", responses={
-    200: {
-        "content": {"application/pdf": {}}
-    }
-})
+
+
+
+@doc_router.get(
+    "/download/{doc_id}",
+    response_class=FileResponse,
+    responses={
+        200: {
+            "content": {"application/octet-stream": {}},
+        }
+    },
+)
 async def download_doc(
     doc_id: str,
     session: AsyncSession = Depends(create_session)
 ):
-
     try:
         doc_uuid = UUID(doc_id)
     except ValueError:
-        raise HTTPException(status_code=422, detail="doc_id must be a valid UUID (GUID)")
+        raise HTTPException(
+            status_code=422,
+            detail="doc_id must be a valid UUID (GUID)"
+        )
 
-   
-    result = await service.get_document_path(id=doc_uuid, session=session)
-    doc_path = result.first()
-
+    doc_path = await service.get_document_path(id=doc_uuid, session=session)
     if not doc_path:
         raise HTTPException(status_code=404, detail="Document not found")
 
-    documents_path = Path(__file__).resolve().parent.parents[0] / "documents"
-    documents_path.mkdir(parents=True, exist_ok=True)
-    complete_path = documents_path / Path(doc_path).name
-    complete_path = Path(complete_path)
+    documents_path = Path(__file__).resolve().parent.parents[1] / "documents"
+    complete_path = documents_path / Path(doc_path)
 
     if complete_path.is_file():
-        return FileResponse(path=complete_path, media_type="application/pdf")
+        return FileResponse(
+            path=complete_path,
+            media_type="application/octet-stream",
+            filename=complete_path.name
+        )
 
-    raise HTTPException(status_code=404, detail={
-        "error" : "file not found",
-        "file_path" : f'{complete_path}'
-    })
+    raise HTTPException(
+        status_code=404,
+        detail={
+            "error": "file not found",
+            "file_path": str(complete_path)
+        }
+    )
 
  

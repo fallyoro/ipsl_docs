@@ -1,6 +1,5 @@
 import 'dart:io';
 
-
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/models/document.dart';
@@ -21,7 +20,7 @@ void logWarning(String message) {
 
 Future<bool> isConnectedToInternet() async {
   try {
-    final result = await InternetAddress.lookup('example.com');
+    final result = await InternetAddress.lookup('google.com');
     return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
   } catch (e) {
     return false;
@@ -44,22 +43,21 @@ bool isDarkModePrefer(BuildContext context) {
   return MediaQuery.of(context).platformBrightness == Brightness.dark;
 }
 
-
- Future<String> getSavePath(Document doc) async {
-    final baseDir = await getApplicationDocumentsDirectory();
-    final docDir = Directory(
-      p.join(
-        baseDir.path,
-        "ipsl_docs",
-        doc.classe,
-        doc.year.toString(),
-        doc.subject,
-        doc.categorie,
-      ),
-    );
-    if (!await docDir.exists()) {
-      await docDir.create(recursive: true);
-    }
-    final savePath = p.join(docDir.path, doc.filename);
-    return savePath;
+Future<String> getSavePath(Document doc) async {
+  final baseDir = await getApplicationDocumentsDirectory();
+  final docDir = Directory(
+    p.join(
+      baseDir.path,
+      "ipsl_docs",
+      doc.classe,
+      doc.year.toString(),
+      doc.subject,
+      doc.categorie,
+    ),
+  );
+  if (!await docDir.exists()) {
+    await docDir.create(recursive: true);
   }
+  final savePath = p.join(docDir.path, doc.filename);
+  return savePath;
+}

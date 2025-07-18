@@ -9,7 +9,7 @@ import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/services/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
-import 'package:ipsl_docs/views/home.dart';
+import 'package:ipsl_docs/views/home/home.dart';
 import 'package:ipsl_docs/views/profile.dart';
 import 'package:ipsl_docs/views/widgets/sidebar.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -30,52 +30,26 @@ class WidgetTree extends StatefulWidget {
 }
 
 class _WidgetTreeState extends State<WidgetTree> {
-  final documentViewModel = GetIt.I<DocumentViewModel>();
-  TextEditingController filenameController = TextEditingController();
-  TextEditingController classeController = TextEditingController();
-  TextEditingController subjectController = TextEditingController();
-  TextEditingController yearController = TextEditingController();
-  double progress = 0.0;
-  bool isSending = false;
-  String? selectedClasse = 'Cpi1';
-  final List<String> classe = [
-    'Cpi1',
-    'Cpi2',
-    'GeIT1',
-    'GeIT2',
-    'GeIT3',
-    'GeM1',
-    'GeM2',
-    'GeM3',
-    'GeC1',
-    'GeC2',
-    'GeC3',
-  ];
-  String? selectedCategory = 'cour';
-  final List<String> categories = [
-    'cour',
-    'tp',
-    'devoir',
-    'td',
-    'tutorat',
-    'utile',
-  ];
   final PageController _pageController = PageController();
-  PlatformFile? pickedFile;
   int _selectedPage = 0;
-  String? fileName;
-  DocumentServive service = DocumentServive();
+  final DraggableScrollableController _sheetController =
+      DraggableScrollableController();
 
-  Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+  void _openUploadDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => UploadDialog(context: context),
+    );
+  }
 
-    if (result != null) {
-      pickedFile = result.files.single;
-      setState(() {
-        fileName = result.files.single.name;
-        filenameController.text = result.files.single.name;
-      });
-    }
+  void _openUploadSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // pour des coins arrondis visibles
+      builder:
+          (_) => DraggableScrollableSheetUpload(controller: _sheetController),
+    );
   }
 
   void _onItemSelected(int index) {
@@ -101,12 +75,12 @@ class _WidgetTreeState extends State<WidgetTree> {
 
         return Scaffold(
           floatingActionButton: FloatingActionButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
+            ),
             backgroundColor: AppColors.primaryColor,
-            shape: CircleBorder(),
-            onPressed: () {
-              submitDialog(context, isDestop, screenWidth, isDark);
-            },
-            child: Icon(FontAwesomeIcons.plus, color: Colors.white),
+            onPressed: _openUploadDialog,
+            child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
           ),
           appBar: buildAppbarWidgetTree(isDark),
 
@@ -237,255 +211,6 @@ class _WidgetTreeState extends State<WidgetTree> {
       ],
     );
   }
-
-  Future<dynamic> submitDialog(
-    BuildContext context,
-    bool isDestop,
-    double screenWidth,
-    bool isDark,
-  ) {
-    return showDialog(
-      context: context,
-      builder:
-          (context) => StatefulBuilder(
-            builder:
-                (context, setState) => AlertDialog(
-                  // alignment: Alignment.topRight,
-                  actionsAlignment: MainAxisAlignment.center,
-
-                  insetPadding: EdgeInsets.symmetric(
-                    horizontal:
-                        isDestop ? screenWidth * 0.3 : screenWidth * 0.22,
-                    vertical: 24,
-                  ),
-                  actionsPadding: EdgeInsets.all(50),
-                  iconColor: AppColors.primaryColor,
-
-                  backgroundColor:
-                      isDark
-                          ? AppColors.darkSecondarySystemBackground
-                          : AppColors.lightSystemBackground,
-                  icon: Icon(FontAwesomeIcons.upload),
-                  title: Text('Envoyer un document'),
-                  actions: [
-                    TextField(
-                      controller: filenameController,
-
-                      decoration: const InputDecoration(
-                        labelText: "Non du fichier",
-                        constraints: BoxConstraints(maxWidth: 500),
-                      ),
-                    ),
-                    TextField(
-                      controller: yearController,
-
-                      decoration: const InputDecoration(
-                        labelText: "annee",
-                        constraints: BoxConstraints(maxWidth: 500),
-                      ),
-                    ),
-                    TextField(
-                      controller: subjectController,
-
-                      decoration: const InputDecoration(
-                        labelText: "matiere",
-                        constraints: BoxConstraints(maxWidth: 500),
-                      ),
-                    ),
-                    Row(
-                      // mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text("Classe"),
-                        DropdownButton<String>(
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          value: selectedClasse,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedClasse = value;
-                            });
-                          },
-                          items:
-                              classe
-                                  .map<DropdownMenuItem<String>>(
-                                    (String value) => DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    ),
-                                  )
-                                  .toList(),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text('Categorie'),
-                        SizedBox(width: 20),
-                        DropdownButton<String>(
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          value: selectedCategory,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedCategory = value;
-                            });
-                          },
-                          items:
-                              categories
-                                  .map(
-                                    (e) => DropdownMenuItem<String>(
-                                      value: e,
-                                      child: Text(e),
-                                    ),
-                                  )
-                                  .toList(),
-                        ),
-                      ],
-                    ),
-
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                      ),
-                      onPressed: _pickFile,
-                      child: const Text(
-                        "Choisir un fichier",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        // minimumSize: const Size(200, 40),
-                      ),
-
-                      onPressed: () async {
-                        if (pickedFile == null ||
-                            fileName == null ||
-                            selectedClasse == null ||
-                            selectedCategory == null ||
-                            subjectController.text.isEmpty ||
-                            yearController.text.isEmpty) {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: Text('Champs manquants'),
-                                  content: Text(
-                                    'Veuillez remplir tous les champs et sélectionner un fichier.',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                          );
-                          return;
-                        }
-                        final bool isConnected = await isConnectedToInternet();
-                        if (isConnected == false) {
-                          if (!context.mounted) return;
-                          showNoConnectionMessage(context);
-                          return;
-                        }
-                        var userData = SQLiteService.instance.getUser();
-                        setState(() {
-                          isSending = true;
-                        });
-                        String? idDocument = await service.uploadDocument(
-                          file: File(pickedFile!.path!),
-                          filename: fileName!,
-                          classe: selectedClasse!,
-                          subject: subjectController.text,
-                          year: int.tryParse(yearController.text) ?? 0,
-                          categorie: selectedCategory!,
-                          userId: userData!['id'],
-                          onProgress: (received, total) {
-                            logInfo('RECU: $received / TOTAL: $total');
-                            logInfo("Progression : $received / $total");
-                            setState(() {
-                              progress = total != -1 ? received / total : 0.0;
-                            });
-                          },
-                        );
-
-                        Document doc = Document(
-                          id: idDocument!,
-                          idUploader: userData['id'],
-                          filename: fileName!,
-                          year: int.tryParse(yearController.text) ?? 0,
-                          classe: selectedClasse!,
-                          subject: subjectController.text,
-                          categorie: selectedCategory!,
-                        );
-                        documentViewModel.addDocument(doc);
-                        documentViewModel.documents.value = [
-                          ...documentViewModel.documents.value,
-                          doc,
-                        ];
-                        setState(() {
-                          isSending = false;
-                        });
-                        if (!context.mounted) return;
-                        Navigator.pop(context);
-                        if (idDocument.isNotEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "Fichier envoyer avec succes. Merci de votre contribution",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              backgroundColor:
-                                  AppColors.darkSecondarySystemBackground,
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "Envoie echoue. Veillez verifier votre connexion internet",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              backgroundColor:
-                                  AppColors.darkSecondarySystemBackground,
-                            ),
-                          );
-                        }
-                      },
-                      child: Text(
-                        "Envoyer",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    if (isSending) customLinearProgressSending(progress),
-                  ],
-                ),
-          ),
-    );
-  }
 }
 
 Row customLinearProgressSending(double progress) {
@@ -510,4 +235,290 @@ Row customLinearProgressSending(double progress) {
       ),
     ],
   );
+}
+
+class DraggableScrollableSheetUpload extends StatefulWidget {
+  final DraggableScrollableController? controller;
+
+  const DraggableScrollableSheetUpload({super.key, this.controller});
+
+  @override
+  State<DraggableScrollableSheetUpload> createState() =>
+      _DraggableScrollableSheetUploadState();
+}
+
+class _DraggableScrollableSheetUploadState
+    extends State<DraggableScrollableSheetUpload> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).canvasColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: DraggableScrollableSheet(
+        controller: widget.controller,
+        initialChildSize: 0.5,
+        minChildSize: 0.2,
+        maxChildSize: 1.0,
+        expand: false,
+        builder: (context, scrollController) {
+          return ListView(
+            controller: scrollController,
+            children: List.generate(
+              10,
+              (i) => ListTile(title: Text('Item $i')),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class UploadDialog extends StatefulWidget {
+  final BuildContext context;
+  const UploadDialog({super.key, required this.context});
+
+  @override
+  State<UploadDialog> createState() => _UploadDialogState();
+}
+
+class _UploadDialogState extends State<UploadDialog> {
+  List<Map<String, dynamic>> documents = SQLiteService.instance.getDocuments();
+  final filenameController = TextEditingController();
+  final yearController = TextEditingController();
+  final subjectController = TextEditingController();
+  String selectedClasse = 'Cpi1';
+  String selectedCategory = 'cour';
+  double progress = 0;
+  bool isSending = false;
+  PlatformFile? pickedFile;
+  final viewModel = GetIt.I<DocumentViewModel>();
+  // final docs = GetIt.I
+
+  final classes = [
+    'Cpi1',
+    'Cpi2',
+    'GeIT1',
+    'GeIT2',
+    'GeIT3',
+    'GeM1',
+    'GeM2',
+    'GeM3',
+    'GeC1',
+    'GeC2',
+    'GeC3',
+  ];
+  final categories = ['cour', 'tp', 'devoir', 'td', 'tutorat', 'utile'];
+  final service = DocumentServive();
+
+  @override
+  void dispose() {
+    filenameController.dispose();
+    yearController.dispose();
+    subjectController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      pickedFile = result.files.single;
+      filenameController.text = pickedFile!.name;
+      setState(() {});
+    }
+  }
+
+  Future<void> _submit(BuildContext context) async {
+    if (pickedFile == null ||
+        filenameController.text.isEmpty ||
+        yearController.text.isEmpty ||
+        subjectController.text.isEmpty) {
+      _showAlert('Champs manquants', context);
+      return;
+    }
+    setState(() => isSending = true);
+    if (!await isConnectedToInternet()) {
+      setState(() => isSending = false);
+      if (!context.mounted) return;
+      showNoConnectionMessage(context);
+      return;
+    }
+
+    setState(() => isSending = true);
+    final user = SQLiteService.instance.getUser();
+    final idDocument = await service.uploadDocument(
+      file: File(pickedFile!.path!),
+      filename: filenameController.text,
+      classe: selectedClasse,
+      subject: subjectController.text,
+      year: int.tryParse(yearController.text) ?? 0,
+      categorie: selectedCategory,
+      userId: user!['id'],
+      onProgress: (received, total) {
+        setState(() => progress = total > 0 ? received / total : 0);
+      },
+    );
+
+    final doc = Document(
+      id: idDocument!,
+      idUploader: user['id'],
+      filename: filenameController.text,
+      year: int.tryParse(yearController.text) ?? 0,
+      classe: selectedClasse,
+      subject: subjectController.text,
+      categorie: selectedCategory,
+    );
+    GetIt.I<DocumentViewModel>().addDocument(doc);
+
+    setState(() => isSending = false);
+    if (!context.mounted) return;
+    Navigator.pop(context);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Fichier envoyé')));
+  }
+
+  void _showAlert(String title, BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: Text(title),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = ThemeController.isDarkModeNotifier.value;
+    final width = MediaQuery.of(context).size.width;
+    final inset = Responsive.isDesktop(context) ? width * 0.3 : width * 0.22;
+
+    return AlertDialog(
+      // shape: RoundedRectangleBorder(side: BorderSide(width: 700)),
+      // insetPadding: EdgeInsets.symmetric(horizontal: inset, vertical: 24),
+      contentPadding: EdgeInsets.symmetric(vertical: 40, horizontal: 50),
+      backgroundColor:
+          isDark
+              ? AppColors.darkSecondarySystemBackground
+              : AppColors.lightSystemBackground,
+      title: const Icon(
+        FontAwesomeIcons.cloudArrowUp,
+        size: 48,
+        color: AppColors.primaryColor,
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          spacing: 7,
+          children: [
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                final input = textEditingValue.text;
+                if (input.isEmpty) {
+                  return const <String>[];
+                }
+                return documents
+                    .map((d) => d['subject'] as String)
+                    .where(
+                      (s) => s.toLowerCase().contains(input.toLowerCase()),
+                    );
+              },
+              fieldViewBuilder: (
+                BuildContext context,
+                TextEditingController textController,
+                FocusNode focusNode,
+                VoidCallback onFieldSubmitted,
+              ) {
+                return TextField(
+                  controller: textController,
+                  focusNode: focusNode,
+                  decoration: const InputDecoration(labelText: 'Matière'),
+                  onSubmitted: (_) => onFieldSubmitted(),
+                );
+              },
+              onSelected: (String selection) {
+                subjectController.text = selection;
+              },
+            ),
+
+            TextField(
+              controller: filenameController,
+              decoration: const InputDecoration(labelText: 'Nom du fichier'),
+            ),
+            TextField(
+              controller: yearController,
+              decoration: const InputDecoration(labelText: 'Année'),
+            ),
+
+            Row(
+              children: [
+                Text("Classe"),
+                Spacer(),
+                DropdownButton<String>(
+                  value: selectedClasse,
+                  items:
+                      classes
+                          .map(
+                            (c) => DropdownMenuItem(value: c, child: Text(c)),
+                          )
+                          .toList(),
+                  onChanged: (v) => setState(() => selectedClasse = v!),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text("Categorie"),
+                Spacer(),
+                DropdownButton<String>(
+                  value: selectedCategory,
+                  items:
+                      categories
+                          .map(
+                            (c) => DropdownMenuItem(value: c, child: Text(c)),
+                          )
+                          .toList(),
+                  onChanged: (v) => setState(() => selectedCategory = v!),
+                ),
+              ],
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                // minimumSize: const Size(200, 40),
+              ),
+              onPressed: _pickFile,
+              child: const Text(
+                'Choisir un fichier',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                // minimumSize: const Size(200, 40),
+              ),
+              onPressed: () => isSending ? null : _submit(context),
+              child: const Text(
+                'Envoyer',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            // SizedBox(height: 8),
+            if (isSending) customLinearProgressSending(progress),
+          ],
+        ),
+      ),
+    );
+  }
 }

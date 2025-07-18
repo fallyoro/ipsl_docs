@@ -1,0 +1,7 @@
+prefix=/home/yoro/Documents/PROJECT/IPSL_DOCS/backend/.conda
+includedir=${prefix}/include
+ 
+Name: DMXProto
+Description: DMX extension headers
+Version: 2.3.1
+Cflags: -I${includedir}

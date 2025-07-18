@@ -4,10 +4,23 @@ from datetime import datetime
 from typing import Optional
 from src.models.document import Document
 
+'''
+ __tablename__ = "documents"
+    id: UUID = Field(primary_key=True, default_factory=uuid4)
+    
+    filename: str
+ 
+   
+    upload_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))
+    user_id: UUID = Field(foreign_key="users.id")
+    # user: "User" = Relationship(back_populates="documents")
+'''
+
 class DocumentBase(BaseModel):
     filename: str
-    file_path: str
-    file_type: str
+    classe: str
+    subject: str
+    year: int 
     categorie: str
     user_id: UUID
 

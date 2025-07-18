@@ -4,6 +4,10 @@ from pydantic import SecretStr
 class Settings(BaseSettings):
     admin_email: str
     DATABASE_URL: str
+    REDIS_HOST: str
+    REDIS_PORT: int
+    JWT_SECRET: str
+    JWT_ALGO: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
