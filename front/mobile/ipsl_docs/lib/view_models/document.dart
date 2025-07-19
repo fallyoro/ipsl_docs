@@ -17,7 +17,7 @@ class DocumentViewModel {
 
   Future<void> addDocument(Document doc) async {
     _db.insertDocument(doc.toJson());
-    // documents.value.add(doc);
+    documents.value.add(doc);
   }
 
   List<String> getClasseFolders() {

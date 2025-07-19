@@ -18,7 +18,7 @@ TokenService tokens = TokenService();
 
 final options = BaseOptions(
   baseUrl: 'http://$host:$port/auth',
-  // connectTimeout: Duration(minutes: 1),
+  connectTimeout: Duration(seconds: 10),
   // receiveTimeout: Duration(minutes: 1),
 );
 final dio = Dio(options);
@@ -368,6 +368,7 @@ class _LoginPageState extends State<SignUpPage> {
                         isLoading: isLoding,
                         action: "S'inscrire",
                         onPressed: () async {
+
                           _onSignUpPressed(context);
                         },
                         width: 300,
@@ -408,6 +409,7 @@ class _LoginPageState extends State<SignUpPage> {
   }
 
   Future<void> _onSignUpPressed(BuildContext context) async {
+      FocusScope.of(context).unfocus();
     final bool isConnected = await isConnectedToInternet();
     if (!isConnected) {
       if (!context.mounted) return;

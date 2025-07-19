@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
+import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/home/home.dart';
 import 'package:ipsl_docs/views/home/widget/card_folder.dart';
 import 'package:ipsl_docs/views/subject_page.dart';
@@ -8,9 +10,23 @@ import 'package:ipsl_docs/views/widgets/folder_home.dart';
 import 'package:ipsl_docs/widget_tree.dart';
 import 'package:page_transition/page_transition.dart';
 
-class YearPage extends StatelessWidget {
+class YearPage extends StatefulWidget {
   final String classe;
   const YearPage({super.key, required this.classe});
+
+  @override
+  State<YearPage> createState() => _YearPageState();
+}
+
+class _YearPageState extends State<YearPage> {
+  late final DocumentViewModel documentViewModel;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    documentViewModel = GetIt.I<DocumentViewModel>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +50,7 @@ class YearPage extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                classe,
+                widget.classe,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -47,11 +63,11 @@ class YearPage extends StatelessWidget {
         ),
       ),
       body: ValueListenableBuilder<List<Document>>(
-        valueListenable: viewModel.documents,
+        valueListenable: documentViewModel.documents,
         builder: (context, docs, _) {
           final yearFolders =
               docs
-                  .where((doc) => doc.classe == classe)
+                  .where((doc) => doc.classe == widget.classe)
                   .map((doc) => doc.year)
                   .toSet()
                   .toList();
@@ -75,7 +91,7 @@ class YearPage extends StatelessWidget {
                     MaterialPageRoute(
                       builder:
                           (_) => SubjectPage(
-                            classFolder: classe,
+                            classFolder: widget.classe,
                             yearFolder: year.toString(),
                           ),
                     ),

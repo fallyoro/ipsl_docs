@@ -7,6 +7,7 @@ import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
+import 'package:ipsl_docs/view_models/user.dart';
 import 'package:ipsl_docs/views/home/widget/card_folder.dart';
 import 'package:ipsl_docs/views/home/widget/search.dart';
 import 'package:ipsl_docs/views/widgets/folder_home.dart';
@@ -16,7 +17,7 @@ import 'package:ipsl_docs/widget_tree.dart';
 import 'package:open_file/open_file.dart';
 import 'package:page_transition/page_transition.dart';
 
-final viewModel = GetIt.I<DocumentViewModel>();
+// final documentViewModel = GetIt.I<DocumentViewModel>();
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -26,17 +27,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late final UserViewModel userViewModel;
+  late final DocumentViewModel documentViewModel;
   bool isLoading = false;
   bool _hasFetched = false;
   String errorMessage = "";
 
   String userName = "hello";
   Responsive responsive = Responsive();
-  final documents = viewModel.documents.value;
 
   @override
   void initState() {
     super.initState();
+    userViewModel = GetIt.instance<UserViewModel>();
+    documentViewModel = GetIt.I<DocumentViewModel>();
     var userData = SQLiteService.instance.getUser();
     String userNameq = userData!['user_name'];
     setState(() {
@@ -52,7 +56,7 @@ class _HomeState extends State<Home> {
         final data = await document_service.fetchDocuments();
         _hasFetched = true;
         SQLiteService.instance.insertAllDoc(data);
-        viewModel.loadDocuments();
+        documentViewModel.loadDocuments();
       }
     } catch (e) {
       /*    setState(() {
@@ -64,16 +68,18 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final documentsList = documentViewModel.documents.value;
     double screenWidth = MediaQuery.of(context).size.width;
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return ValueListenableBuilder<List<Document>>(
-      valueListenable: viewModel.documents,
+      valueListenable: documentViewModel.documents,
       builder: (context, docs, _) {
         final classe =
-            viewModel.getClasseFolders()..sort((a, b) => a.compareTo(b));
+            documentViewModel.getClasseFolders()
+              ..sort((a, b) => a.compareTo(b));
 
         return SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 10),
@@ -96,7 +102,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               SizedBox(height: 20),
-              Search(documents: documents),
+              Search(documents: documentsList),
               builFolders(classe, screenWidth),
             ],
           ),
@@ -142,6 +148,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
-
-

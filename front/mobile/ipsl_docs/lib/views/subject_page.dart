@@ -1,8 +1,10 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
+import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/categorie_page.dart';
 import 'package:ipsl_docs/views/home/home.dart';
 import 'package:ipsl_docs/views/home/widget/card_folder.dart';
@@ -25,6 +27,14 @@ class SubjectPage extends StatefulWidget {
 }
 
 class _SubjectPageState extends State<SubjectPage> {
+    late final DocumentViewModel documentViewModel;
+
+    @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    documentViewModel = GetIt.I<DocumentViewModel>();
+  }
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -60,7 +70,7 @@ class _SubjectPageState extends State<SubjectPage> {
         ),
       ),
       body: ValueListenableBuilder<List<Document>>(
-        valueListenable: viewModel.documents,
+        valueListenable: documentViewModel.documents,
         builder: (context, docs, _) {
           final subjectFolder =
               docs

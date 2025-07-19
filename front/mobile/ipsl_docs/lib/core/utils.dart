@@ -39,8 +39,9 @@ void showNoConnectionMessage(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
-bool isDarkModePrefer(BuildContext context) {
-  return MediaQuery.of(context).platformBrightness == Brightness.dark;
+bool isDarkModePrefer() {
+ final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+return brightness == Brightness.dark;
 }
 
 Future<String> getSavePath(Document doc) async {

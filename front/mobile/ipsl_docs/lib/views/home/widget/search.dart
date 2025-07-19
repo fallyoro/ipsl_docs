@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/utils.dart';
@@ -9,10 +6,7 @@ import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
 import 'package:open_file/open_file.dart';
 
 class Search extends StatelessWidget {
-  const Search({
-    super.key,
-    required this.documents,
-  });
+  const Search({super.key, required this.documents});
 
   final List<Document> documents;
 
@@ -22,26 +16,28 @@ class Search extends StatelessWidget {
       constraints: BoxConstraints(maxWidth: 600, minHeight: 55),
       suggestionsBuilder: (context, controller) {
         final input = controller.text.toLowerCase();
+        final seen = <String>{};
         final results =
             documents
+                .where((doc) => doc.filename.toLowerCase().contains(input))
                 .where(
-                  (doc) => doc.filename.toLowerCase().contains(input),
-                )
+                  (doc) => seen.add(doc.filename),
+                ) // garde seulement le premier doc avec ce nom
                 .toList();
-    
+
         return results.map((doc) {
           return ListTile(
             title: Text(doc.filename),
             onTap: () async {
+              FocusScope.of(context).unfocus();
+
               controller.text = doc.filename;
               String docPath = await getSavePath(doc);
               if (await isExistFile(docPath) == false) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      "Veillez d'abord telecharger ce fichier",
-                    ),
+                    content: Text("Veillez d'abord telecharger ce fichier"),
                   ),
                 );
                 return;

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
+import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/home/home.dart';
 import 'package:ipsl_docs/views/home/widget/card_folder.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
 import 'package:ipsl_docs/views/widgets/folder_home.dart';
 import 'package:ipsl_docs/widget_tree.dart';
 import 'package:page_transition/page_transition.dart';
-
 
 class CategoryPage extends StatefulWidget {
   final String classFolder;
@@ -26,6 +27,14 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
+  late final DocumentViewModel documentViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    documentViewModel = GetIt.I<DocumentViewModel>();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -62,7 +71,7 @@ class _CategoryPageState extends State<CategoryPage> {
       ),
 
       body: ValueListenableBuilder<List<Document>>(
-        valueListenable: viewModel.documents,
+        valueListenable: documentViewModel.documents,
         builder: (context, docs, _) {
           final categoryFolder =
               docs

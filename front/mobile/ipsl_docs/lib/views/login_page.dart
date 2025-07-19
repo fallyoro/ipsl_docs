@@ -273,6 +273,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> handleLogin(BuildContext context) async {
+    FocusScope.of(context).unfocus();
     final bool isConnected = await isConnectedToInternet();
     if (!isConnected) {
       if (!context.mounted) return; // Vérifie que widget est toujours actif
@@ -286,11 +287,11 @@ class _LoginPageState extends State<LoginPage> {
       emailController.text,
       passwordController.text,
     );
-    if (!mounted) return; // essentiel avant de setState/post-await
+    if (!context.mounted) return; // essentiel avant de setState/post-await
     setState(() => isLoding = false);
 
     if (userInfo['error'] != null) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -311,7 +312,7 @@ class _LoginPageState extends State<LoginPage> {
     await StorageService.setBool("isLoged", true);
     userViewModel.addUser(user);
 
-    if (!mounted) return;
+    if (!context.mounted) return;
     Navigator.push(context, MaterialPageRoute(builder: (_) => WidgetTree()));
   }
 }

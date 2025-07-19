@@ -84,93 +84,101 @@ class _DocumentListViewState extends State<DocumentListView> {
 
   GridView buildDocumentGird() {
     return GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 250,
-            crossAxisSpacing: 24,
-            mainAxisSpacing: 24,
-            childAspectRatio: 1.1,
-          ),
-          itemCount: widget.documents.length,
-          itemBuilder: (context, index) {
-            final doc = widget.documents[index];
+      padding: const EdgeInsets.all(16),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 250,
+        crossAxisSpacing: 24,
+        mainAxisSpacing: 24,
+        childAspectRatio: 1.1,
+      ),
+      itemCount: widget.documents.length,
+      itemBuilder: (context, index) {
+        final doc = widget.documents[index];
 
-            return GestureDetector(
-              onTap: () async {
-                String docPath = await getSavePath(doc);
-                if (await isExistFile(docPath) == false) {
-                  final bool isConnected = await isConnectedToInternet();
-                  if (isConnected == false) {
-                    if (!context.mounted || _isDisposed == true) return;
-                    showNoConnectionMessage(context);
-                    return;
-                  }
-                  doc.isDownloading = true;
-                  await service.downloadFile(doc, (received, total) {
-                    if (!mounted || _isDisposed == true) return;
-                    setState(() {
-                      doc.progress = total != -1 ? received / total : 0;
-                    });
-                  });
+        return GestureDetector(
+          onTap: () async {
+            doc.isDownloading = true;
+            String docPath = await getSavePath(doc);
+            if (await isExistFile(docPath) == false) {
+              final bool isConnected = await isConnectedToInternet();
+              if (isConnected == false) {
+                doc.isDownloading = false;
+                if (!context.mounted || _isDisposed == true) return;
+                showNoConnectionMessage(context);
+                return;
+              }
+              doc.isDownloading = true;
+              try {
+                await service.downloadFile(doc, (received, total) {
                   if (!mounted || _isDisposed == true) return;
                   setState(() {
-                    doc.isDownloading = false;
+                    doc.progress = total != -1 ? received / total : 0;
                   });
-                }
+                });
+              } catch (e) {
+                doc.isDownloading = false;
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Serveur indisponible')));
+              }
+              if (!mounted || _isDisposed == true) return;
+              setState(() {
+                doc.isDownloading = false;
+              });
+            }
 
-                await OpenFile.open(docPath);
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      doc.isDownloading
-                          ? customCircularProgress(doc)
-                          : FutureBuilder<Widget>(
-                            future: _buildDocumentPreview(doc),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const SizedBox(
-                                  height: 100,
-                                  width: 100,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                );
-                              } else if (snapshot.hasError ||
-                                  !snapshot.hasData) {
-                                logInfo(snapshot.error.toString());
-                                return const Icon(
-                                  Icons.insert_drive_file,
-                                  size: 64,
-                                );
-                              } else {
-                                return snapshot.data!;
-                              }
-                            },
-                          ),
-                      const SizedBox(height: 8),
-                      Text(
-                        doc.filename,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
+            await OpenFile.open(docPath);
           },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  doc.isDownloading
+                      ? customCircularProgress(doc)
+                      : FutureBuilder<Widget>(
+                        future: _buildDocumentPreview(doc),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox(
+                              height: 100,
+                              width: 100,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            );
+                          } else if (snapshot.hasError || !snapshot.hasData) {
+                            logInfo(snapshot.error.toString());
+                            return const Icon(
+                              Icons.insert_drive_file,
+                              size: 64,
+                            );
+                          } else {
+                            return snapshot.data!;
+                          }
+                        },
+                      ),
+                  const SizedBox(height: 8),
+                  Text(
+                    doc.filename,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
+      },
+    );
   }
 
   Stack customCircularProgress(Document doc) {

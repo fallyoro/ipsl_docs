@@ -154,7 +154,6 @@ class _WidgetTreeState extends State<WidgetTree> {
                       ),
                     ],
                   ),
-
           bottomNavigationBar:
               ((Theme.of(context).platform == TargetPlatform.android ||
                       Theme.of(context).platform == TargetPlatform.iOS))
@@ -324,21 +323,20 @@ class _UploadDialogState extends State<UploadDialog> {
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      pickedFile = result.files.single;
-      filenameController.text = pickedFile!.name;
-      setState(() {});
+
+    if (result != null && result.files.isNotEmpty) {
+      final file = result.files.single;
+
+      setState(() {
+        pickedFile = file;
+        filenameController.text = file.name;
+      });
     }
   }
 
   Future<void> _submit(BuildContext context) async {
-    if (pickedFile == null ||
-        filenameController.text.isEmpty ||
-        yearController.text.isEmpty ||
-        subjectController.text.isEmpty) {
-      _showAlert('Champs manquants', context);
-      return;
-    }
+    FocusScope.of(context).unfocus();
+
     setState(() => isSending = true);
     if (!await isConnectedToInternet()) {
       setState(() => isSending = false);
@@ -397,6 +395,8 @@ class _UploadDialogState extends State<UploadDialog> {
     );
   }
 
+  final _formKeySubmit = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     final isDark = ThemeController.isDarkModeNotifier.value;
@@ -405,8 +405,8 @@ class _UploadDialogState extends State<UploadDialog> {
 
     return AlertDialog(
       // shape: RoundedRectangleBorder(side: BorderSide(width: 700)),
-      // insetPadding: EdgeInsets.symmetric(horizontal: inset, vertical: 24),
-      contentPadding: EdgeInsets.symmetric(vertical: 40, horizontal: 50),
+
+      // contentPadding: EdgeInsets.symmetric(vertical: 40, horizontal: 50),
       backgroundColor:
           isDark
               ? AppColors.darkSecondarySystemBackground
@@ -420,102 +420,153 @@ class _UploadDialogState extends State<UploadDialog> {
         child: Column(
           spacing: 7,
           children: [
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                final input = textEditingValue.text;
-                if (input.isEmpty) {
-                  return const <String>[];
-                }
-                return documents
-                    .map((d) => d['subject'] as String)
-                    .where(
-                      (s) => s.toLowerCase().contains(input.toLowerCase()),
-                    );
-              },
-              fieldViewBuilder: (
-                BuildContext context,
-                TextEditingController textController,
-                FocusNode focusNode,
-                VoidCallback onFieldSubmitted,
-              ) {
-                return TextField(
-                  controller: textController,
-                  focusNode: focusNode,
-                  decoration: const InputDecoration(labelText: 'Matière'),
-                  onSubmitted: (_) => onFieldSubmitted(),
-                );
-              },
-              onSelected: (String selection) {
-                subjectController.text = selection;
-              },
-            ),
+            Form(
+              key: _formKeySubmit,
+              child: Column(
+                children: [
+                  // Autocomplete + Subject
+                  Autocomplete<String>(
+                    optionsBuilder: (TextEditingValue textEditingValue) {
+                      final input = textEditingValue.text;
+                      if (input.isEmpty) return const <String>[];
+                      return documents
+                          .map((d) => d['subject'] as String)
+                          .where(
+                            (s) =>
+                                s.toLowerCase().contains(input.toLowerCase()),
+                          );
+                    },
+                    fieldViewBuilder: (
+                      BuildContext context,
+                      TextEditingController textController,
+                      FocusNode focusNode,
+                      VoidCallback onFieldSubmitted,
+                    ) {
+                      return TextFormField(
+                        controller: textController,
+                        focusNode: focusNode,
+                        decoration: const InputDecoration(labelText: 'Matière'),
+                        validator:
+                            (value) =>
+                                value == null || value.isEmpty
+                                    ? 'Champ requis'
+                                    : null,
+                        onFieldSubmitted: (_) => onFieldSubmitted(),
+                        onChanged: (val) => subjectController.text = val,
+                      );
+                    },
+                    onSelected: (String selection) {
+                      subjectController.text = selection;
+                    },
+                  ),
 
-            TextField(
-              controller: filenameController,
-              decoration: const InputDecoration(labelText: 'Nom du fichier'),
-            ),
-            TextField(
-              controller: yearController,
-              decoration: const InputDecoration(labelText: 'Année'),
-            ),
+                  // Nom du fichier
+                  TextFormField(
+                    controller: filenameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nom du fichier',
+                    ),
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Champ requis'
+                                : null,
+                  ),
 
-            Row(
-              children: [
-                Text("Classe"),
-                Spacer(),
-                DropdownButton<String>(
-                  value: selectedClasse,
-                  items:
-                      classes
-                          .map(
-                            (c) => DropdownMenuItem(value: c, child: Text(c)),
-                          )
-                          .toList(),
-                  onChanged: (v) => setState(() => selectedClasse = v!),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text("Categorie"),
-                Spacer(),
-                DropdownButton<String>(
-                  value: selectedCategory,
-                  items:
-                      categories
-                          .map(
-                            (c) => DropdownMenuItem(value: c, child: Text(c)),
-                          )
-                          .toList(),
-                  onChanged: (v) => setState(() => selectedCategory = v!),
-                ),
-              ],
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                // minimumSize: const Size(200, 40),
+                  // Année
+                  TextFormField(
+                    controller: yearController,
+                    decoration: const InputDecoration(labelText: 'Année'),
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Champ requis'
+                                : null,
+                  ),
+
+                  // Classe
+                  Row(
+                    children: [
+                      const Text("Classe"),
+                      const Spacer(),
+                      DropdownButton<String>(
+                        value: selectedClasse,
+                        items:
+                            classes
+                                .map(
+                                  (c) => DropdownMenuItem(
+                                    value: c,
+                                    child: Text(c),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (v) => setState(() => selectedClasse = v!),
+                      ),
+                    ],
+                  ),
+
+                  // Catégorie
+                  Row(
+                    children: [
+                      const Text("Catégorie"),
+                      const Spacer(),
+                      DropdownButton<String>(
+                        value: selectedCategory,
+                        items:
+                            categories
+                                .map(
+                                  (c) => DropdownMenuItem(
+                                    value: c,
+                                    child: Text(c),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (v) => setState(() => selectedCategory = v!),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      // minimumSize: const Size(200, 40),
+                    ),
+                    onPressed: _pickFile,
+                    child: const Text(
+                      'Choisir un fichier',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Bouton Envoyer
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                    ),
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      if (_formKeySubmit.currentState!.validate() &&
+                          pickedFile != null) {
+                        _submit(context);
+                      } else {
+                        _showAlert(
+                          "Champs manquants ou fichier non sélectionné",
+                          context,
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'Envoyer',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+
+                  if (isSending) customLinearProgressSending(progress),
+                ],
               ),
-              onPressed: _pickFile,
-              child: const Text(
-                'Choisir un fichier',
-                style: TextStyle(color: Colors.white),
-              ),
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                // minimumSize: const Size(200, 40),
-              ),
-              onPressed: () => isSending ? null : _submit(context),
-              child: const Text(
-                'Envoyer',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            // SizedBox(height: 8),
-            if (isSending) customLinearProgressSending(progress),
           ],
         ),
       ),
