@@ -379,11 +379,8 @@ class _UploadDialogState extends State<UploadDialog> {
     ).showSnackBar(SnackBar(content: Text('Fichier envoyé')));
   }
 
-  void _showAlert(String title, BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (_) => AlertDialog(
+  AlertDialog _showAlert(String title, BuildContext context) {
+ return  AlertDialog(
             title: Text(title),
             actions: [
               TextButton(
@@ -391,8 +388,8 @@ class _UploadDialogState extends State<UploadDialog> {
                 child: const Text('OK'),
               ),
             ],
-          ),
-    );
+          );
+   
   }
 
   final _formKeySubmit = GlobalKey<FormState>();
@@ -400,13 +397,9 @@ class _UploadDialogState extends State<UploadDialog> {
   @override
   Widget build(BuildContext context) {
     final isDark = ThemeController.isDarkModeNotifier.value;
-    final width = MediaQuery.of(context).size.width;
-    final inset = Responsive.isDesktop(context) ? width * 0.3 : width * 0.22;
 
     return AlertDialog(
-      // shape: RoundedRectangleBorder(side: BorderSide(width: 700)),
-
-      // contentPadding: EdgeInsets.symmetric(vertical: 40, horizontal: 50),
+ 
       backgroundColor:
           isDark
               ? AppColors.darkSecondarySystemBackground
@@ -424,7 +417,7 @@ class _UploadDialogState extends State<UploadDialog> {
               key: _formKeySubmit,
               child: Column(
                 children: [
-                  // Autocomplete + Subject
+                
                   Autocomplete<String>(
                     optionsBuilder: (TextEditingValue textEditingValue) {
                       final input = textEditingValue.text;
@@ -460,7 +453,7 @@ class _UploadDialogState extends State<UploadDialog> {
                     },
                   ),
 
-                  // Nom du fichier
+                  // Name of the file
                   TextFormField(
                     controller: filenameController,
                     decoration: const InputDecoration(
@@ -473,7 +466,7 @@ class _UploadDialogState extends State<UploadDialog> {
                                 : null,
                   ),
 
-                  // Année
+                  // Year
                   TextFormField(
                     controller: yearController,
                     decoration: const InputDecoration(labelText: 'Année'),
@@ -505,7 +498,7 @@ class _UploadDialogState extends State<UploadDialog> {
                     ],
                   ),
 
-                  // Catégorie
+                  // Catégory
                   Row(
                     children: [
                       const Text("Catégorie"),
@@ -527,10 +520,12 @@ class _UploadDialogState extends State<UploadDialog> {
                   ),
 
                   const SizedBox(height: 16),
+
+                  // Button for choose file
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
-                      // minimumSize: const Size(200, 40),
+                      minimumSize: Size(200, 40),
                     ),
                     onPressed: _pickFile,
                     child: const Text(
@@ -540,21 +535,17 @@ class _UploadDialogState extends State<UploadDialog> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Bouton Envoyer
+                  // Button for send
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
+                      minimumSize: Size(200, 40),
                     ),
                     onPressed: () {
                       FocusScope.of(context).unfocus();
                       if (_formKeySubmit.currentState!.validate() &&
                           pickedFile != null) {
                         _submit(context);
-                      } else {
-                        _showAlert(
-                          "Champs manquants ou fichier non sélectionné",
-                          context,
-                        );
                       }
                     },
                     child: const Text(

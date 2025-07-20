@@ -21,7 +21,7 @@ Future<void> main() async {
   }
   ThemeController.loadTheme();
 
-  // await StorageService.setBool("isLoged", false); //xdcdcdcdcd
+ 
 
   final dir = await getApplicationDocumentsDirectory();
 

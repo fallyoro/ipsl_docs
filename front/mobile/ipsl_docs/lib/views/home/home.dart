@@ -1,23 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ipsl_docs/core/Responsive.dart';
-import 'package:ipsl_docs/core/constant.dart';
-import 'package:ipsl_docs/core/notifiers.dart';
+import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/utils.dart';
-import 'package:ipsl_docs/database/database.dart';
+import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
-import 'package:ipsl_docs/view_models/document.dart';
+import 'package:ipsl_docs/core/Responsive.dart';
 import 'package:ipsl_docs/view_models/user.dart';
-import 'package:ipsl_docs/views/home/widget/card_folder.dart';
-import 'package:ipsl_docs/views/home/widget/search.dart';
-import 'package:ipsl_docs/views/widgets/folder_home.dart';
+import 'package:ipsl_docs/database/database.dart';
+import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/year_folder_page.dart';
-import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
-import 'package:ipsl_docs/widget_tree.dart';
-import 'package:open_file/open_file.dart';
-import 'package:page_transition/page_transition.dart';
-
-// final documentViewModel = GetIt.I<DocumentViewModel>();
+import 'package:ipsl_docs/views/home/widget/search.dart';
+import 'package:ipsl_docs/views/home/widget/card_folder.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -59,9 +51,6 @@ class _HomeState extends State<Home> {
         documentViewModel.loadDocuments();
       }
     } catch (e) {
-      /*    setState(() {
-        errorMessage = 'Erreur lors du chargement : $e';
-      });*/
       errorMessage = 'Erreur lors du chargement : $e';
     }
   }
