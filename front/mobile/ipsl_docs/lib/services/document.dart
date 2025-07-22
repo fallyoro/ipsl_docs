@@ -9,8 +9,8 @@ import 'package:path_provider/path_provider.dart';
 
 final options = BaseOptions(
   baseUrl: 'http://$host:$port/document',
-   connectTimeout: Duration(seconds: 10),
-    receiveTimeout: Duration(minutes: 3),
+  connectTimeout: Duration(seconds: 10),
+  receiveTimeout: Duration(minutes: 3),
 );
 final dio = Dio(options);
 
@@ -44,7 +44,7 @@ class DocumentServive {
         baseDir.path,
         "ipsl_docs",
         doc.classe,
-        doc.year.toString(),
+        doc.year,
         doc.subject,
         doc.categorie,
       ),
@@ -77,7 +77,7 @@ class DocumentServive {
     required String filename,
     required String classe,
     required String subject,
-    required int year,
+    required String year,
     required String categorie,
     required String userId,
     void Function(int, int)? onProgress,
@@ -88,7 +88,7 @@ class DocumentServive {
       'filename': filename,
       'classe': classe,
       'subject': subject,
-      'year': year.toString(),
+      'year': year,
       'categorie': categorie,
       'user_id': userId,
       'doc': await MultipartFile.fromFile(
@@ -118,10 +118,3 @@ class DocumentServive {
     }
   }
 }
-
-
-
-
-
-
-

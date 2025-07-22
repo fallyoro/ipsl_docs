@@ -22,7 +22,6 @@ class _YearPageState extends State<YearPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     documentViewModel = GetIt.I<DocumentViewModel>();
   }
@@ -87,12 +86,13 @@ class _YearPageState extends State<YearPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => SubjectPage(
-                            classFolder: widget.classe,
-                            yearFolder: year.toString(),
-                          ),
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: SubjectPage(
+                        classFolder: widget.classe,
+                        yearFolder: year.toString(),
+                      ),
+                      duration: Duration(milliseconds: 210),
                     ),
                   );
                 },

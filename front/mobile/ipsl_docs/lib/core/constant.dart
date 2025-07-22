@@ -20,8 +20,13 @@ class AppColors {
   );
 
   // Backgrounds Light
-  static const Color lightSystemBackground = Color.fromARGB(255, 242, 242, 247);
-  static const Color lightSecondarySystemBackground = Colors.white;
+  static const Color lightSystemBackground = Colors.white;
+  static const Color lightSecondarySystemBackground = Color.fromARGB(
+    255,
+    242,
+    242,
+    247,
+  );
   static const Color lightTertiarySystemBackground = Color.fromARGB(
     255,
     229,

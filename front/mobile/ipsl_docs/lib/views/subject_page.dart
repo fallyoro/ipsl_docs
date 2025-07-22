@@ -24,14 +24,14 @@ class SubjectPage extends StatefulWidget {
 }
 
 class _SubjectPageState extends State<SubjectPage> {
-    late final DocumentViewModel documentViewModel;
+  late final DocumentViewModel documentViewModel;
 
-    @override
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     documentViewModel = GetIt.I<DocumentViewModel>();
   }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -73,7 +73,7 @@ class _SubjectPageState extends State<SubjectPage> {
               docs
                   .where((doc) {
                     return doc.classe == widget.classFolder &&
-                        doc.year.toString() == widget.yearFolder;
+                        doc.year == widget.yearFolder;
                   })
                   .map((e) => e.subject)
                   .toSet()
@@ -95,13 +95,14 @@ class _SubjectPageState extends State<SubjectPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => CategoryPage(
-                            classFolder: widget.classFolder,
-                            yearFolder: widget.yearFolder,
-                            subjectFolder: folder,
-                          ),
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: CategoryPage(
+                        classFolder: widget.classFolder,
+                        yearFolder: widget.yearFolder,
+                        subjectFolder: folder,
+                      ),
+                      duration: Duration(milliseconds: 210),
                     ),
                   );
                 },

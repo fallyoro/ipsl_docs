@@ -51,7 +51,7 @@ Future<String> getSavePath(Document doc) async {
       baseDir.path,
       "ipsl_docs",
       doc.classe,
-      doc.year.toString(),
+      doc.year,
       doc.subject,
       doc.categorie,
     ),

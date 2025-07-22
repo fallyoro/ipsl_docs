@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/global.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/theme.dart';
@@ -21,8 +23,6 @@ Future<void> main() async {
   }
   ThemeController.loadTheme();
 
- 
-
   final dir = await getApplicationDocumentsDirectory();
 
   logInfo('DB path: ${dir.path}/ipsl_docs.db');
@@ -35,23 +35,31 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
+    return ValueListenableBuilder<bool>(
       valueListenable: ThemeController.isDarkModeNotifier,
-      builder: (context, isDark, child) {
-        bool isLoged = StorageService.getBool("isLoged");
+      builder: (context, isDark, _) {
+        // ✅ Appelé à chaque changement
+        Future.microtask(() {
+          SystemChrome.setSystemUIOverlayStyle(
+            SystemUiOverlayStyle(
+              systemNavigationBarColor:
+                  isDark
+                      ? AppColors.darkSecondarySystemBackground
+                      : Colors.white,
+              systemNavigationBarIconBrightness:
+                  isDark ? Brightness.light : Brightness.dark,
+            ),
+          );
+        });
+
         final theme = isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
-        return AnimatedTheme(
-          data: theme,
-          curve: Curves.decelerate,
-          duration: const Duration(seconds: 1),
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
+        final isLoged = StorageService.getBool("isLoged");
 
-            title: 'Flutter Demo',
-            theme: theme,
-
-            home: isLoged ? WidgetTree() : IntroductionScreen(),
-          ),
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: theme,
+          home: isLoged ? const WidgetTree() : const IntroductionScreen(),
         );
       },
     );

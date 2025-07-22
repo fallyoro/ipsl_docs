@@ -4,8 +4,12 @@ import 'package:ipsl_docs/core/constant.dart';
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
-      appBarTheme: AppBarTheme(color: AppColors.lightSystemBackground),
+      appBarTheme: AppBarTheme(
+        color: AppColors.lightSystemBackground,
+        // toolbarHeight: 60,
+      ),
 
+      primaryColor: AppColors.primaryColor,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryColor,
 

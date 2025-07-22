@@ -53,6 +53,7 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_svg: ^2.2.0
   smooth_page_indicator: ^1.2.1
+  mask_text_input_formatter: ^2.9.0
   
  
   
@@ -86,6 +87,7 @@ flutter:
     - assets/images/onboarding2.svg
     - assets/images/onboarding3.svg
     - assets/images/onboarding4.svg
+    - assets/images/icon.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

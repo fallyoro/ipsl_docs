@@ -3,7 +3,7 @@ class Document {
   final String idUploader;
   final String filename;
   final String categorie;
-  final int year;
+  final String year;
   final String subject;
   final String classe;
   final bool isLoding;
@@ -28,20 +28,10 @@ class Document {
     idUploader: json['user_id'] ?? '',
     filename: json['filename'] ?? ' ',
     classe: json['classe'] ?? 'pas/de',
-    year: json['year'] ?? 'pas/de',
+    year: json['year'].toString() ,
     subject: json['subject'] ?? 'pas/de',
     categorie: json['categorie'] ?? '',
-
   );
-
-  /*factory Document.fromJsonForDatabase(Map<String, dynamic> json) => Document(
-    id: json['id'] ?? '',
-    idUploader: json['user_id'] ?? '',
-    filename: json['filename'] ?? ' ',
-    filePath: json['filePath'] ?? 'pas/de',
-    categorie: json['categorie'] ?? '',
-    isDownload: json['isDownload'] ?? 0,
-  );*/
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -51,6 +41,5 @@ class Document {
     'year': year,
     'subject': subject,
     'categorie': categorie,
-    //'isDownload': isDownload,
   };
 }

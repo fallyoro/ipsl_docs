@@ -76,7 +76,7 @@ class _CategoryPageState extends State<CategoryPage> {
               docs
                   .where((doc) {
                     return doc.classe == widget.classFolder &&
-                        doc.year.toString() == widget.yearFolder &&
+                        doc.year == widget.yearFolder &&
                         doc.subject == widget.subjectFolder;
                   })
                   .map((doc) => doc.categorie)
@@ -98,7 +98,7 @@ class _CategoryPageState extends State<CategoryPage> {
               final documents =
                   docs.where((doc) {
                     return doc.classe == widget.classFolder &&
-                        doc.year.toString() == widget.yearFolder &&
+                        doc.year == widget.yearFolder &&
                         doc.subject == widget.subjectFolder &&
                         doc.categorie == folder;
                   }).toList();
@@ -106,8 +106,10 @@ class _CategoryPageState extends State<CategoryPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => DocumentListView(documents: documents),
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: DocumentListView(documents: documents),
+                      duration: Duration(milliseconds: 210),
                     ),
                   );
                 },

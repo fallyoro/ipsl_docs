@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
@@ -215,7 +213,7 @@ Future<Widget> _buildDocumentPreview(Document doc) async {
       baseDir.path,
       "ipsl_docs",
       doc.classe,
-      doc.year.toString(),
+      doc.year,
       doc.subject,
       doc.categorie,
     ),

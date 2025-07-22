@@ -24,7 +24,7 @@ class SQLiteService {
         subject TEXT,
         classe TEXT,
         categorie TEXT,
-        year INTEGER
+        year TEXT
       );
     ''');
     instance.db.execute('''
