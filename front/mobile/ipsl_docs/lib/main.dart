@@ -26,7 +26,7 @@ Future<void> main() async {
 
   final dir = await getApplicationDocumentsDirectory();
 
-  logInfo('DB path: ${dir.path}/ipsl_docs.db');
+  // logInfo('DB path: ${dir.path}/ipsl_docs.db');
 
   runApp(const MyApp());
 }

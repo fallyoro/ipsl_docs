@@ -49,14 +49,18 @@ class _CardFolderState extends State<CardFolder> {
           children: [
             Icon(FontAwesomeIcons.solidFolder, size: 75, color: Colors.amber),
 
-            Text(
-              widget.folder,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+            SizedBox(
+              height: 46,
+              child: Text(
+                widget.folder,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
 
-                fontSize: widget.screenWidth < 600 ? 14 : 14,
+                  fontSize: widget.screenWidth < 600 ? 14 : 14,
+                ),
               ),
             ),
           ],

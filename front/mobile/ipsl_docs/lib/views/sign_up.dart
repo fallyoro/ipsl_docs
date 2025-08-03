@@ -13,8 +13,6 @@ import 'package:ipsl_docs/views/login_page.dart';
 import 'package:ipsl_docs/widget_tree.dart';
 import 'package:page_transition/page_transition.dart';
 
-
-
 final options = BaseOptions(
   baseUrl: 'http://$host:$port/auth',
   connectTimeout: Duration(seconds: 10),
@@ -423,7 +421,11 @@ class _SignUpPageState extends State<SignUpPage> {
     userViewModel.addUser(user);
     StorageService.setBool("isLoged", true);
     if (!context.mounted) return;
-    Navigator.push(context, MaterialPageRoute(builder: (_) => WidgetTree()));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => WidgetTree()),
+      (route) => false,
+    );
   }
 }
 
