@@ -11,9 +11,7 @@ Ipls_docs est une **application Flutter** développée pour l’Institut Polytec
 </p>
 
 
-<p align="center">
-<img src="images/ordi1.png" alt="Ordinateur" title="Interface application" width="50%" />
-</p>
+
 
 
 ## ✨ Fonctionnalités
