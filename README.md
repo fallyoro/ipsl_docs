@@ -1,6 +1,6 @@
 # 📚 Ipls_docs — Bibliothèque numérique multi‑plateformes
 
-Ipls_docs est une **application Flutter** développée pour l’Institut Polytechnique de Saint‑Louis. Elle permet l’accès à une bibliothèque numérique sur **Linux**, **Windows**, **macOS**, **Android** et **iOS**.
+Ipls_docs est une **application Flutter** que j'ai pour l’Institut Polytechnique de Saint‑Louis. Elle permet l’accès à une bibliothèque numérique sur **Linux**, **Windows**, **macOS**, **Android** et **iOS**.
 
 ---
 
@@ -56,7 +56,7 @@ Prérequis
 - macOS : CocoaPods (pour iOS/macOS)
    ```bash
    git clone https://github.com/fallyoro/ipls_docs.git
-   cd Ipls_docs
+   cd ipls_docs
    flutter pub get
 
 ###🛠️ Contribution
