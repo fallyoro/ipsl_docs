@@ -1,0 +1,11 @@
+prefix=/home/yoro/Documents/PROJECT/IPSL_DOCS/backend/.conda
+exec_prefix=/home/yoro/Documents/PROJECT/IPSL_DOCS/backend/.conda
+libdir=/home/yoro/Documents/PROJECT/IPSL_DOCS/backend/.conda/lib
+includedir=/home/yoro/Documents/PROJECT/IPSL_DOCS/backend/.conda/include
+
+Name: uuid
+Description: Universally unique id library
+Version: 2.32.1
+Requires:
+Cflags: -I${includedir}/uuid
+Libs: -L${libdir} -luuid
