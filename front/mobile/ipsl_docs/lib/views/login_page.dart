@@ -314,6 +314,10 @@ class _LoginPageState extends State<LoginPage> {
     userViewModel.addUser(user);
 
     if (!context.mounted) return;
-    Navigator.push(context, MaterialPageRoute(builder: (_) => WidgetTree()));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => WidgetTree()),
+      (route) => false,
+    );
   }
 }

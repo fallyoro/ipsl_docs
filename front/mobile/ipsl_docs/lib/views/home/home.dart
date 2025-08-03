@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
   bool _hasFetched = false;
   String errorMessage = "";
 
-  String userName = "hello";
+  // String userName = "hello";
   Responsive responsive = Responsive();
 
   @override
@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
     userViewModel = GetIt.instance<UserViewModel>();
     userViewModel.getUser();
     documentViewModel = GetIt.I<DocumentViewModel>();
-    userName = userViewModel.userNotifier.value.userName;
+    // userName = userViewModel.userNotifier.value.userName;
     _fetchDocuments();
   }
 
@@ -276,9 +276,8 @@ GridView builFoldersOnDesktop(
     padding: const EdgeInsets.all(0),
     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
       maxCrossAxisExtent: 180,
-
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 10,
+      crossAxisSpacing: 20,
+      mainAxisSpacing: 0,
       childAspectRatio: 1.1,
     ),
     itemCount: folders.length,
