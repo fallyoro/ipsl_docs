@@ -1,0 +1,423 @@
+[
+    {
+        "label": "BaseSettings",
+        "importPath": "pydantic_settings",
+        "description": "pydantic_settings",
+        "isExtraImport": true,
+        "detail": "pydantic_settings",
+        "documentation": {}
+    },
+    {
+        "label": "SettingsConfigDict",
+        "importPath": "pydantic_settings",
+        "description": "pydantic_settings",
+        "isExtraImport": true,
+        "detail": "pydantic_settings",
+        "documentation": {}
+    },
+    {
+        "label": "SecretStr",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "SQLModel",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "Relationship",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "SQLModel",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "SQLModel",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "Relationship",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlmodel.ext.asyncio.session",
+        "description": "sqlmodel.ext.asyncio.session",
+        "isExtraImport": true,
+        "detail": "sqlmodel.ext.asyncio.session",
+        "documentation": {}
+    },
+    {
+        "label": "sessionmaker",
+        "importPath": "sqlalchemy.orm",
+        "description": "sqlalchemy.orm",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.orm",
+        "documentation": {}
+    },
+    {
+        "label": "create_async_engine",
+        "importPath": "sqlalchemy.ext.asyncio",
+        "description": "sqlalchemy.ext.asyncio",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.ext.asyncio",
+        "documentation": {}
+    },
+    {
+        "label": "sett",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "init_db",
+        "importPath": "src.database.database",
+        "description": "src.database.database",
+        "isExtraImport": true,
+        "detail": "src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "settings",
+        "importPath": "src.core.config",
+        "description": "src.core.config",
+        "isExtraImport": true,
+        "detail": "src.core.config",
+        "documentation": {}
+    },
+    {
+        "label": "Document",
+        "importPath": "src.models.document",
+        "description": "src.models.document",
+        "isExtraImport": true,
+        "detail": "src.models.document",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.models.user",
+        "description": "src.models.user",
+        "isExtraImport": true,
+        "detail": "src.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.models.user",
+        "description": "src.models.user",
+        "isExtraImport": true,
+        "detail": "src.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "asynccontextmanager",
+        "importPath": "contextlib",
+        "description": "contextlib",
+        "isExtraImport": true,
+        "detail": "contextlib",
+        "documentation": {}
+    },
+    {
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "Settings",
+        "kind": 6,
+        "importPath": "backend.src.core.config",
+        "description": "backend.src.core.config",
+        "peekOfCode": "class Settings(BaseSettings):\n    admin_email: str\n    DATABASE_URL: str\n    model_config = SettingsConfigDict(\n        env_file=\".env\",\n        extra=\"ignore\",        # ignore les variables .env non définies dans Settings\n        case_sensitive=False, # variables non sensibles à la casse\n    )\nsettings = Settings()",
+        "detail": "backend.src.core.config",
+        "documentation": {}
+    },
+    {
+        "label": "settings",
+        "kind": 5,
+        "importPath": "backend.src.core.config",
+        "description": "backend.src.core.config",
+        "peekOfCode": "settings = Settings()",
+        "detail": "backend.src.core.config",
+        "documentation": {}
+    },
+    {
+        "label": "SessionLocal",
+        "kind": 5,
+        "importPath": "backend.src.database.database",
+        "description": "backend.src.database.database",
+        "peekOfCode": "SessionLocal = sessionmaker(\n    bind=engine, # type: ignore\n    class_=AsyncSession,\n    expire_on_commit=False,\n) # type: ignore\nasync def init_db():\n    async with engine.begin() as conn:\n        await conn.run_sync(SQLModel.metadata.create_all)\nasync def create_session():\n    async with SessionLocal() as session: # type: ignore",
+        "detail": "backend.src.database.database",
+        "documentation": {}
+    },
+    {
+        "label": "Document",
+        "kind": 6,
+        "importPath": "backend.src.models.document",
+        "description": "backend.src.models.document",
+        "peekOfCode": "class Document(SQLModel, table = True):\n    __tablename__ = \"documents\"\n    id: UUID = Field(primary_key=True, default_factory=uuid4)\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\n    upload_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))\n    user_id: UUID = Field(foreign_key=\"users.id\")\n    user: \"User\" = Relationship(back_populates=\"documents\")",
+        "detail": "backend.src.models.document",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "kind": 6,
+        "importPath": "backend.src.models.user",
+        "description": "backend.src.models.user",
+        "peekOfCode": "class User(SQLModel, table=True):\n    __tablename__ = \"users\"\n    id : UUID = Field(default_factory=uuid4, primary_key= True)\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime = Field(default_factory= lambda: datetime.now(timezone.utc))\n    updated_at: datetime = Field(\n        default_factory=lambda: datetime.now(timezone.utc),",
+        "detail": "backend.src.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentBase",
+        "kind": 6,
+        "importPath": "backend.src.schemas.document",
+        "description": "backend.src.schemas.document",
+        "peekOfCode": "class DocumentBase(BaseModel):\n    filename: str\n    file_path: str\n    file_type: str\n    categorie: str\nclass DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "detail": "backend.src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentOut",
+        "kind": 6,
+        "importPath": "backend.src.schemas.document",
+        "description": "backend.src.schemas.document",
+        "peekOfCode": "class DocumentOut(DocumentBase):\n    id: UUID \n    upload_at: datetime\nclass DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "detail": "backend.src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "DocumentIn",
+        "kind": 6,
+        "importPath": "backend.src.schemas.document",
+        "description": "backend.src.schemas.document",
+        "peekOfCode": "class DocumentIn(DocumentBase):\n    upload_at: Optional[datetime] = None",
+        "detail": "backend.src.schemas.document",
+        "documentation": {}
+    },
+    {
+        "label": "UserBase",
+        "kind": 6,
+        "importPath": "backend.src.schemas.user",
+        "description": "backend.src.schemas.user",
+        "peekOfCode": "class UserBase(BaseModel):\n    nom: str\n    prenom: str\n    email: str\n    password: str\n    classe: str\nclass UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass",
+        "detail": "backend.src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserUpdate",
+        "kind": 6,
+        "importPath": "backend.src.schemas.user",
+        "description": "backend.src.schemas.user",
+        "peekOfCode": "class UserUpdate(UserBase):\n    pass\nclass UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str",
+        "detail": "backend.src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "kind": 6,
+        "importPath": "backend.src.schemas.user",
+        "description": "backend.src.schemas.user",
+        "peekOfCode": "class UserCreate(UserBase):\n    pass\nclass UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
+        "detail": "backend.src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserOut",
+        "kind": 6,
+        "importPath": "backend.src.schemas.user",
+        "description": "backend.src.schemas.user",
+        "peekOfCode": "class UserOut(BaseModel):\n    id: uuid\n    nom: str\n    prenom: str\n    email: str\n    password_hash: str\n    created_at: datetime\n    updated_at: datetime",
+        "detail": "backend.src.schemas.user",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "backend.main",
+        "description": "backend.main",
+        "peekOfCode": "app = FastAPI(lifespan=life_span)",
+        "detail": "backend.main",
+        "documentation": {}
+    }
+]
