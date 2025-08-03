@@ -31,17 +31,36 @@ class SQLiteService {
       CREATE TABLE IF NOT EXISTS user (
         id TEXT PRIMARY KEY,
         user_name TEXT,
-        email TEXT
+        email TEXT,
+        classe TEXT,
+        number_contribution INT
       );
     ''');
 
     return instance;
   }
 
+  void updateUser(String classe, String userName) {
+    final stmt = db.prepare('UPDATE user SET user_name = ?, classe = ?;');
+    try {
+      stmt.execute([userName, classe]);
+    } finally {
+      stmt.dispose(); // toujours fermer le statement
+    }
+  }
+
+  void updateNumberContribution(int numberContribution) {
+    final stmt = db.prepare('UPDATE user SET number_contribution = ?;');
+    try {
+      stmt.execute([numberContribution]);
+    } finally {
+      stmt.dispose(); // toujours fermer le statement
+    }
+  }
+
   Future<void> insertAllDoc(List<Document> data) async {
- 
     // final data = await document_service.fetchDocuments();
-      //  deleteAlldoc();
+    //  deleteAlldoc();
 
     for (var doc in data) {
       db.execute(
@@ -80,7 +99,6 @@ class SQLiteService {
         .toList();
   }
 
-  // Todo add .first
   Map<String, dynamic>? getUser() {
     final result = db.select("SELECT * FROM user");
 
@@ -93,7 +111,8 @@ class SQLiteService {
           (row) => {
             'id': row['id'],
             'user_name': row['user_name'],
-            'email': row['email'],
+            'number_contribution': row['number_contribution'],
+            'classe': row["classe"],
           },
         )
         .first;
@@ -119,10 +138,15 @@ class SQLiteService {
     deleteAllUsers();
     db.execute(
       '''
-      INSERT OR REPLACE INTO user (id, user_name, email)
-      VALUES (?, ?, ?);
+      INSERT OR REPLACE INTO user (id, user_name, number_contribution, classe)
+      VALUES (?, ?, ?, ?);
       ''',
-      [user['id'], user['user_name'], user['email']],
+      [
+        user['id'],
+        user['user_name'],
+        user['number_contribution'] ?? 0,
+        user['classe'],
+      ],
     );
   }
 

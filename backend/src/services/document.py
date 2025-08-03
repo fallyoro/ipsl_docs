@@ -8,7 +8,7 @@ from pathlib import Path
 
 class DocumentService:
     async def get_document_path(self, id: UUID, session: AsyncSession):
-        statement = select(Document.classe, Document.year, Document.subject,Document.categorie, Document.filename).where(Document.id == id)
+        statement = select(Document.classe, Document.year, Document.subject,Document.categorie, Document.filename).where(Document.id == id) # type: ignore
         result = await session.exec(statement)
         row = result.first()
         if row:
@@ -26,6 +26,8 @@ class DocumentService:
         statement = select(Document)
         result = await session.exec(statement)
         return result.all()
+    
+    
 
     async def upload_doc(self, session: AsyncSession, doc_data: DocumentIn):
         doc_data_dict = doc_data.model_dump()

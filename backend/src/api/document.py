@@ -1,15 +1,15 @@
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Depends,  status
-from pathlib import Path as FilePath
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.database.database import create_session
 from typing import List
 from src.services.document import DocumentService
 from fastapi.responses import FileResponse
 import shutil
-import os
 from pathlib import Path
 from src.schemas.document import DocumentDownload, DocumentIn, DocumentOut
 from uuid import UUID
+
+from src.services.user import UserService
 
 service = DocumentService()
 doc_router = APIRouter()
@@ -25,12 +25,13 @@ async def get_all_documents( session: AsyncSession = Depends(create_session)):
 
 
 
+
 @doc_router.post("/upload")
 async def upload_doc(
     filename: str = Form(...),
     classe: str = Form(...),
     subject: str = Form(...),
-    year: int  = Form(...),
+    year: str  = Form(...),
     categorie: str = Form(...),
     user_id: str = Form(...),
     doc: UploadFile = File(...),
@@ -43,7 +44,7 @@ async def upload_doc(
         classe=classe,
         categorie=categorie,
         subject=subject,
-        user_id=user_id
+        user_id=user_id # type: ignore
     )
     
 
@@ -69,13 +70,14 @@ async def upload_doc(
     with open(complete_path, "wb") as buffer:
         shutil.copyfileobj(doc.file, buffer)
         
-
-
+    user_service = UserService()
+    number_contribution =  await user_service.get_number_contribution(session=session,user_id= UUID(user_id))
 
     return {
         "filename": document.filename,
         "id": document.id,
-        "path": str(complete_path)
+        "path": str(complete_path),
+        'number_contribution': number_contribution
     }
 
 

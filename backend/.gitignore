@@ -1,2 +1,4 @@
 *.env
 documents/
+.conda/
+__pycahe__/

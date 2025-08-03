@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ipsl_docs/core/constant.dart';
+import 'package:ipsl_docs/core/Responsive.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
@@ -12,6 +12,7 @@ class Search extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isMobileDivice = Responsive.isMobileDevice(context);
     return SearchAnchor.bar(
       constraints: BoxConstraints(maxWidth: 600, minHeight: 55),
       suggestionsBuilder: (context, controller) {
@@ -42,16 +43,24 @@ class Search extends StatelessWidget {
                 );
                 return;
               }
+              final ext = getFileExtension(doc.filename);
+              if (ext == 'wxmx' && isMobileDivice) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Veillez ouvrir ce fichier avec votre pc"),
+                  ),
+                );
+                return;
+              }
               await OpenFile.open(docPath);
+              // docsFilter
+              // Navigator.push(context, PageTransition(type: PageTransitionType.bottomToTop, child: DocumentListView(documents: documents)))
             },
           );
         });
       },
-      barBackgroundColor: WidgetStateProperty.all(
-        Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkSecondarySystemBackground
-            : Colors.white,
-      ),
+      barBackgroundColor: WidgetStateProperty.all(Colors.white),
       barElevation: WidgetStateProperty.all(0.5),
       barHintText: "Chercher",
     );

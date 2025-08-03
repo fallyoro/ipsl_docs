@@ -23,7 +23,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKeyLog = GlobalKey<FormState>();
-  TextEditingController emailController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isLoding = false;
   bool _obscurePassword = false;
@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Bienvenue sur Ipsl Docs",
+                    "Se connecter",
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 36,
@@ -61,20 +61,20 @@ class _LoginPageState extends State<LoginPage> {
                       spacing: 30,
                       children: [
                         TextFormField(
-                          controller: emailController,
+                          controller: userNameController,
 
                           validator:
                               (value) =>
                                   value == null || value.isEmpty
-                                      ? 'Veuillez entrer votre email'
+                                      ? 'Veuillez entrer votre nom utilisateur'
                                       : null,
                           decoration: InputDecoration(
-                            labelText: "Email",
+                            labelText: "Nom d'utilisateur",
                             filled: true,
                             fillColor:
                                 isDark
                                     ? AppColors.darkSystemBackground
-                                    : AppColors.lightSystemBackground,
+                                    : AppColors.lightSecondarySystemBackground,
 
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                             fillColor:
                                 isDark
                                     ? AppColors.darkSystemBackground
-                                    : AppColors.lightSystemBackground,
+                                    : AppColors.lightSecondarySystemBackground,
                             labelText: "Mot de passe",
                             suffixIcon: IconButton(
                               icon:
@@ -176,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Bienvenue sur Ipsl Docs",
+                      "Se connecter",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 36,
@@ -190,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         children: [
                           TextFormField(
-                            controller: emailController,
+                            controller: userNameController,
 
                             validator:
                                 (value) =>
@@ -284,7 +284,7 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() => isLoding = true);
     final userInfo = await auth.login(
-      emailController.text,
+      userNameController.text,
       passwordController.text,
     );
     if (!context.mounted) return; // essentiel avant de setState/post-await
@@ -307,7 +307,8 @@ class _LoginPageState extends State<LoginPage> {
     final user = User(
       id: userInfo['id'],
       userName: userInfo['user_name'],
-      email: userInfo['email'],
+      classe: userInfo['classe'],
+      numberContribution: int.tryParse(userInfo['number_contribution'])!,
     );
     await StorageService.setBool("isLoged", true);
     userViewModel.addUser(user);

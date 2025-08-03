@@ -27,8 +27,8 @@ class _CardFolderState extends State<CardFolder> {
     if (widget.isDark) {
       backgroundColor =
           isHover
-              ? AppColors.darkSecondarySystemBackground
-              : AppColors.darkSystemBackground;
+              ? AppColors.darkSystemBackground
+              : AppColors.darkSecondarySystemBackground;
     } else {
       backgroundColor =
           isHover
@@ -46,17 +46,17 @@ class _CardFolderState extends State<CardFolder> {
         child: Column(
           spacing: 3,
           mainAxisAlignment: MainAxisAlignment.center,
-
           children: [
             Icon(FontAwesomeIcons.solidFolder, size: 75, color: Colors.amber),
 
             Text(
               widget.folder,
               textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
 
-                fontSize: widget.screenWidth < 600 ? 14 : 20,
+                fontSize: widget.screenWidth < 600 ? 14 : 14,
               ),
             ),
           ],

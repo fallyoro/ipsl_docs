@@ -1,30 +1,60 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:ipsl_docs/services/token_service.dart';
+
+class UserService {
+  Dio dio;
+  UserService({required this.dio});
+
+  Future<Map<String, dynamic>> editProfile(
+    String classe,
+    String userName,
+    String newUserName
+  ) async {
+    try {
+      final response = await dio.put(
+        "edit-profile",
+        data: jsonEncode({
+          'user_name': userName,
+          'new_user_name': newUserName,
+          "classe": classe,
+        }),
+      );
+      return {
+        'user_name': response.data['user_name'],
+        'classe': response.data['classe'],
+      };
+    } catch (e) {
+      return {"error": "Erreur inconnue : $e"};
+    }
+  }
+}
 
 class AuthService {
   Dio dio;
-  TokenService tokens;
 
-  AuthService({required this.dio, required this.tokens});
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  AuthService({required this.dio});
+
+  Future<Map<String, dynamic>> login(String userName, String password) async {
     try {
       final response = await dio.post(
         "/login",
-        data: jsonEncode({'email': email, 'password': password}),
+        data: jsonEncode({'user_name': userName, 'password': password}),
       );
 
-      // Si on arrive ici, c’est forcément un 200
+   /*
       await tokens.saveTokens(
         response.data['access_token'],
         response.data['refresh_token'],
       );
 
+      */
+
       return {
         'id': response.data['user']['id'],
         'user_name': response.data['user']['user_name'],
-        'email': response.data['user']['email'],
+        'number_contribution': response.data['user']['number_contribution'],
+        'classe': response.data['user']['classe'],
       };
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
@@ -39,7 +69,6 @@ class AuthService {
 
   Future<Map<String, dynamic>> signUp(
     String userName,
-    String email,
     String password,
     String classe,
   ) async {
@@ -48,7 +77,6 @@ class AuthService {
         "/sign-up",
         data: jsonEncode({
           'user_name': userName,
-          'email': email,
           'password': password,
           'classe': classe,
         }),
@@ -58,7 +86,7 @@ class AuthService {
         return {
           'id': resp.data['id'],
           'user_name': resp.data['user_name'],
-          'email': resp.data['email'],
+          'number_contribution': resp.data['number_contribution']
         };
       }
 
@@ -67,15 +95,7 @@ class AuthService {
       if (e.response?.statusCode == 401) {
         return {'error': e.response?.data['detail']};
       }
-      // Timeout, pas de connexion, etc.
-      /* if (e.type == DioExceptionType.connectionTimeout ||
-        e.type == DioExceptionType.receiveTimeout ||
-        e.type == DioExceptionType.sendTimeout ||
-        e.type == DioExceptionType.connectionError) {
-      throw Exception('Problème réseau, réessaye plus tard.');
-    }*/
-      // Autre erreur Dio
-      // throw Exception('Erreur API: ${e.message}');
+
       return {'error': 'Erreur API: ${e.message}'};
     } catch (e) {
       return {'error': 'Erreur inconnue: $e'};

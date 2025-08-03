@@ -1,17 +1,16 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/utils.dart';
-import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/services/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
+import 'package:ipsl_docs/view_models/user.dart';
 import 'package:ipsl_docs/views/home/widget/year_formater.dart';
-import 'package:ipsl_docs/widget_tree.dart';
+import 'package:ipsl_docs/views/widgets/linear_progress.dart';
 
 class UploadFormContent extends StatefulWidget {
   final VoidCallback onSuccess;
@@ -29,6 +28,7 @@ class _UploadFormContentState extends State<UploadFormContent> {
   final subjectController = TextEditingController();
   final yearMaskFormatter = YearInputFormatter(); // ton formatter custom
   final viewModel = GetIt.I<DocumentViewModel>();
+  final userViewModel = GetIt.I<UserViewModel>();
   final service = DocumentServive();
 
   String selectedClasse = 'Cpi1';
@@ -50,8 +50,15 @@ class _UploadFormContentState extends State<UploadFormContent> {
     'GeC2',
     'GeC3',
   ];
-  final categories = ['cour', 'tp', 'devoir', 'td', 'tutorat', 'utile'];
-  final documents = SQLiteService.instance.getDocuments();
+  final categories = [
+    'cour',
+    'travaux pratique',
+    'devoir',
+    'travaux dirige',
+    'tutorat',
+    'utile',
+    'rattrapage',
+  ];
 
   @override
   void dispose() {
@@ -86,23 +93,22 @@ class _UploadFormContentState extends State<UploadFormContent> {
       return;
     }
 
-    final user = SQLiteService.instance.getUser();
-    final idDocument = await service.uploadDocument(
+    final responseUpload = await service.uploadDocument(
       file: File(pickedFile!.path!),
       filename: filenameController.text,
       classe: selectedClasse,
       subject: subjectController.text,
       year: yearController.text,
       categorie: selectedCategory,
-      userId: user!['id'],
+      userId: userViewModel.userNotifier.value.id,
       onProgress: (received, total) {
         setState(() => progress = total > 0 ? received / total : 0);
       },
     );
 
     final doc = Document(
-      id: idDocument!,
-      idUploader: user['id'],
+      id: responseUpload!['id'],
+      idUploader: userViewModel.userNotifier.value.id,
       filename: filenameController.text,
       year: yearController.text,
       classe: selectedClasse,
@@ -111,11 +117,15 @@ class _UploadFormContentState extends State<UploadFormContent> {
     );
     viewModel.addDocument(doc);
 
+    final int numberContribution = responseUpload['number_contribution'];
+    userViewModel.updateNumberContribution(numberContribution);
+
     setState(() => isSending = false);
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
+    viewModel.loadDocuments();
 
     widget.onSuccess(); // ← déclenche la fermeture si besoin
   }
@@ -127,7 +137,6 @@ class _UploadFormContentState extends State<UploadFormContent> {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 15),
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(
@@ -139,11 +148,16 @@ class _UploadFormContentState extends State<UploadFormContent> {
               optionsBuilder: (TextEditingValue textEditingValue) {
                 final input = textEditingValue.text;
                 if (input.isEmpty) return const <String>[];
-                return documents
-                    .map((d) => d['subject'] as String)
-                    .where(
-                      (s) => s.toLowerCase().contains(input.toLowerCase()),
-                    );
+
+                List<String> subjects =
+                    viewModel.documents.value
+                        .map((e) => e.subject)
+                        .toSet()
+                        .toList();
+
+                return subjects.where(
+                  (s) => s.toLowerCase().contains(input.toLowerCase()),
+                );
               },
               fieldViewBuilder: (
                 context,
@@ -179,13 +193,13 @@ class _UploadFormContentState extends State<UploadFormContent> {
               inputFormatters: [yearMaskFormatter],
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                labelText: 'Année scolaire',
-                hintText: "Exemple 2024/2025",
+                labelText: 'Année universitaire',
+                hintText: "Exemple 2024-2025",
               ),
               validator: (value) {
-                final parts = value?.split('/') ?? [];
+                final parts = value?.split('-') ?? [];
                 if (value == null || value.isEmpty) return 'Champ requis';
-                if (!RegExp(r'^\d{4}/\d{4}$').hasMatch(value)) {
+                if (!RegExp(r'^\d{4}-\d{4}$').hasMatch(value)) {
                   return 'Format invalide';
                 }
                 if (int.parse(parts[1]) != int.parse(parts[0]) + 1) {
@@ -198,7 +212,7 @@ class _UploadFormContentState extends State<UploadFormContent> {
             Align(
               alignment: Alignment.bottomLeft,
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 200),
+                constraints: BoxConstraints(maxWidth: 262),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,18 +222,27 @@ class _UploadFormContentState extends State<UploadFormContent> {
                       children: [
                         const Text("Classe"),
                         const Spacer(),
-                        DropdownButton<String>(
-                          value: selectedClasse,
-                          items:
+                        DropdownMenu<String>(
+                          textAlign: TextAlign.end,
+                          inputDecorationTheme: InputDecorationTheme(
+                            border: InputBorder.none,
+                          ),
+
+                          initialSelection: selectedClasse,
+                          onSelected: (String? value) {
+                            setState(() {
+                              selectedClasse = value!;
+                            });
+                          },
+                          dropdownMenuEntries:
                               classes
                                   .map(
-                                    (c) => DropdownMenuItem(
+                                    (c) => DropdownMenuEntry<String>(
                                       value: c,
-                                      child: Text(c),
+                                      label: c,
                                     ),
                                   )
                                   .toList(),
-                          onChanged: (v) => setState(() => selectedClasse = v!),
                         ),
                       ],
                     ),
@@ -228,19 +251,27 @@ class _UploadFormContentState extends State<UploadFormContent> {
                       children: [
                         const Text("Catégorie"),
                         const Spacer(),
-                        DropdownButton<String>(
-                          value: selectedCategory,
-                          items:
+                        DropdownMenu<String>(
+                          width: 160,
+                          textAlign: TextAlign.end,
+                          inputDecorationTheme: InputDecorationTheme(
+                            border: InputBorder.none,
+                          ),
+                          initialSelection: selectedCategory,
+                          onSelected: (String? value) {
+                            setState(() {
+                              selectedCategory = value!;
+                            });
+                          },
+                          dropdownMenuEntries:
                               categories
                                   .map(
-                                    (c) => DropdownMenuItem(
+                                    (c) => DropdownMenuEntry<String>(
                                       value: c,
-                                      child: Text(c),
+                                      label: c,
                                     ),
                                   )
                                   .toList(),
-                          onChanged:
-                              (v) => setState(() => selectedCategory = v!),
                         ),
                       ],
                     ),
@@ -254,7 +285,6 @@ class _UploadFormContentState extends State<UploadFormContent> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
-                minimumSize: const Size(200, 40),
               ),
               onPressed: _pickFile,
               child: const Text(
@@ -268,7 +298,6 @@ class _UploadFormContentState extends State<UploadFormContent> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
-                minimumSize: const Size(200, 40),
               ),
               onPressed: () => _submit(context),
               child: const Text(

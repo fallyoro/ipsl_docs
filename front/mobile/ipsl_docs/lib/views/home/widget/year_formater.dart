@@ -7,7 +7,7 @@ class YearInputFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     // Enlever tous les '/' pour repartir sur du "propre"
-    String digitsOnly = newValue.text.replaceAll('/', '');
+    String digitsOnly = newValue.text.replaceAll('-', '');
 
     // Limiter à 8 chiffres max (4 + 4)
     if (digitsOnly.length > 8) {
@@ -22,9 +22,9 @@ class YearInputFormatter extends TextInputFormatter {
       String firstPart = digitsOnly.substring(0, 4);
       // Puis le reste (même si vide)
       String secondPart = digitsOnly.length > 4 ? digitsOnly.substring(4) : '';
-      formatted = '$firstPart/$secondPart';
+      formatted = '$firstPart-$secondPart';
     } else {
-      // Moins de 4 chiffres : pas de '/'
+      // Moins de 4 chiffres : pas de '-'
       formatted = digitsOnly;
     }
 

@@ -7,10 +7,9 @@ SliverAppBar CustomSliverAppBar(bool isDark2) {
     floating: true,
     snap: true,
     iconTheme: IconThemeData(color: Colors.white),
-    backgroundColor:
-        isDark2 ? AppColors.darkSystemBackground : AppColors.primaryColor,
+    backgroundColor: AppColors.primaryColor,
     title: Text(
-      "Hello",
+      "Ipsl Docs",
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 28,

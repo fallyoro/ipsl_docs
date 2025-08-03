@@ -20,7 +20,13 @@ class DocumentViewModel {
     documents.value.add(doc);
   }
 
+  void deleteAlldoc() {
+    _db.deleteAlldoc();
+  }
+
   List<String> getClasseFolders() {
     return documents.value.map((doc) => doc.classe).toSet().toList();
   }
+
+  
 }

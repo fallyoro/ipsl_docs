@@ -19,4 +19,4 @@ async def add_blacklist_jti(jti: str):
     
 async def is_black_list_jti(jti: str):
     key = f"blacklist:refresh:{jti}"
-    return await redis_client.exists(names=key)
+    return await redis_client.exists(names=key) # pyright: ignore[reportCallIssue]

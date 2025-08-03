@@ -11,6 +11,7 @@ import 'package:ipsl_docs/views/introduction/onboarding.dart';
 import 'package:ipsl_docs/widget_tree.dart';
 import 'package:path_provider/path_provider.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

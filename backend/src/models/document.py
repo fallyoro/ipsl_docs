@@ -11,7 +11,7 @@ from uuid import uuid4, UUID
 class Document(SQLModel, table = True):
     __tablename__ = "documents"
     id: UUID = Field(primary_key=True, default_factory=uuid4)
-    year: int 
+    year: str 
     filename: str
     subject: str
     categorie: str

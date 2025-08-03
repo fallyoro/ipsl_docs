@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+// import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
 allprojects {

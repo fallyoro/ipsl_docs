@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/core/Responsive.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/view_models/document.dart';
-import 'package:ipsl_docs/views/categorie_page.dart';
+import 'package:ipsl_docs/views/document_navigation.dart/categorie_page.dart';
 import 'package:ipsl_docs/views/home/widget/card_folder.dart';
 import 'package:ipsl_docs/views/widgets/folder_home.dart';
 import 'package:ipsl_docs/widget_tree.dart';
@@ -34,6 +35,7 @@ class _SubjectPageState extends State<SubjectPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobileDevice = Responsive.isMobileDevice(context);
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -69,7 +71,7 @@ class _SubjectPageState extends State<SubjectPage> {
       body: ValueListenableBuilder<List<Document>>(
         valueListenable: documentViewModel.documents,
         builder: (context, docs, _) {
-          final subjectFolder =
+          final subjectFolders =
               docs
                   .where((doc) {
                     return doc.classe == widget.classFolder &&
@@ -79,7 +81,121 @@ class _SubjectPageState extends State<SubjectPage> {
                   .toSet()
                   .toList();
 
-          return GridView.builder(
+          return isMobileDevice
+              ? builSubjectdFoldersOnMobile(
+                subjectFolders,
+                widget.classFolder,
+                screenWidth,
+                (subject) => CategoryPage(
+                  classFolder: widget.classFolder,
+                  subjectFolder: subject,
+                  yearFolder: widget.yearFolder,
+                ),
+              )
+              : builSubjectFoldersOnDesktop(
+                subjectFolders,
+                widget.classFolder,
+                screenWidth,
+                (subject) => CategoryPage(
+                  classFolder: widget.classFolder,
+                  subjectFolder: subject,
+                  yearFolder: widget.yearFolder,
+                ),
+              );
+        },
+      ),
+    );
+  }
+
+  GridView builSubjectdFoldersOnMobile(
+    List<String> folders,
+    String classe,
+    double screenWidth,
+    Widget Function(String subject) pageBuilder,
+  ) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+
+        crossAxisSpacing: 0,
+        mainAxisSpacing: 24,
+        childAspectRatio: 1.1,
+      ),
+      itemCount: folders.length,
+      itemBuilder: (context, index) {
+        final subject = folders[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: CategoryPage(
+                  classFolder: widget.classFolder,
+                  yearFolder: widget.yearFolder,
+                  subjectFolder: subject,
+                ),
+                duration: Duration(milliseconds: 10),
+              ),
+            );
+          },
+          child: CardFolder(
+            screenWidth: screenWidth,
+            folder: subject,
+            isDark: ThemeController.isDarkModeNotifier.value,
+          ),
+        );
+      },
+    );
+  }
+
+  GridView builSubjectFoldersOnDesktop(
+    List<String> folders,
+    String classe,
+    double screenWidth,
+    Widget Function(String subject) pageBuilder,
+  ) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 180,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 0,
+        childAspectRatio: 1.1,
+      ),
+      itemCount: folders.length,
+      itemBuilder: (context, index) {
+        final subject = folders[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: CategoryPage(
+                  classFolder: widget.classFolder,
+                  yearFolder: widget.yearFolder,
+                  subjectFolder: subject,
+                ),
+                duration: Duration(milliseconds: 10),
+              ),
+            );
+          },
+          child: CardFolder(
+            screenWidth: screenWidth,
+            folder: subject,
+            isDark: ThemeController.isDarkModeNotifier.value,
+          ),
+        );
+      },
+    );
+  }
+}
+
+
+/*
+GridView.builder(
             padding: const EdgeInsets.all(16),
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 250,
@@ -118,9 +234,4 @@ class _SubjectPageState extends State<SubjectPage> {
                 ),
               );
             },
-          );
-        },
-      ),
-    );
-  }
-}
+          );*/

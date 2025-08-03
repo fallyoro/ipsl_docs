@@ -8,11 +8,7 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
 
-List<Widget> pages = [
-  Home(),
-  const Profile(),
-  const Center(child: Text("Paramètres")),
-];
+List<Widget> pages = [Home(), const Profile()];
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
@@ -97,10 +93,6 @@ class _WidgetTreeState extends State<WidgetTree> {
                         icon: const Icon(FontAwesomeIcons.userLarge, size: 23),
                         title: const Text('Profil'),
                       ),
-                      SalomonBottomBarItem(
-                        icon: const Icon(FontAwesomeIcons.users, size: 23),
-                        title: const Text('Communauté'),
-                      ),
                     ],
                   )
                   : null,
@@ -108,28 +100,4 @@ class _WidgetTreeState extends State<WidgetTree> {
       },
     );
   }
-}
-
-Row customLinearProgressSending(double progress) {
-  return Row(
-    children: [
-      // Barre de progression
-      Expanded(
-        child: LinearProgressIndicator(
-          value: progress,
-          borderRadius: BorderRadius.circular(50),
-          minHeight: 6,
-          color: Colors.green,
-          backgroundColor: Colors.grey.shade300,
-        ),
-      ),
-      const SizedBox(width: 10),
-
-      // Pourcentage
-      Text(
-        '${(progress * 100).toStringAsFixed(0)}%',
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-      ),
-    ],
-  );
 }

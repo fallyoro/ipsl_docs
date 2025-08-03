@@ -15,6 +15,14 @@ class AppTheme {
 
         brightness: Brightness.light,
       ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          minimumSize: const Size(200, 40),
+          iconColor: Colors.white,
+          // textStyle: TextStyle(color: Colors.white),
+        ),
+      ),
 
       scaffoldBackgroundColor: AppColors.lightSystemBackground,
     );
@@ -22,12 +30,20 @@ class AppTheme {
 
   static ThemeData get darkTheme {
     return ThemeData(
-      appBarTheme: AppBarTheme(color: AppColors.darkSystemBackground),
+      appBarTheme: AppBarTheme(color: AppColors.darkSecondarySystemBackground),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          minimumSize: const Size(200, 40),
+          iconColor: Colors.white,
+          // textStyle: TextStyle(color: Colors.white),
+        ),
+      ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryColor,
         brightness: Brightness.dark,
       ),
-      scaffoldBackgroundColor: AppColors.darkSystemBackground,
+      scaffoldBackgroundColor: AppColors.darkSecondarySystemBackground,
     );
   }
 }

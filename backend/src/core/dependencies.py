@@ -12,7 +12,7 @@ class TokenBearer(HTTPBearer):
         super().__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request):
-        credentials: HTTPAuthorizationCredentials = await super().__call__(request)
+        credentials: HTTPAuthorizationCredentials = await super().__call__(request) # pyright: ignore[reportAssignmentType]
         token = credentials.credentials
 
         token_data = decode_token(token)
@@ -30,7 +30,7 @@ class TokenBearer(HTTPBearer):
         return token_data
     
     def verify_token_data(self, token_data: dict):
-        raise NotImplemented('Please overide this methode')
+        raise NotImplemented('Please overide this methode') # type: ignore
 
 
 class AccesTokenBearer(TokenBearer):

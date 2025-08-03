@@ -9,14 +9,15 @@ Future<void> setupDependencies() async {
   final bool isConnected = await isConnectedToInternet();
   final sqlite = await SQLiteService.init();
   if (isConnected) {
-    // await sqlite.insertAllDoc();
+    //  await sqlite.insertAllDoc();
   }
 
   final documentViewModel = DocumentViewModel(sqlite);
-   await documentViewModel.loadDocuments();
+  // documentViewModel.deleteAlldoc();
+  await documentViewModel.loadDocuments();
 
   final userViewModel = UserViewModel(sqlite);
-
+  userViewModel.getUser();
   getIt.registerSingleton<DocumentViewModel>(documentViewModel);
   getIt.registerSingleton<UserViewModel>(userViewModel);
 }

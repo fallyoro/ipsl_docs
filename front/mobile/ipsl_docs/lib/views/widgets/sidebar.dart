@@ -48,15 +48,6 @@ class SideBar extends StatelessWidget {
                         : SidebarItemStatus.inactive,
                 onTap: () => onItemSelected(1),
               ),
-              SideBarCategoryItem2(
-                icon: FontAwesomeIcons.gear,
-                title: 'Parametre',
-                status:
-                    selectedIndex == 2
-                        ? SidebarItemStatus.active
-                        : SidebarItemStatus.inactive,
-                onTap: () => onItemSelected(2),
-              ),
             ],
           ),
         ],

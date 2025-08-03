@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/core/Responsive.dart';
+import 'package:ipsl_docs/core/constant.dart';
+import 'package:ipsl_docs/view_models/user.dart';
+import 'package:ipsl_docs/views/edit_profile_page.dart';
+import 'package:page_transition/page_transition.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -8,46 +15,183 @@ class Profile extends StatefulWidget {
 }
 
 class _HomeState extends State<Profile> {
+  late final UserViewModel userViewModel;
+  late String userName;
+  late String userClass;
+  bool _hasFetched = false;
   @override
-  Widget build(BuildContext context) {
-    return Center(child: Text("Profile"));
+  void initState() {
+    super.initState();
+
+    userViewModel = GetIt.I<UserViewModel>();
+
+    userName = userViewModel.userNotifier.value.userName;
+    userClass = userViewModel.userNotifier.value.classe;
+
+    _hasFetched = true;
   }
-}
-
-class Description extends StatelessWidget {
-  final String name;
-  final int value;
-  const Description({super.key, required this.name, required this.value});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          value.toString(),
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isMobileDevice = Responsive.isMobileDevice(context);
+
+    return Scaffold(
+      backgroundColor:
+          isDark
+              ? AppColors.darkSecondarySystemBackground
+              : AppColors.lightSecondarySystemBackground,
+      // The constrainedBox make the second container visible
+      body: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height,
         ),
-        Text(name),
+        child: Stack(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 280,
+              padding: EdgeInsets.only(
+                bottom: 44,
+                left: 20,
+                right: 20,
+                top: 50,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(20),
+                ),
+                color: AppColors.primaryColor,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.person_outline, size: 100, color: Colors.white),
 
-        // Trait vertical
-      ],
-    );
-  }
-}
+                  // SizedBox(height: 20),
+                  ValueListenableBuilder(
+                    valueListenable: userViewModel.userNotifier,
+                    builder: (context, value, child) {
+                      return Text(
+                        value.userName,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 35,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                      /*    Text(
+                    userClass,
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),*/
+                    },
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: userViewModel.userNotifier,
+                    builder: (context, value, child) {
+                      return Text(
+                        value.classe,
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
 
-class ProfileMenu extends StatelessWidget {
-  const ProfileMenu({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(400),
-          child: Image.asset("assets/images/icon.png"),
+            Positioned(
+              top: 245,
+              left: 0,
+              right: 0,
+              // bottom: 0,
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  // Center what inside
+                  alignment: Alignment.center,
+                  width: 330,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Contribution",
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      ValueListenableBuilder(
+                        valueListenable: userViewModel.userNotifier,
+                        builder: (context, value, child) {
+                          return Text(
+                            value.numberContribution.toString(),
+                            style: TextStyle(
+                              fontSize: 50,
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            isMobileDevice
+                ? Positioned(
+                  top: 515,
+                  left: 0,
+                  right: 0,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 300),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 45),
+                            // maximumSize: const Size(200, 45),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.bottomToTop,
+                                child: EditProfilePage(
+                                  userName: userName,
+                                  userClass: userClass,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            spacing: 10,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(FontAwesomeIcons.pen),
+                              Text(
+                                "Modifier le profil",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+                : Container(),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

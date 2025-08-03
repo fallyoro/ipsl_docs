@@ -10,9 +10,8 @@ import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/home/widget/appbar.dart';
 import 'package:ipsl_docs/views/home/widget/bottom_sheet.dart';
-import 'package:ipsl_docs/views/home/widget/navigation_drawer.dart';
 import 'package:ipsl_docs/views/home/widget/upload_form_document.dart';
-import 'package:ipsl_docs/views/year_folder_page.dart';
+import 'package:ipsl_docs/views/document_navigation.dart/year_folder_page.dart';
 import 'package:ipsl_docs/views/home/widget/search.dart';
 import 'package:ipsl_docs/views/home/widget/card_folder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -39,12 +38,9 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     userViewModel = GetIt.instance<UserViewModel>();
+    userViewModel.getUser();
     documentViewModel = GetIt.I<DocumentViewModel>();
-    var userData = SQLiteService.instance.getUser();
-    String userNameq = userData!['user_name'];
-    setState(() {
-      userName = userNameq;
-    });
+    userName = userViewModel.userNotifier.value.userName;
     _fetchDocuments();
   }
 
@@ -54,22 +50,27 @@ class _HomeState extends State<Home> {
       if (isConnected & !_hasFetched) {
         final data = await document_service.fetchDocuments();
         _hasFetched = true;
+
+        SQLiteService.instance.deleteAlldoc();
         SQLiteService.instance.insertAllDoc(data);
         documentViewModel.loadDocuments();
       }
     } catch (e) {
       errorMessage = 'Erreur lors du chargement : $e';
     }
+    _hasFetched = false;
   }
 
   @override
   Widget build(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
+    final isMobileDevice = Responsive.isMobileDevice(context);
     final isDestop = Responsive.isDesktop(context);
     final isTablet = Responsive.isTablet(context);
     double screenWidth = MediaQuery.of(context).size.width;
 
     final documentsList = documentViewModel.documents.value;
+    // final documentClass = documentsList.map((d) => d.classe).toSet().toList();
 
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     if (isLoading) {
@@ -79,7 +80,10 @@ class _HomeState extends State<Home> {
     return ValueListenableBuilder<List<Document>>(
       valueListenable: documentViewModel.documents,
       builder: (context, docs, _) {
-        final classe =
+        final documentClass =
+            docs.map((d) => d.classe).toSet().toList()
+              ..sort((a, b) => a.compareTo(b));
+        final classes =
             documentViewModel.getClasseFolders()
               ..sort((a, b) => a.compareTo(b));
 
@@ -94,11 +98,7 @@ class _HomeState extends State<Home> {
             },
             child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
           ),
-          backgroundColor:
-              Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkSystemBackground
-                  : AppColors.primaryColor,
-          drawer: (isMobile) ? buildDrawer() : null,
+          backgroundColor: AppColors.primaryColor,
 
           body: SafeArea(
             child: CustomScrollView(
@@ -115,41 +115,44 @@ class _HomeState extends State<Home> {
                       builder: (context, isDark, child) {
                         return Stack(
                           children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                bottom: 90,
-                                left: 20,
-                                right: 20,
-                              ),
-                              color:
-                                  isDark
-                                      ? AppColors.darkSystemBackground
-                                      : AppColors.primaryColor,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text.rich(
-                                    TextSpan(
-                                      text: 'Bienvenue 👋, ',
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        color: Colors.white,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: userName,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                            ValueListenableBuilder(
+                              valueListenable: userViewModel.userNotifier,
+                              builder: (context, user, child) {
+                                return Container(
+                                  padding: EdgeInsets.only(
+                                    bottom: 90,
+                                    left: 20,
+                                    right: 20,
                                   ),
-                                  SizedBox(height: 20),
-                                  Search(documents: documentsList),
-                                ],
-                              ),
+                                  color: AppColors.primaryColor,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text.rich(
+                                        TextSpan(
+                                          text: 'Bienvenue 👋, ',
+                                          style: TextStyle(
+                                            fontSize: 22,
+                                            color: Colors.white,
+                                          ),
+                                          children: [
+                                            TextSpan(
+                                              text: user.userName,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 20),
+                                      Search(documents: documentsList),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
 
                             Positioned(
@@ -161,13 +164,26 @@ class _HomeState extends State<Home> {
                                 decoration: BoxDecoration(
                                   color:
                                       isDark
-                                          ? AppColors.darkSystemBackground
+                                          ? AppColors
+                                              .darkSecondarySystemBackground
                                           : AppColors.lightSystemBackground,
                                   borderRadius: BorderRadius.vertical(
                                     top: Radius.circular(18),
                                   ),
                                 ),
-                                child: builFolders(classe, screenWidth),
+                                child:
+                                    isMobileDevice
+                                        ? buildFoldersOnMobile(
+                                          classes,
+                                          screenWidth,
+                                          (classe) => YearPage(classe: classe),
+                                        )
+                                        : builFoldersOnDesktop(
+                                          documentClass,
+                                          documentsList,
+                                          screenWidth,
+                                          (classe) => YearPage(classe: classe),
+                                        ),
                               ),
                             ),
                           ],
@@ -189,6 +205,10 @@ class _HomeState extends State<Home> {
       context: context,
       builder:
           (context) => AlertDialog(
+            backgroundColor:
+                Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkSecondarySystemBackground
+                    : Colors.white,
             title: const Text("Uploader un document"),
             content: SingleChildScrollView(
               child: UploadFormContent(onSuccess: () => Navigator.pop(context)),
@@ -197,7 +217,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  GridView builFolders(List<String> folders, double screenWidth) {
+  GridView buildFoldersOnMobile(
+    List<String> folders,
+    // List<Document> documents,
+    double screenWidth,
+    Widget Function(String folder) pageBuilder,
+  ) {
     return GridView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -218,12 +243,11 @@ class _HomeState extends State<Home> {
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
-                child: YearPage(classe: folder),
+                child: pageBuilder(folder),
                 duration: Duration(milliseconds: 210),
               ),
             );
           },
-
           child: ValueListenableBuilder(
             valueListenable: ThemeController.isDarkModeNotifier,
             builder: (context, isDark, child) {
@@ -240,43 +264,49 @@ class _HomeState extends State<Home> {
   }
 }
 
-/* GridView builFolders(List<String> folders, double screenWidth) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(0),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 280,
+GridView builFoldersOnDesktop(
+  List<String> folders,
+  List<Document> documents,
+  double screenWidth,
+  Widget Function(String folder) pageBuilder,
+) {
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: NeverScrollableScrollPhysics(),
+    padding: const EdgeInsets.all(0),
+    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+      maxCrossAxisExtent: 180,
 
-        crossAxisSpacing: 0,
-        mainAxisSpacing: 0,
-        childAspectRatio: 1.1,
-      ),
-      itemCount: folders.length,
-      itemBuilder: (context, index) {
-        final folder = folders[index];
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.rightToLeft,
-                child: YearPage(classe: folder),
-              ),
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 10,
+      childAspectRatio: 1.1,
+    ),
+    itemCount: folders.length,
+    itemBuilder: (context, index) {
+      final folder = folders[index];
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.bottomToTop,
+              child: pageBuilder(folder),
+              duration: Duration(milliseconds: 200),
+            ),
+          );
+        },
+
+        child: ValueListenableBuilder(
+          valueListenable: ThemeController.isDarkModeNotifier,
+          builder: (context, isDark, child) {
+            return CardFolder(
+              screenWidth: screenWidth,
+              folder: folder,
+              isDark: isDark,
             );
           },
-
-          child: ValueListenableBuilder(
-            valueListenable: ThemeController.isDarkModeNotifier,
-            builder: (context, isDark, child) {
-              return CardFolder(
-                screenWidth: screenWidth,
-                folder: folder,
-                isDark: isDark,
-              );
-            },
-          ),
-        );
-      },
-    );
-  }*/
+        ),
+      );
+    },
+  );
+}

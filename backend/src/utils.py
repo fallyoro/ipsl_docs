@@ -2,17 +2,17 @@ from passlib.context import CryptContext
 import datetime
 from src.core.config import settings
 import jwt
-
 from datetime import datetime, timedelta
 from uuid import uuid4
 import logging
+
 
 passwd_context = CryptContext(schemes=['bcrypt'])
 
 ACCES_TOKEN_EXPIRY = 3600
 
 
-def generate_passord_hash(password: str):
+def generate_passord_hash(password: str) -> str:
     hash = passwd_context.hash(password)
     return hash
 
@@ -21,18 +21,20 @@ def verify_password(password: str, hash: str) -> bool:
     return passwd_context.verify(secret=password, hash=hash)
 
 
-def create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False): # type: ignore
+def create_acess_token(user_data: dict, expiry: timedelta = None, refresh: bool = False) -> str:  # type: ignore
     payload = {}
     payload['user'] = user_data
     payload["exp"] = datetime.now() + (expiry or timedelta(seconds=ACCES_TOKEN_EXPIRY))
+
+    
+    payload['jti'] = str(uuid4())
+    payload['refresh'] = refresh
 
     token = jwt.encode(
         payload=payload,
         key=settings.JWT_SECRET,
         algorithm=settings.JWT_ALGO
     )
-    payload['jti'] = str(uuid4())
-    payload['refresh'] = refresh
 
     return token
 
@@ -48,3 +50,4 @@ def decode_token(token: str):
         logging.exception(e)
         return None
         
+

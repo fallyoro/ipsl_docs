@@ -72,7 +72,7 @@ class DocumentServive {
     }
   }
 
-  Future<String?> uploadDocument({
+  Future<Map<String, dynamic>?> uploadDocument({
     required File file,
     required String filename,
     required String classe,
@@ -107,7 +107,11 @@ class DocumentServive {
       if (response.statusCode == 200 && response.data is Map) {
         final data = response.data as Map<String, dynamic>;
         logInfo('Success: ${response.data}');
-        return data['id']?.toString();
+        return {
+          'id': data['id']?.toString(),
+          'number_contribution': data['number_contribution'],
+        };
+        // return data['id']?.toString();
       } else {
         logInfo('Erreur ${response.statusCode}: ${response.data}');
         return null;
