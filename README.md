@@ -29,10 +29,12 @@ Ipls_docs est une **application Flutter** que j'ai pour l’Institut Polytechniq
 
 
 ### 1. 👤 Pour les utilisateurs (installation simple)
-- [Linux AppImage](https://github.com/fallyoro/ipsl_docs/front/mobile/ipsl_docs/apps/ipsl_docs)  
+- [Linux AppImage](https://github.com/fallyoro/ipsl_docs/blob/main/front/mobile/ipsl_docs/apps/ipsl_docs?raw=true
+)  
 - [Android APK 64 bits](https://github.com/fallyoro/ipsl_docs/blob/main/front/mobile/ipsl_docs/apps/app-arm64-v8a-release.apk?raw=true
 )
-- [Android APK 32 bits](https://github.com/fallyoro/ipsl_docs/front/mobile/ipsl_docs/apps/app-armeabi-v7a-release.apk)  
+- [Android APK 32 bits](https://github.com/fallyoro/ipsl_docs/blob/main/front/mobile/ipsl_docs/apps/app-armeabi-v7a-release.apk?raw=true
+)  
 
 
 #### Linux (AppImage)
