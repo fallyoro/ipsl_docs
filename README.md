@@ -29,7 +29,7 @@ Ipls_docs est une **application Flutter** que j'ai pour l’Institut Polytechniq
 
 
 ### 1. 👤 Pour les utilisateurs (installation simple)
-- [Linux AppImage](https://github.com/fallyoro/ipsl_docs/blob/main/front/mobile/ipsl_docs/apps/ipsl_docs?raw=true
+- [Linux AppImage](https://github.com/fallyoro/ipsl_docs/blob/main/front/mobile/ipsl_docs/apps/ipsl_docs.zip?raw=true
 )  
 - [Android APK 64 bits](https://github.com/fallyoro/ipsl_docs/blob/main/front/mobile/ipsl_docs/apps/app-arm64-v8a-release.apk?raw=true
 )
@@ -39,12 +39,18 @@ Ipls_docs est une **application Flutter** que j'ai pour l’Institut Polytechniq
 
 #### Linux (AppImage)
 1. Télécharge le fichier `.AppImage`.
-2. Rends-le exécutable :
+2. Decompresse le fichier
+   ```bash
+   unzip ipsl_docs.zip
+4. Entre dans le dossier ipsl_docs :
+   ```bash
+   cd ipsl_docs
+5. Rend le programme executable :
    ```bash
    chmod +x ipsl_docs
-3. Double-clique dessus ou lance :
+6. Lance ipsl_docs
    ```bash
-     ./ipsl_docs
+   ./ipsl_docs
 
 
 
