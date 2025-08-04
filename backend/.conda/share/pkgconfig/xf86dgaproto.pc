@@ -1,7 +1,0 @@
-prefix=/home/yoro/Documents/PROJECT/IPSL_DOCS/backend/.conda
-includedir=${prefix}/include
- 
-Name: XF86DGAProto
-Description: XF86DGA extension headers
-Version: 2.1
-Cflags: -I${includedir}

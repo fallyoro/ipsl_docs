@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+front/mobile/.idea
 build/
 develop-eggs/
 dist/

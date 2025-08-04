@@ -1,7 +1,0 @@
-prefix=/home/yoro/Documents/PROJECT/IPSL_DOCS/backend/.conda
-includedir=${prefix}/include
-
-Name: XwaylandProto
-Description: Xwayland extension headers
-Version: 1.0
-Cflags: -I${includedir}
