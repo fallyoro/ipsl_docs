@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Document {
   final String id;
   final String idUploader;
@@ -7,8 +9,8 @@ class Document {
   final String subject;
   final String classe;
   final bool isLoding;
-  bool isDownloading;
-  double progress;
+  final ValueNotifier<bool> isDownloading = ValueNotifier(false);
+  final ValueNotifier<double> progress = ValueNotifier(0.0);
 
   Document({
     required this.id,
@@ -19,8 +21,7 @@ class Document {
     required this.subject,
     required this.categorie,
     this.isLoding = false,
-    this.isDownloading = false,
-    this.progress = 0,
+ 
   });
 
   factory Document.fromJson(Map<String, dynamic> json) => Document(

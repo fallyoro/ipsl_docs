@@ -115,7 +115,7 @@ class _CategoryPageState extends State<CategoryPage> {
         crossAxisCount: 3,
         crossAxisSpacing: 0,
         mainAxisSpacing: 24,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1,
       ),
       itemCount: categoryFolders.length,
       itemBuilder: (context, index) {
@@ -164,8 +164,8 @@ class _CategoryPageState extends State<CategoryPage> {
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 180,
         crossAxisSpacing: 20,
-        mainAxisSpacing: 0,
-        childAspectRatio: 1.1,
+        mainAxisSpacing: 20,
+        childAspectRatio: 1,
       ),
       itemCount: categoryFolders.length,
       itemBuilder: (context, index) {
@@ -198,49 +198,3 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 }
-
-
-/*
-GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 250,
-
-              crossAxisSpacing: 24,
-              mainAxisSpacing: 24,
-              childAspectRatio: 1.1,
-            ),
-            itemCount: categoryFolder.length,
-            itemBuilder: (context, index) {
-              final folder = categoryFolder[index];
-              final documents =
-                  docs.where((doc) {
-                    return doc.classe == widget.classFolder &&
-                        doc.year == widget.yearFolder &&
-                        doc.subject == widget.subjectFolder &&
-                        doc.categorie == folder;
-                  }).toList();
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.rightToLeft,
-                      child: DocumentListView(documents: documents),
-                      duration: Duration(milliseconds: 210),
-                    ),
-                  );
-                },
-                child: ValueListenableBuilder(
-                  valueListenable: ThemeController.isDarkModeNotifier,
-                  builder: (context, isDark, child) {
-                    return CardFolder(
-                      screenWidth: screenWidth,
-                      folder: folder,
-                      isDark: ThemeController.isDarkModeNotifier.value,
-                    );
-                  },
-                ),
-              );
-            },
-          );*/

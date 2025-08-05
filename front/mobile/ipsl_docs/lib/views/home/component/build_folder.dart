@@ -18,7 +18,7 @@ GridView buildFoldersOnMobile(
 
       crossAxisSpacing: 0,
       mainAxisSpacing: 24,
-      childAspectRatio: 1.1,
+      childAspectRatio: 1,
     ),
     itemCount: folders.length,
     itemBuilder: (context, index) {
@@ -64,7 +64,7 @@ GridView builFoldersOnDesktop(
 
       crossAxisSpacing: 20,
       mainAxisSpacing: 0,
-      childAspectRatio: 1.1,
+      childAspectRatio: 1,
     ),
     itemCount: folders.length,
     itemBuilder: (context, index) {

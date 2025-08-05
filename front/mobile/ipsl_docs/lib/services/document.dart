@@ -53,7 +53,7 @@ class DocumentServive {
       await docDir.create(recursive: true);
     }
     final savePath = p.join(docDir.path, doc.filename);
-    logInfo("Where the do is supposed to be saved $savePath");
+    // logInfo("Where the do is supposed to be saved $savePath");
 
     try {
       await dio.download(

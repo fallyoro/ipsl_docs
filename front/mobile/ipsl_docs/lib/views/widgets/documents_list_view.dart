@@ -84,51 +84,44 @@ class _DocumentListViewState extends State<DocumentListView> {
         maxCrossAxisExtent: 250,
         crossAxisSpacing: 24,
         mainAxisSpacing: 24,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1,
       ),
       itemCount: widget.documents.length,
       itemBuilder: (context, index) {
         final doc = widget.documents[index];
 
         return GestureDetector(
-          onLongPress: () async {
-            String path = await getSavePath(doc);
-            File file = File(path);
-
-            if (await file.exists()) {
-              if (!context.mounted) return;
-              showDialog(
-                context: context,
-                builder:
-                    (context) => AlertDialog(
-                      title: Text("Supprimer ce fichier"),
-                      actions: [
-                        IconButton(
-                          onPressed: () {
-                            file.delete();
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(Icons.delete, color: Colors.red),
-                        ),
-                      ],
-                    ),
-              );
-            }
+          onSecondaryTapDown: (details) async {
+            await deleteFileIfExist(
+              context: context,
+              doc: doc,
+              onDeleted: () => setState(() {}),
+            );
           },
+          onLongPress: () async {
+            await deleteFileIfExist(
+              context: context,
+              doc: doc,
+              onDeleted: () => setState(() {}),
+            );
+          },
+
           onTap: () async {
+            final isMobileDevice = Responsive.isMobileDevice(context);
             final ext = getFileExtension(doc.filename);
-            if (ext == 'wxmx') {
+            if (ext == 'wxmx' && isMobileDevice) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text("Veillez ouvrir ce fichier avec votre pc"),
                 ),
               );
+              return;
             }
 
             String docPath = await getSavePath(doc);
             if (await isExistFile(docPath) == false) {
               final bool isConnected = await isConnectedToInternet();
-              if (isConnected == false) {
+              if (!isConnected) {
                 // doc.isDownloading = false;
                 if (!context.mounted || _isDisposed == true) return;
                 showNoConnectionMessage(context);
@@ -136,28 +129,26 @@ class _DocumentListViewState extends State<DocumentListView> {
               }
 
               try {
-                setState(() {
-                  doc.isDownloading = true;
-                });
+                // setState(() {
+                doc.isDownloading.value = true;
+                // });
                 await service.downloadFile(doc, (received, total) {
                   if (!mounted || _isDisposed == true) return;
-                  setState(() {
-                    doc.progress = total != -1 ? received / total : 0;
-                  });
+                  // setState(() {
+                  doc.progress.value = total != -1 ? received / total : 0;
+                  // });
                 });
               } catch (e) {
-                setState(() {
-                  doc.isDownloading = false;
-                });
+                doc.isDownloading.value = false;
+
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text('Serveur indisponible')));
               }
               if (!mounted || _isDisposed == true) return;
-              setState(() {
-                doc.isDownloading = false;
-              });
+
+              doc.isDownloading.value = false;
             }
 
             await OpenFile.open(docPath);
@@ -173,33 +164,39 @@ class _DocumentListViewState extends State<DocumentListView> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  doc.isDownloading
-                      ? customCircularProgress(doc)
-                      : FutureBuilder<Widget>(
-                        future: _buildDocumentPreview(doc),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const SizedBox(
-                              height: 100,
-                              width: 100,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            );
-                          } else if (snapshot.hasError || !snapshot.hasData) {
-                            logInfo(snapshot.error.toString());
-                            return const Icon(
-                              Icons.insert_drive_file,
-                              size: 64,
-                            );
-                          } else {
-                            return snapshot.data!;
-                          }
-                        },
-                      ),
+                  ValueListenableBuilder(
+                    valueListenable: doc.isDownloading,
+                    builder: (context, isDownloading, child) {
+                      return isDownloading
+                          ? customCircularProgress(doc)
+                          : FutureBuilder<Widget>(
+                            future: _buildDocumentPreview(doc),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const SizedBox(
+                                  height: 100,
+                                  width: 100,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                );
+                              } else if (snapshot.hasError ||
+                                  !snapshot.hasData) {
+                                logInfo(snapshot.error.toString());
+                                return const Icon(
+                                  Icons.insert_drive_file,
+                                  size: 64,
+                                );
+                              } else {
+                                return snapshot.data!;
+                              }
+                            },
+                          );
+                    },
+                  ),
                   const SizedBox(height: 8),
                   Container(
                     constraints: BoxConstraints(maxWidth: 130),
@@ -225,16 +222,26 @@ class _DocumentListViewState extends State<DocumentListView> {
         SizedBox(
           width: 48,
           height: 48,
-          child: CircularProgressIndicator(
-            value: doc.progress, // entre 0.0 et 1.0
+          child: ValueListenableBuilder(
+            valueListenable: doc.progress,
+            builder: (context, progress, child) {
+              return CircularProgressIndicator(
+                value: progress, // entre 0.0 et 1.0
 
-            strokeWidth: 4,
-            color: Colors.green,
+                strokeWidth: 4,
+                color: Colors.green,
+              );
+            },
           ),
         ),
-        Text(
-          '${(doc.progress * 100).toStringAsFixed(0)}%',
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        ValueListenableBuilder(
+          valueListenable: doc.progress,
+          builder: (context, progress, child) {
+            return Text(
+              '${(progress * 100).toStringAsFixed(0)}%',
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            );
+          },
         ),
       ],
     );
@@ -293,7 +300,6 @@ Future<Widget> _buildDocumentPreview(Document doc) async {
           double previewHeight = previewWidth * pageRatio;
 
           if (previewHeight > widgetSize.height) {
-            // Ajuste pour que la hauteur rentre dans le carré
             previewHeight = widgetSize.height;
             previewWidth = previewHeight / pageRatio;
           }
@@ -311,7 +317,7 @@ Future<Widget> _buildDocumentPreview(Document doc) async {
 
   // return Icon(Icons.insert_drive_file);
 
-  return Icon(Icons.badge);
+  return Icon(Icons.error);
 }
 
 Future<bool> isExistFile(String path) async {
@@ -320,124 +326,44 @@ Future<bool> isExistFile(String path) async {
   return await fichier.exists();
 }
 
-
-/*Future<bool> isPDF(String path) async {
-  final fichier = File(path);
-  if (!await fichier.exists()) return false;
-
-  final bytes = await fichier.openRead(0, 5).first;
-  final signature = utf8.decode(bytes);
-
-  return signature.startsWith('%PDF-');
+Future<void> showDeleteDialog({
+  required BuildContext context,
+  required File file,
+  required VoidCallback onDeleted,
+}) async {
+  return showDialog<void>(
+    context: context,
+    builder: (_) {
+      return AlertDialog(
+        title: const Text("Supprimer ce fichier"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: () async {
+              await file.delete();
+              onDeleted();
+              Navigator.of(context).pop();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      );
+    },
+  );
 }
 
-Future<bool> isPPTFile(String chemin) async {
-  final fichier = File(chemin);
-  if (!await fichier.exists()) return false;
+Future<void> deleteFileIfExist({
+  required BuildContext context,
+  required Document doc,
+  required VoidCallback onDeleted, // callback pour mettre à jour le widget
+}) async {
+  final path = await getSavePath(doc);
+  final file = File(path);
+  if (!await file.exists()) return;
+  if (!context.mounted) return;
 
-  final bytes = await fichier.openRead(0, 4).first;
-  final signature = utf8.decode(bytes, allowMalformed: true);
-
-  return signature.startsWith('PK'); 
-}*/
-
-
-/*
-  GridView buildDocumentGird() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 250,
-        crossAxisSpacing: 24,
-        mainAxisSpacing: 24,
-        childAspectRatio: 1.1,
-      ),
-      itemCount: widget.documents.length,
-      itemBuilder: (context, index) {
-        final doc = widget.documents[index];
-
-        return GestureDetector(
-          onTap: () async {
-            doc.isDownloading = true;
-            String docPath = await getSavePath(doc);
-            if (await isExistFile(docPath) == false) {
-              final bool isConnected = await isConnectedToInternet();
-              if (isConnected == false) {
-                doc.isDownloading = false;
-                if (!context.mounted || _isDisposed == true) return;
-                showNoConnectionMessage(context);
-                return;
-              }
-              doc.isDownloading = true;
-              try {
-                await service.downloadFile(doc, (received, total) {
-                  if (!mounted || _isDisposed == true) return;
-                  setState(() {
-                    doc.progress = total != -1 ? received / total : 0;
-                  });
-                });
-              } catch (e) {
-                doc.isDownloading = false;
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Serveur indisponible')));
-              }
-              if (!mounted || _isDisposed == true) return;
-              setState(() {
-                doc.isDownloading = false;
-              });
-            }
-
-            await OpenFile.open(docPath);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  doc.isDownloading
-                      ? customCircularProgress(doc)
-                      : FutureBuilder<Widget>(
-                        future: _buildDocumentPreview(doc),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const SizedBox(
-                              height: 100,
-                              width: 100,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            );
-                          } else if (snapshot.hasError || !snapshot.hasData) {
-                            logInfo(snapshot.error.toString());
-                            return const Icon(
-                              Icons.insert_drive_file,
-                              size: 64,
-                            );
-                          } else {
-                            return snapshot.data!;
-                          }
-                        },
-                      ),
-                  const SizedBox(height: 8),
-                  Text(
-                    doc.filename,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }*/
+  await showDeleteDialog(context: context, file: file, onDeleted: onDeleted);
+}

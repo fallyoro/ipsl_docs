@@ -232,7 +232,7 @@ class _HomeState extends State<Home> {
 
         crossAxisSpacing: 0,
         mainAxisSpacing: 24,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1,
       ),
       itemCount: folders.length,
       itemBuilder: (context, index) {
@@ -277,8 +277,8 @@ GridView builFoldersOnDesktop(
     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
       maxCrossAxisExtent: 180,
       crossAxisSpacing: 20,
-      mainAxisSpacing: 0,
-      childAspectRatio: 1.1,
+      mainAxisSpacing: 20,
+      childAspectRatio: 1,
     ),
     itemCount: folders.length,
     itemBuilder: (context, index) {
