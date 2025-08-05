@@ -120,7 +120,7 @@ class _SubjectPageState extends State<SubjectPage> {
 
         crossAxisSpacing: 0,
         mainAxisSpacing: 24,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1,
       ),
       itemCount: folders.length,
       itemBuilder: (context, index) {
@@ -161,8 +161,8 @@ class _SubjectPageState extends State<SubjectPage> {
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 180,
         crossAxisSpacing: 20,
-        mainAxisSpacing: 0,
-        childAspectRatio: 1.1,
+        mainAxisSpacing: 20,
+        childAspectRatio: 1,
       ),
       itemCount: folders.length,
       itemBuilder: (context, index) {
@@ -192,46 +192,3 @@ class _SubjectPageState extends State<SubjectPage> {
     );
   }
 }
-
-
-/*
-GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 250,
-
-              crossAxisSpacing: 24,
-              mainAxisSpacing: 24,
-              childAspectRatio: 1.1,
-            ),
-            itemCount: subjectFolder.length,
-            itemBuilder: (context, index) {
-              final folder = subjectFolder[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.rightToLeft,
-                      child: CategoryPage(
-                        classFolder: widget.classFolder,
-                        yearFolder: widget.yearFolder,
-                        subjectFolder: folder,
-                      ),
-                      duration: Duration(milliseconds: 210),
-                    ),
-                  );
-                },
-                child: ValueListenableBuilder(
-                  valueListenable: ThemeController.isDarkModeNotifier,
-                  builder: (context, isDark, child) {
-                    return CardFolder(
-                      screenWidth: screenWidth,
-                      folder: folder,
-                      isDark: ThemeController.isDarkModeNotifier.value,
-                    );
-                  },
-                ),
-              );
-            },
-          );*/

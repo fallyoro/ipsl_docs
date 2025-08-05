@@ -113,10 +113,9 @@ class _YearPageState extends State<YearPage> {
       padding: const EdgeInsets.all(16),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-
         crossAxisSpacing: 0,
         mainAxisSpacing: 24,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1,
       ),
       itemCount: folders.length,
       itemBuilder: (context, index) {
@@ -156,8 +155,8 @@ class _YearPageState extends State<YearPage> {
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 180,
         crossAxisSpacing: 20,
-        mainAxisSpacing: 0,
-        childAspectRatio: 1.1,
+        mainAxisSpacing: 20,
+        childAspectRatio: 1,
       ),
       itemCount: folders.length,
       itemBuilder: (context, index) {

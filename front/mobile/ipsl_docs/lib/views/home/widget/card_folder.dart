@@ -45,6 +45,7 @@ class _CardFolderState extends State<CardFolder> {
 
         child: Column(
           spacing: 3,
+          // mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(FontAwesomeIcons.solidFolder, size: 75, color: Colors.amber),
@@ -56,11 +57,7 @@ class _CardFolderState extends State<CardFolder> {
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-
-                  fontSize: widget.screenWidth < 600 ? 14 : 14,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ),
           ],
