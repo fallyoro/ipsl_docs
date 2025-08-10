@@ -39,20 +39,16 @@ Ipls_docs est une **application Flutter** que j'ai developer pour l’Institut P
 
 #### Linux (AppImage)
 1. Télécharge le fichier `.AppImage`.
+   
 2. Decompresse le fichier
    ```bash
    unzip ipsl_docs.zip
 4. Entre dans le dossier ipsl_docs :
    ```bash
    cd ipsl_docs
-5. Rend le programme executable :
-   ```bash
-   chmod +x ipsl_docs
-6. Lance ipsl_docs
+5. Lance ipsl_docs
    ```bash
    ./ipsl_docs
-
-
 
 ### 👨‍💻 Pour les développeurs (Flutter)
 Prérequis
