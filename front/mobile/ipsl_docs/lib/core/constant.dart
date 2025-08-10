@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-   static const Color warmBeige = Color(0xFFD7CCC8); // Beige chaud
-    static const Color warmGray = Color(0xFFBEBEBE);
+  static const Color warmBeige = Color(0xFFD7CCC8); // Beige chaud
+  static const Color warmGray = Color(0xFFBEBEBE);
   // Returns the same primary color regardless of brightness (light/dark mode)
   static const Color primaryColor = Color.fromARGB(255, 184, 92, 52);
   static const Color backgroundCream = Color(0xFFFDFBDC);
@@ -75,6 +75,7 @@ class AppColors {
   // Grays
   static const Color darkSystemGray = Color.fromARGB(255, 142, 142, 147);
   static const Color darkSystemGray6 = Color.fromARGB(255, 28, 28, 30);
+
 }
 
 final String host = "209.74.71.221";

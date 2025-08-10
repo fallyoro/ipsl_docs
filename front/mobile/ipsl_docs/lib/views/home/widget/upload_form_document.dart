@@ -192,9 +192,15 @@ class _UploadFormContentState extends State<UploadFormContent> {
               controller: yearController,
               inputFormatters: [yearMaskFormatter],
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Année universitaire',
                 hintText: "Exemple 2024-2025",
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    yearController.clear();
+                  },
+                  icon: const Icon(FontAwesomeIcons.circleXmark),
+                ),
               ),
               validator: (value) {
                 final parts = value?.split('-') ?? [];

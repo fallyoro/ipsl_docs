@@ -15,9 +15,13 @@ final options = BaseOptions(
 final dio = Dio(options);
 
 class DocumentServive {
+  final CancelToken _cancelToken = CancelToken();
+
+  void cancelDownload([String? reason]) => _cancelToken.cancel(reason);
+
   Future<List<Document>> fetchDocuments() async {
     try {
-      final response = await dio.get('/documents');
+      final response = await dio.get('/documents', cancelToken: _cancelToken);
 
       if (response.statusCode == 200) {
         final data = response.data as List;
@@ -36,8 +40,12 @@ class DocumentServive {
 
   Future<void> downloadFile(
     Document doc,
+    CancelToken cancelToken,
     void Function(int, int)? onProgress,
   ) async {
+    if (cancelToken.isCancelled) {
+      cancelToken = CancelToken();
+    }
     final baseDir = await getApplicationDocumentsDirectory();
     final docDir = Directory(
       p.join(
@@ -59,6 +67,7 @@ class DocumentServive {
       await dio.download(
         "/download/${doc.id}",
         savePath,
+        cancelToken: cancelToken,
         onReceiveProgress: onProgress,
         options: Options(
           responseType: ResponseType.bytes,
@@ -66,10 +75,12 @@ class DocumentServive {
         ),
       );
     } on DioException catch (e) {
-      throw Exception("Failed to download the document: $e");
-    } catch (e) {
-      throw Exception("Erreur unexpected: $e");
-    }
+      if (CancelToken.isCancel(e)) {
+        logInfo("Téléchargement annulé : ${e.message}");
+      } else {
+        throw Exception('Erreur inattendue : $e');
+      }
+    } 
   }
 
   Future<Map<String, dynamic>?> uploadDocument({

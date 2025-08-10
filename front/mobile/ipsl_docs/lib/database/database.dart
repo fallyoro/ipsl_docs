@@ -49,6 +49,17 @@ class SQLiteService {
     }
   }
 
+  void updateDocument(String filename, String id) {
+    final stmt = db.prepare('UPDATE documents SET filename = ? WHERE id = ?;');
+    try {
+      stmt.execute([filename, id]);
+    } catch (e) {
+      throw ("Error when update document");
+    } finally {
+      stmt.dispose(); // toujours fermer le statement
+    }
+  }
+
   void updateNumberContribution(int numberContribution) {
     final stmt = db.prepare('UPDATE user SET number_contribution = ?;');
     try {
