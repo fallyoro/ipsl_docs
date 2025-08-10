@@ -36,3 +36,9 @@ class DocumentService:
         await session.commit()
         await session.refresh(new_doc)
         return new_doc
+    
+    
+
+    
+
+    

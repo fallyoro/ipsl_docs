@@ -11,7 +11,7 @@ from uuid import UUID
 
 from src.services.user import UserService
 
-service = DocumentService()
+service = DocumentService()  
 doc_router = APIRouter()
 
 
@@ -128,5 +128,4 @@ async def download_doc(
             "file_path": str(complete_path)
         }
     )
-
  
