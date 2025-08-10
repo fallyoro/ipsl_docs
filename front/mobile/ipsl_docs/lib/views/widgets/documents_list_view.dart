@@ -1,10 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
+import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/services/document.dart';
+import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/widgets/folder_home.dart';
 import 'package:ipsl_docs/widget_tree.dart';
 import 'package:open_file/open_file.dart';
@@ -24,24 +28,44 @@ class DocumentListView extends StatefulWidget {
 }
 
 class _DocumentListViewState extends State<DocumentListView> {
+  late final DocumentViewModel documentViewModel;
   DocumentServive service = DocumentServive();
   bool _isDisposed = false;
+  late CancelToken _cancelToken;
+
+  @override
+  void initState() {
+    super.initState();
+    documentViewModel = GetIt.I<DocumentViewModel>();
+    _cancelToken = CancelToken();
+    for (final doc in widget.documents) {
+      doc.isDownloading.value = false;
+      doc.progress.value = 0;
+    }
+  }
 
   @override
   void dispose() {
     _isDisposed = true;
-
+    _cancelToken.cancel("ViewModel disposed");
+    // setState(() {});
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isMobileScreen = Responsive.isMobile(context);
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final isMobileDevice = Responsive.isMobileDevice(context);
     return ValueListenableBuilder(
       valueListenable: ThemeController.isDarkModeNotifier,
       builder: (context, isDark, child) {
         return Scaffold(
+          backgroundColor:
+              isDark ? AppColors.darkSystemBackground : Colors.white,
           appBar: AppBar(
+            backgroundColor:
+                isDark ? AppColors.darkSystemBackground : Colors.white,
             title: Row(
               children: [
                 IconButton(
@@ -71,13 +95,246 @@ class _DocumentListViewState extends State<DocumentListView> {
               ],
             ),
           ),
-          body: buildDocumentGird(),
+          body:
+              isMobileScreen
+                  ? buildDocumentOnMobile(context)
+                  : builDocumentOnDesktop(),
         );
       },
     );
   }
 
-  GridView buildDocumentGird() {
+  buildDocumentOnMobile(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    return ListView.separated(
+      separatorBuilder: (context, index) => SizedBox(height: 30),
+
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+
+      itemCount: widget.documents.length,
+      itemBuilder: (context, index) {
+        final doc = widget.documents[index];
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+
+          onTap: () async {
+            final isMobileDevice = Responsive.isMobileDevice(context);
+            final ext = getFileExtension(doc.filename);
+            if (ext == 'wxmx' && isMobileDevice) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Veillez ouvrir ce fichier avec votre pc"),
+                ),
+              );
+              return;
+            }
+
+            String docPath = await getSavePath(doc);
+            if (await isExistFile(docPath) == false) {
+              final bool isConnected = await isConnectedToInternet();
+              if (!isConnected) {
+                // doc.isDownloading = false;
+                if (!context.mounted || _isDisposed == true) return;
+                showNoConnectionMessage(context);
+                return;
+              }
+
+              try {
+                doc.isDownloading.value = true;
+                await service.downloadFile(doc, _cancelToken, (
+                  received,
+                  total,
+                ) {
+                  if (!mounted || _isDisposed == true) return;
+
+                  doc.progress.value = total != -1 ? received / total : 0;
+                });
+              } catch (e) {
+                doc.isDownloading.value = false;
+
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Serveur indisponible')));
+              }
+              if (!mounted || _isDisposed == true) return;
+
+              doc.isDownloading.value = false;
+            }
+
+            await OpenFile.open(docPath);
+          },
+          child: Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color:
+                  isDark
+                      ? AppColors.darkSecondarySystemBackground
+                      : Colors.grey[100],
+            ),
+            height: 120,
+
+            child: Row(
+              children: [
+                ValueListenableBuilder(
+                  valueListenable: doc.isDownloading,
+                  builder: (context, isDownloading, child) {
+                    return isDownloading
+                        ? SizedBox(
+                          height: 100,
+                          width: 100,
+                          child: customCircularProgress(doc),
+                        )
+                        : FutureBuilder<Widget>(
+                          future: _buildDocumentPreview(doc, context),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              );
+                            } else if (snapshot.hasError || !snapshot.hasData) {
+                              logInfo(snapshot.error.toString());
+                              return const Icon(
+                                Icons.insert_drive_file,
+                                size: 64,
+                              );
+                            } else {
+                              return snapshot.data!;
+                            }
+                          },
+                        );
+                  },
+                ),
+                SizedBox(width: 20),
+                Column(
+                  // mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 8),
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 130),
+                      child: Text(
+                        maxLines: 3,
+                        doc.filename,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                Spacer(),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: PopupMenuButton<String>(
+                    onSelected: (value) async {
+                      if (value == 'delete') {
+                        await deleteFileIfExist(
+                          context: context,
+                          doc: doc,
+                          onDeleted: () => setState(() {}),
+                        );
+                      }
+                      /*     if (value == 'edit') {
+                        final formKey = GlobalKey<FormState>();
+                        TextEditingController newFileNameController =
+                            TextEditingController(text: doc.filename);
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                spacing: 50,
+                                children: [
+                                  Form(
+                                    key: formKey,
+                                    child: TextFormField(
+                                      controller: newFileNameController,
+                                      decoration: InputDecoration(
+                                        labelText: "Modifier titre ",
+                                      ),
+                                      validator:
+                                          (value) =>
+                                              value == null || value.isEmpty
+                                                  ? "Veillez entrer un nom"
+                                                  : null,
+                                    ),
+                                  ),
+
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      if (!await IsExistFile(doc)) {
+                                        if (!context.mounted) return;
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "Ce fichier n'est pas télécharger",
+                                            ),
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      if (!formKey.currentState!.validate()) {
+                                        return;
+                                      }
+                                      documentViewModel.updateDocumentName(
+                                        newFileNameController.text,
+                                        doc.id,
+                                      );
+                                      if (!context.mounted) return;
+                                      Navigator.pop(context);
+                                    },
+
+                                    child: Text(
+                                      "Modifier",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }*/
+                    },
+                    icon: Icon(Icons.more_vert),
+                    itemBuilder: (context) {
+                      return [
+                        /*  PopupMenuItem(value: 'edit', child: Text("Modifier")),*/
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Text("Supprimer"),
+                              Icon(Icons.delete, color: Colors.red),
+                            ],
+                          ),
+                        ),
+                      ];
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  GridView builDocumentOnDesktop() {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -132,7 +389,10 @@ class _DocumentListViewState extends State<DocumentListView> {
                 // setState(() {
                 doc.isDownloading.value = true;
                 // });
-                await service.downloadFile(doc, (received, total) {
+                await service.downloadFile(doc, _cancelToken, (
+                  received,
+                  total,
+                ) {
                   if (!mounted || _isDisposed == true) return;
                   // setState(() {
                   doc.progress.value = total != -1 ? received / total : 0;
@@ -170,7 +430,7 @@ class _DocumentListViewState extends State<DocumentListView> {
                       return isDownloading
                           ? customCircularProgress(doc)
                           : FutureBuilder<Widget>(
-                            future: _buildDocumentPreview(doc),
+                            future: _buildDocumentPreview(doc, context),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -234,17 +494,32 @@ class _DocumentListViewState extends State<DocumentListView> {
             },
           ),
         ),
-        ValueListenableBuilder(
+        IconButton(
+          onPressed: () async {
+            await cancelDoc(doc);
+            setState(() {});
+          },
+          icon: Icon(FontAwesomeIcons.xmark),
+        ),
+        /*  ValueListenableBuilder(
           valueListenable: doc.progress,
           builder: (context, progress, child) {
-            return Text(
+            return 
+              return Text(
               '${(progress * 100).toStringAsFixed(0)}%',
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             );
           },
-        ),
+        ),*/
       ],
     );
+  }
+
+  Future<void> cancelDoc(Document doc) async {
+    document_service.cancelDownload('Cancel by the user');
+    // setState(() {});
+    doc.isDownloading.value = false;
+    await deleteFile(doc);
   }
 }
 
@@ -252,7 +527,8 @@ String getFileExtension(String fileName) {
   return fileName.split('.').last.toLowerCase();
 }
 
-Future<Widget> _buildDocumentPreview(Document doc) async {
+Future<Widget> _buildDocumentPreview(Document doc, BuildContext context) async {
+  final isMobileScreen = Responsive.isMobile(context);
   final baseDir = await getApplicationDocumentsDirectory();
   final docDir = Directory(
     p.join(
@@ -270,7 +546,14 @@ Future<Widget> _buildDocumentPreview(Document doc) async {
   final fichier = File(savePath);
 
   if (!await fichier.exists()) {
-    return Icon(Icons.download);
+    if (isMobileScreen) {
+      return SizedBox(
+        height: 100,
+        width: 100,
+        child: Icon(FontAwesomeIcons.arrowDown),
+      );
+    }
+    return Icon(FontAwesomeIcons.arrowDown);
   }
 
   if (['jpg', 'jpeg', 'png'].contains(ext)) {
@@ -337,11 +620,12 @@ Future<void> showDeleteDialog({
       return AlertDialog(
         title: const Text("Supprimer ce fichier"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
+          TextButton(
+            child: Text("Oui"),
             onPressed: () async {
               await file.delete();
               onDeleted();
+              if (!context.mounted) return;
               Navigator.of(context).pop();
             },
           ),
@@ -355,6 +639,13 @@ Future<void> showDeleteDialog({
   );
 }
 
+Future<void> deleteFile(Document doc) async {
+  final path = await getSavePath(doc);
+  final file = File(path);
+  if (!await file.exists()) return;
+  file.delete();
+}
+
 Future<void> deleteFileIfExist({
   required BuildContext context,
   required Document doc,
@@ -366,4 +657,11 @@ Future<void> deleteFileIfExist({
   if (!context.mounted) return;
 
   await showDeleteDialog(context: context, file: file, onDeleted: onDeleted);
+}
+
+Future<bool> IsExistFile(Document doc) async {
+  final path = await getSavePath(doc);
+  final fichier = File(path);
+
+  return await fichier.exists();
 }

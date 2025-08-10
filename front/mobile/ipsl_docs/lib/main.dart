@@ -9,7 +9,6 @@ import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/stokage_service.dart';
 import 'package:ipsl_docs/views/introduction/onboarding.dart';
 import 'package:ipsl_docs/widget_tree.dart';
-import 'package:path_provider/path_provider.dart';
 
 
 Future<void> main() async {
@@ -24,7 +23,7 @@ Future<void> main() async {
   }
   ThemeController.loadTheme();
 
-  final dir = await getApplicationDocumentsDirectory();
+  // final dir = await getApplicationDocumentsDirectory();
 
   // logInfo('DB path: ${dir.path}/ipsl_docs.db');
 
