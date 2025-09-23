@@ -17,11 +17,16 @@ class User {
       userName: json['user_name'] as String,
 
       classe: json['classe'],
-      numberContribution: json['number_contribution']
+      numberContribution: json['number_contribution'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'user_name': userName,  'classe': classe, 'number_contribution': numberContribution};
+    return {
+      'id': id,
+      'user_name': userName,
+      'classe': classe,
+      'number_contribution': numberContribution,
+    };
   }
 }

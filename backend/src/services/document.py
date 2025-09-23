@@ -1,7 +1,7 @@
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.models.document import Document
-from src.schemas.document import DocumentIn, DocumentOut, DocumentDownload
+from src.schemas.document import DocumentIn
 from uuid import UUID
 from pathlib import Path
 
