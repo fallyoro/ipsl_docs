@@ -51,8 +51,8 @@ class _HomeState extends State<Home> {
         final data = await document_service.fetchDocuments();
         _hasFetched = true;
 
-        SQLiteService.instance.deleteAlldoc();
-        SQLiteService.instance.insertAllDoc(data);
+        DatabaseHelper.instance.deleteAlldoc();
+        DatabaseHelper.instance.insertAllDoc(data);
         documentViewModel.loadDocuments();
       }
     } catch (e) {

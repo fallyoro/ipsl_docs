@@ -7,16 +7,16 @@ import 'package:ipsl_docs/view_models/user.dart';
 Future<void> setupDependencies() async {
   final getIt = GetIt.instance;
   final bool isConnected = await isConnectedToInternet();
-  final sqlite = await SQLiteService.init();
+  final db =  DatabaseHelper.instance;
   if (isConnected) {
-    //  await sqlite.insertAllDoc();
+    //  await db.insertAllDoc();
   }
 
-  final documentViewModel = DocumentViewModel(sqlite);
+  final documentViewModel = DocumentViewModel(db);
   // documentViewModel.deleteAlldoc();
   await documentViewModel.loadDocuments();
 
-  final userViewModel = UserViewModel(sqlite);
+  final userViewModel = UserViewModel(db);
   userViewModel.getUser();
   getIt.registerSingleton<DocumentViewModel>(documentViewModel);
   getIt.registerSingleton<UserViewModel>(userViewModel);

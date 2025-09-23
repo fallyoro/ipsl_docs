@@ -16,7 +16,7 @@ Future<void> main() async {
 
   await setupDependencies();
   await StorageService.init();
-  var userData = SQLiteService.instance.getUser();
+  var userData = DatabaseHelper.instance.getUser();
   if (userData == null) {
     await StorageService.setBool("isLoged", false);
     await StorageService.setBool("isDark", isDarkModePrefer());

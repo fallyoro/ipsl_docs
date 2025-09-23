@@ -3,21 +3,18 @@ import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
 
 class DocumentViewModel {
-  final SQLiteService _db;
+  final DatabaseHelper _db;
 
   final ValueNotifier<List<Document>> documents = ValueNotifier([]);
 
   DocumentViewModel(this._db);
 
   Future<void> loadDocuments() async {
-    // documents.value = [];
-    final rawDocs = _db.getDocuments();
-
-    documents.value = rawDocs.map((row) => Document.fromJson(row)).toList();
+    documents.value = await _db.getDocuments();
   }
 
   Future<void> addDocument(Document doc) async {
-    _db.insertDocument(doc.toJson());
+    _db.insertDocument(doc);
     documents.value.add(doc);
   }
 
