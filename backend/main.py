@@ -5,7 +5,7 @@ from src.api.document import doc_router
 
 from src.database.database import init_db
 
-@asynccontextmanager 
+@asynccontextmanager
 async def life_span(app:FastAPI):
     print("Server start")
     await init_db()
