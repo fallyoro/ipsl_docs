@@ -3,7 +3,7 @@ import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/user.dart';
 
 class UserViewModel {
-  final SQLiteService _db;
+  final DatabaseHelper _db;
   ValueNotifier<User> userNotifier = ValueNotifier(
     User(
       id: "0",
@@ -16,7 +16,7 @@ class UserViewModel {
   UserViewModel(this._db);
 
   void addUser(User user) {
-    _db.insertUser(user.toJson());
+    _db.insertUser(user);
     userNotifier.value = user;
   }
 
@@ -30,15 +30,11 @@ class UserViewModel {
     getUser();
   }
 
-  void getUser() {
-    final rawUsers = _db.getUser();
-
-    // userNotifier.value = User.fromJson(rawUsers!);
-    // Call after the build
+  Future<void> getUser() async{
+    final User  user = await _db.getUser();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (rawUsers != null) {
-        userNotifier.value = User.fromJson(rawUsers);
-      }
+        userNotifier.value = user;
+
     });
   }
 }
