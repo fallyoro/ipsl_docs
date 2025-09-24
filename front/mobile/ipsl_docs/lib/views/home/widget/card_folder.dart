@@ -3,14 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/constant.dart';
 
 class CardFolder extends StatefulWidget {
-  const CardFolder({
-    super.key,
-    required this.screenWidth,
-    required this.folder,
-    required this.isDark,
-  });
+  const CardFolder({super.key, required this.folder, required this.isDark});
 
-  final double screenWidth;
   final String folder;
   final bool isDark;
 

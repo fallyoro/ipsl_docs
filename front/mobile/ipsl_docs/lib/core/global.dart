@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/view_models/document.dart';
+import 'package:ipsl_docs/view_models/navigation.dart';
 import 'package:ipsl_docs/view_models/user.dart';
 
 Future<void> setupDependencies() async {
@@ -12,7 +13,10 @@ Future<void> setupDependencies() async {
     //  await db.insertAllDoc();
   }
 
-  final documentViewModel = DocumentViewModel(db);
+  final DocumentViewModel documentViewModel = DocumentViewModel(db);
+  final NavigationViewModel navigationViewModel = NavigationViewModel(
+    documentViewModel,
+  );
   // documentViewModel.deleteAlldoc();
   await documentViewModel.loadDocuments();
 
@@ -20,4 +24,5 @@ Future<void> setupDependencies() async {
   userViewModel.getUser();
   getIt.registerSingleton<DocumentViewModel>(documentViewModel);
   getIt.registerSingleton<UserViewModel>(userViewModel);
+  getIt.registerSingleton<NavigationViewModel>(navigationViewModel);
 }

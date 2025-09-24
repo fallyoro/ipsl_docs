@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/views/widgets/documents_list_view.dart';
@@ -62,3 +62,4 @@ class Search extends StatelessWidget {
     );
   }
 }
+*/
