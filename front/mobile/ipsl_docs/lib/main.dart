@@ -10,7 +10,6 @@ import 'package:ipsl_docs/stokage_service.dart';
 import 'package:ipsl_docs/views/introduction/onboarding.dart';
 import 'package:ipsl_docs/widget_tree.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

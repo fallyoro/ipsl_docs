@@ -49,13 +49,7 @@ class DocumentServive {
     final baseDir = await getApplicationDocumentsDirectory();
     final dirPart = p.dirname(doc.path);
     final fileName = p.basename(doc.path);
-    final docDir = Directory(
-      p.join(
-        baseDir.path,
-        "ipsl_docs",
-        dirPart,
-      ),
-    );
+    final docDir = Directory(p.join(baseDir.path, "ipsl_docs", dirPart));
     if (!await docDir.exists()) {
       await docDir.create(recursive: true);
     }
@@ -79,7 +73,7 @@ class DocumentServive {
       } else {
         throw Exception('Erreur inattendue : $e');
       }
-    } 
+    }
   }
 
   Future<Map<String, dynamic>?> uploadDocument({

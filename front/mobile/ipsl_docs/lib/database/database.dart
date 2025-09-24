@@ -70,6 +70,18 @@ class DatabaseHelper {
     );
   }
 
+  Future<List<Document>> loadDirectory(String parentPath) async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> rawDocuments = await db.query(
+      "documents",
+      where: 'path LIKE ?',
+      whereArgs: ["$parentPath%"],
+    );
+    final List<Document> allDocuments =
+        rawDocuments.map((e) => Document.fromJson(e)).toList();
+    return allDocuments;
+  }
+
   Future<void> updateNumberContribution(int numberContribution) async {
     Database db = await instance.database;
     await db.update("users", {"number_contribution": numberContribution});

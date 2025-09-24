@@ -40,25 +40,26 @@ void showNoConnectionMessage(BuildContext context) {
 }
 
 bool isDarkModePrefer() {
- final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
-return brightness == Brightness.dark;
+  final brightness =
+      WidgetsBinding.instance.platformDispatcher.platformBrightness;
+  return brightness == Brightness.dark;
 }
 
+
 Future<String> getSavePath(Document doc) async {
+  final String fileName = p.basename(doc.path);
   final baseDir = await getApplicationDocumentsDirectory();
   final docDir = Directory(
     p.join(
       baseDir.path,
       "ipsl_docs",
-      doc.classe,
-      doc.year,
-      doc.subject,
-      doc.categorie,
+      p.dirname(doc.path)
     ),
+    
   );
   if (!await docDir.exists()) {
     await docDir.create(recursive: true);
   }
-  final savePath = p.join(docDir.path, doc.filename);
+  final savePath = p.join(docDir.path, fileName);
   return savePath;
 }

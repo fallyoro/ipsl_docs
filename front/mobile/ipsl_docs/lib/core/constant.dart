@@ -75,7 +75,6 @@ class AppColors {
   // Grays
   static const Color darkSystemGray = Color.fromARGB(255, 142, 142, 147);
   static const Color darkSystemGray6 = Color.fromARGB(255, 28, 28, 30);
-
 }
 
 final String host = "209.74.71.221";
