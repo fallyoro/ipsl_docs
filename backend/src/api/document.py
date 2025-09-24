@@ -28,36 +28,18 @@ async def get_all_documents(session: AsyncSession = Depends(create_session)):
 
 @doc_router.post("/upload")
 async def upload_doc(
-    filename: str = Form(...),
-    classe: str = Form(...),
-    subject: str = Form(...),
-    year: str = Form(...),
-    categorie: str = Form(...),
+    path: str = Form(...),
     user_id: str = Form(...),
     doc: UploadFile = File(...),
     session: AsyncSession = Depends(create_session),
 ):
 
-    doc_data = DocumentIn(
-        filename=filename,
-        year=year,
-        classe=classe,
-        categorie=categorie,
-        subject=subject,
-        user_id=user_id,  # type: ignore
-    )
+    doc_data = DocumentIn(user_id=user_id, path=path)  # type: ignore
 
     documents_path = Path(__file__).resolve().parent.parents[1] / "documents"
     documents_path.mkdir(parents=True, exist_ok=True)
-
-    complete_path = (
-        documents_path
-        / doc_data.classe
-        / str(doc_data.year)
-        / doc_data.subject
-        / doc_data.categorie
-        / doc_data.filename
-    )
+    relative_path = Path(path)
+    complete_path = documents_path / relative_path
 
     # Crée uniquement le dossier parent, pas le fichier
     complete_path.parent.mkdir(parents=True, exist_ok=True)
@@ -83,7 +65,6 @@ async def upload_doc(
     )
 
     return {
-        "filename": document.filename,
         "id": document.id,
         "path": str(complete_path),
         "number_contribution": number_contribution,
@@ -110,7 +91,7 @@ async def download_doc(doc_id: str, session: AsyncSession = Depends(create_sessi
         raise HTTPException(status_code=404, detail="Document not found")
 
     documents_path = Path(__file__).resolve().parent.parents[1] / "documents"
-    complete_path = documents_path / Path(doc_path)
+    complete_path = documents_path / doc_path
 
     if complete_path.is_file():
         return FileResponse(
