@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
+import 'package:path/path.dart' as p;
 
 class DocumentViewModel {
   final DatabaseHelper _db;
@@ -22,28 +24,25 @@ class DocumentViewModel {
     _db.deleteAlldoc();
   }
 
-  void updateDocumentName(String filename, String id) {
-    _db.updateDocument(filename, id);
+  void updateDocumentName(String newFilename, Document doc) {
+    _db.updateDocument(newFilename, doc.id);
 
-    final index = documents.value.indexWhere((doc) => doc.id == id);
+    final index = documents.value.indexWhere((oldDoc) => oldDoc.id == doc.id);
     if (index == -1) return; // Aucun document trouvé
 
-    final oldDoc = documents.value[index];
+
+    final dirDoc = p.dirname(doc.path);
+    final newPath = p.join(dirDoc, newFilename);
 
     final updatedDoc = Document(
-      id: id,
-      idUploader: oldDoc.idUploader,
-      filename: filename,
-      year: oldDoc.year,
-      classe: oldDoc.classe,
-      subject: oldDoc.subject,
-      categorie: oldDoc.categorie,
+      id: doc.id,
+      idUploader: doc.idUploader,
+      path: newPath,
     );
 
+    final File file = File(doc.path);
+    file.rename(newPath);
     documents.value[index] = updatedDoc;
   }
 
-  List<String> getClasseFolders() {
-    return documents.value.map((doc) => doc.classe).toSet().toList();
   }
-}
