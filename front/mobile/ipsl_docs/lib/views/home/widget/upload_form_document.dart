@@ -11,6 +11,7 @@ import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/view_models/user.dart';
 import 'package:ipsl_docs/views/home/widget/year_formater.dart';
 import 'package:ipsl_docs/views/widgets/linear_progress.dart';
+import 'package:path/path.dart';
 
 class UploadFormContent extends StatefulWidget {
   final VoidCallback onSuccess;
@@ -105,15 +106,18 @@ class _UploadFormContentState extends State<UploadFormContent> {
         setState(() => progress = total > 0 ? received / total : 0);
       },
     );
+    final path = join(
+      selectedClasse,
+      subjectController.text,
+      yearController.text,
+      selectedCategory,
+      filenameController.text,
+    );
 
     final doc = Document(
       id: responseUpload!['id'],
       idUploader: userViewModel.userNotifier.value.id,
-      filename: filenameController.text,
-      year: yearController.text,
-      classe: selectedClasse,
-      subject: subjectController.text,
-      categorie: selectedCategory,
+      path: path,
     );
     viewModel.addDocument(doc);
 
@@ -148,10 +152,9 @@ class _UploadFormContentState extends State<UploadFormContent> {
               optionsBuilder: (TextEditingValue textEditingValue) {
                 final input = textEditingValue.text;
                 if (input.isEmpty) return const <String>[];
-
                 List<String> subjects =
                     viewModel.documents.value
-                        .map((e) => e.subject)
+                        .map((e) => e.path.split("/").elementAt(2))
                         .toSet()
                         .toList();
 

@@ -45,17 +45,11 @@ bool isDarkModePrefer() {
   return brightness == Brightness.dark;
 }
 
-
 Future<String> getSavePath(Document doc) async {
   final String fileName = p.basename(doc.path);
   final baseDir = await getApplicationDocumentsDirectory();
   final docDir = Directory(
-    p.join(
-      baseDir.path,
-      "ipsl_docs",
-      p.dirname(doc.path)
-    ),
-    
+    p.join(baseDir.path, "ipsl_docs", p.dirname(doc.path)),
   );
   if (!await docDir.exists()) {
     await docDir.create(recursive: true);

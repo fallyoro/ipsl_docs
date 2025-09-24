@@ -16,11 +16,11 @@ class DocumentViewModel {
   }
 
   Future<void> loadDirectory(String parentPath) async {
-    List<Document> allDocuments = _getChildren(parentPath);
+    List<Document> allDocuments = getChildren(parentPath);
     documents.value = allDocuments;
   }
 
-  List<Document> _getChildren(String parentPath) {
+  List<Document> getChildren(String parentPath) {
     final Map<String, Document> childrenMap = <String, Document>{};
     for (var doc in documents.value) {
       final relative =

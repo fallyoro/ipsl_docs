@@ -42,37 +42,30 @@ class _WidgetTreeState extends State<WidgetTree> {
 
         return Scaffold(
           //  appBar: buildAppbarWidgetTree(isDark),
-          body:
-                   PageView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: _pageController,
-                    onPageChanged:
-                        (index) => setState(() => _selectedPage = index),
-                    children: pages,
-                  ),
-          bottomNavigationBar:
-                   SalomonBottomBar(
-                    selectedItemColor:
-                        isDark ? Colors.white : AppColors.primaryColor,
-                    unselectedItemColor:
-                        isDark ? Colors.grey : Colors.grey.shade600,
-                    backgroundColor:
-                        isDark
-                            ? AppColors.darkSecondarySystemBackground
-                            : Colors.white,
-                    currentIndex: _selectedPage,
-                    onTap: _onItemSelected,
-                    items: [
-                      SalomonBottomBarItem(
-                        icon: const Icon(FontAwesomeIcons.house, size: 23),
-                        title: const Text('Accueil'),
-                      ),
-                      SalomonBottomBarItem(
-                        icon: const Icon(FontAwesomeIcons.userLarge, size: 23),
-                        title: const Text('Profil'),
-                      ),
-                    ],
-                  )
+          body: PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: _pageController,
+            onPageChanged: (index) => setState(() => _selectedPage = index),
+            children: pages,
+          ),
+          bottomNavigationBar: SalomonBottomBar(
+            selectedItemColor: isDark ? Colors.white : AppColors.primaryColor,
+            unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
+            backgroundColor:
+                isDark ? AppColors.darkSecondarySystemBackground : Colors.white,
+            currentIndex: _selectedPage,
+            onTap: _onItemSelected,
+            items: [
+              SalomonBottomBarItem(
+                icon: const Icon(FontAwesomeIcons.house, size: 23),
+                title: const Text('Accueil'),
+              ),
+              SalomonBottomBarItem(
+                icon: const Icon(FontAwesomeIcons.userLarge, size: 23),
+                title: const Text('Profil'),
+              ),
+            ],
+          ),
         );
       },
     );
