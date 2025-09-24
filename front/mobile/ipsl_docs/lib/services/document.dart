@@ -47,20 +47,19 @@ class DocumentServive {
       cancelToken = CancelToken();
     }
     final baseDir = await getApplicationDocumentsDirectory();
+    final dirPart = p.dirname(doc.path);
+    final fileName = p.basename(doc.path);
     final docDir = Directory(
       p.join(
         baseDir.path,
         "ipsl_docs",
-        doc.classe,
-        doc.year,
-        doc.subject,
-        doc.categorie,
+        dirPart,
       ),
     );
     if (!await docDir.exists()) {
       await docDir.create(recursive: true);
     }
-    final savePath = p.join(docDir.path, doc.filename);
+    final savePath = p.join(docDir.path, fileName);
     // logInfo("Where the do is supposed to be saved $savePath");
 
     try {

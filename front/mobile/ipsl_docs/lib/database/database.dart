@@ -3,7 +3,6 @@ import 'package:ipsl_docs/models/user.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../core/utils.dart';
 
 class DatabaseHelper {
@@ -34,7 +33,7 @@ class DatabaseHelper {
   }
 
   Future<void> _createTable(Database db) async {
-   await db.execute('''
+    await db.execute('''
       CREATE TABLE IF NOT EXISTS documents (
         id TEXT PRIMARY KEY,
         user_id TEXT,
@@ -56,24 +55,24 @@ class DatabaseHelper {
     ''');
   }
 
-
-
-
   Future<void> updateUser(String classe, String userName) async {
     Database db = await instance.database;
-    await db.update("documents", {"user_name" : userName, "classe": classe});
+    await db.update("documents", {"user_name": userName, "classe": classe});
   }
 
   Future<void> updateDocument(String filename, String id) async {
     Database db = await instance.database;
-    await db.update("documents", {"filename" : filename}, whereArgs: [id], conflictAlgorithm: ConflictAlgorithm.replace);
-
+    await db.update(
+      "documents",
+      {"filename": filename},
+      whereArgs: [id],
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<void> updateNumberContribution(int numberContribution) async {
     Database db = await instance.database;
-    await db.update("users", {"number_contribution" : numberContribution});
-
+    await db.update("users", {"number_contribution": numberContribution});
   }
 
   Future<void> insertAllDoc(List<Document> data) async {
@@ -82,11 +81,11 @@ class DatabaseHelper {
     //  deleteAlldoc();
 
     for (var doc in data) {
-      db.insert("documents",
-          doc.toJson(),
-          conflictAlgorithm: ConflictAlgorithm.replace
+      db.insert(
+        "documents",
+        doc.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
       );
-
     }
   }
 
@@ -99,15 +98,13 @@ class DatabaseHelper {
 
   Future<User> getUser() async {
     Database db = await instance.database;
-List<Map<String, dynamic>> rawUsers = await db.query("users");
+    List<Map<String, dynamic>> rawUsers = await db.query("users");
     Map<String, dynamic> rawUser = rawUsers.first;
-User user = User.fromJson(rawUser);
-return user;
-
-
-
+    User user = User.fromJson(rawUser);
+    return user;
   }
- /* Map<String, dynamic>? getUser() {
+
+  /* Map<String, dynamic>? getUser() {
     final result = db.select("SELECT * FROM user");
 
     if (result.isEmpty) {
@@ -131,24 +128,32 @@ return user;
     //db.dispose();
   }*/
 
-  Future<void> deleteAllUsers()  async{
-    Database db =await instance.database;
+  Future<void> deleteAllUsers() async {
+    Database db = await instance.database;
     db.delete("users");
   }
 
-  Future<void> deleteAlldoc() async{
-    Database db =await instance.database;
+  Future<void> deleteAlldoc() async {
+    Database db = await instance.database;
     db.delete("documents");
   }
 
-  Future<void> insertUser(User user)  async{
-    Database db =await instance.database;
+  Future<void> insertUser(User user) async {
+    Database db = await instance.database;
     deleteAllUsers();
-   await db.insert( "users", user.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      "users",
+      user.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  Future<void> insertDocument(Document doc) async{
-    Database db =await instance.database;
-   await db.insert("documents", doc.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+  Future<void> insertDocument(Document doc) async {
+    Database db = await instance.database;
+    await db.insert(
+      "documents",
+      doc.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 }

@@ -3,44 +3,27 @@ import 'package:flutter/material.dart';
 class Document {
   final String id;
   final String idUploader;
-  final String filename;
-  final String categorie;
-  final String year;
-  final String subject;
-  final String classe;
+  final String path;
   final bool isLoding;
   final ValueNotifier<bool> isDownloading = ValueNotifier(false);
   final ValueNotifier<double> progress = ValueNotifier(0.0);
 
   Document({
     required this.id,
-    required this.idUploader,
-    required this.filename,
-    required this.year,
-    required this.classe,
-    required this.subject,
-    required this.categorie,
+    required this.path,
     this.isLoding = false,
- 
+    required this.idUploader,
   });
 
   factory Document.fromJson(Map<String, dynamic> json) => Document(
     id: json['id'] ?? '',
+    path: json['path'],
     idUploader: json['user_id'] ?? '',
-    filename: json['filename'] ?? ' ',
-    classe: json['classe'] ?? 'pas/de',
-    year: json['year'].toString() ,
-    subject: json['subject'] ?? 'pas/de',
-    categorie: json['categorie'] ?? '',
   );
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'user_id': idUploader,
-    'filename': filename,
-    'classe': classe,
-    'year': year,
-    'subject': subject,
-    'categorie': categorie,
+    'path' : path,
   };
 }
