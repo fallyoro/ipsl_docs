@@ -15,6 +15,29 @@ class DocumentViewModel {
     documents.value = await _db.getDocuments();
   }
 
+  Future<void> loadDirectory(String parentPath) async {
+    List<Document> allDocuments = _getChildren(parentPath);
+    documents.value = allDocuments;
+  }
+
+  List<Document> _getChildren(String parentPath) {
+    final Map<String, Document> childrenMap = <String, Document>{};
+    for (var doc in documents.value) {
+      final relative =
+          doc.path
+              .replaceFirst(parentPath, "")
+              .split("/")
+              .where((element) => element.isEmpty)
+              .toList();
+      if (relative.isEmpty) continue;
+      final first = relative.first;
+      final isDir = relative.length > 1;
+      doc.isDir = isDir;
+      childrenMap[first] = doc;
+    }
+    return childrenMap.values.toList();
+  }
+
   Future<void> addDocument(Document doc) async {
     _db.insertDocument(doc);
     documents.value.add(doc);
@@ -30,7 +53,6 @@ class DocumentViewModel {
     final index = documents.value.indexWhere((oldDoc) => oldDoc.id == doc.id);
     if (index == -1) return; // Aucun document trouvé
 
-
     final dirDoc = p.dirname(doc.path);
     final newPath = p.join(dirDoc, newFilename);
 
@@ -44,5 +66,4 @@ class DocumentViewModel {
     file.rename(newPath);
     documents.value[index] = updatedDoc;
   }
-
-  }
+}

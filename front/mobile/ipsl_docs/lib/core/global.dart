@@ -7,7 +7,7 @@ import 'package:ipsl_docs/view_models/user.dart';
 Future<void> setupDependencies() async {
   final getIt = GetIt.instance;
   final bool isConnected = await isConnectedToInternet();
-  final db =  DatabaseHelper.instance;
+  final db = DatabaseHelper.instance;
   if (isConnected) {
     //  await db.insertAllDoc();
   }

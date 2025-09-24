@@ -3,7 +3,6 @@ import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/views/home/home.dart';
 import 'package:ipsl_docs/views/profile_page.dart';
-import 'package:ipsl_docs/views/widgets/sidebar.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipsl_docs/core/Responsive.dart';
@@ -38,42 +37,21 @@ class _WidgetTreeState extends State<WidgetTree> {
       valueListenable: ThemeController.isDarkModeNotifier,
       builder: (context, isDark, child) {
         final isMobile = Responsive.isMobile(context);
-        final isDestop = Responsive.isDesktop(context);
         final isTablet = Responsive.isTablet(context);
         double screenWidth = MediaQuery.of(context).size.width;
 
         return Scaffold(
           //  appBar: buildAppbarWidgetTree(isDark),
           body:
-              (isMobile)
-                  ? PageView(
+                   PageView(
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _pageController,
                     onPageChanged:
                         (index) => setState(() => _selectedPage = index),
                     children: pages,
-                  )
-                  : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SideBar(
-                        selectedIndex: _selectedPage,
-                        onItemSelected: _onItemSelected,
-                        width: isTablet ? 200.0 : 300.0,
-                      ),
-                      const VerticalDivider(thickness: 1, width: 1),
-                      Expanded(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 150),
-                          child: pages[_selectedPage],
-                        ),
-                      ),
-                    ],
                   ),
           bottomNavigationBar:
-              ((Theme.of(context).platform == TargetPlatform.android ||
-                      Theme.of(context).platform == TargetPlatform.iOS))
-                  ? SalomonBottomBar(
+                   SalomonBottomBar(
                     selectedItemColor:
                         isDark ? Colors.white : AppColors.primaryColor,
                     unselectedItemColor:
@@ -95,7 +73,6 @@ class _WidgetTreeState extends State<WidgetTree> {
                       ),
                     ],
                   )
-                  : null,
         );
       },
     );

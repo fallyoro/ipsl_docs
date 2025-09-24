@@ -30,11 +30,10 @@ class UserViewModel {
     getUser();
   }
 
-  Future<void> getUser() async{
-    final User  user = await _db.getUser();
+  Future<void> getUser() async {
+    final User user = await _db.getUser();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-        userNotifier.value = user;
-
+      userNotifier.value = user;
     });
   }
 }

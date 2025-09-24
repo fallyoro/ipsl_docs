@@ -5,6 +5,7 @@ class Document {
   final String idUploader;
   final String path;
   final bool isLoding;
+  bool? isDir;
   final ValueNotifier<bool> isDownloading = ValueNotifier(false);
   final ValueNotifier<double> progress = ValueNotifier(0.0);
 
@@ -12,11 +13,13 @@ class Document {
     required this.id,
     required this.path,
     this.isLoding = false,
+    this.isDir,
     required this.idUploader,
   });
 
   factory Document.fromJson(Map<String, dynamic> json) => Document(
     id: json['id'] ?? '',
+    isDir: null,
     path: json['path'],
     idUploader: json['user_id'] ?? '',
   );
@@ -24,6 +27,6 @@ class Document {
   Map<String, dynamic> toJson() => {
     'id': id,
     'user_id': idUploader,
-    'path' : path,
+    'path': path,
   };
 }

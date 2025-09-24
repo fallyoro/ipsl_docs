@@ -13,4 +13,3 @@ class StorageService {
     await _prefs.setBool(key, value);
   }
 }
-

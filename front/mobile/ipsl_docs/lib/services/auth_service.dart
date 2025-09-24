@@ -8,7 +8,7 @@ class UserService {
   Future<Map<String, dynamic>> editProfile(
     String classe,
     String userName,
-    String newUserName
+    String newUserName,
   ) async {
     try {
       final response = await dio.put(
@@ -32,7 +32,6 @@ class UserService {
 class AuthService {
   Dio dio;
 
-
   AuthService({required this.dio});
 
   Future<Map<String, dynamic>> login(String userName, String password) async {
@@ -42,7 +41,7 @@ class AuthService {
         data: jsonEncode({'user_name': userName, 'password': password}),
       );
 
-   /*
+      /*
       await tokens.saveTokens(
         response.data['access_token'],
         response.data['refresh_token'],
@@ -86,7 +85,7 @@ class AuthService {
         return {
           'id': resp.data['id'],
           'user_name': resp.data['user_name'],
-          'number_contribution': resp.data['number_contribution']
+          'number_contribution': resp.data['number_contribution'],
         };
       }
 

@@ -161,17 +161,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
       showNoConnectionMessage(context);
       return;
     }
-  
+
     service.editProfile(
-        selectedClasse,
-      userViewModel.userNotifier.value.userName,
- 
-      userNameController.text,
-    );
-    userViewModel.updateUser(
-      userNameController.text,
       selectedClasse,
+      userViewModel.userNotifier.value.userName,
+
+      userNameController.text,
     );
+    userViewModel.updateUser(userNameController.text, selectedClasse);
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
