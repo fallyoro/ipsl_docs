@@ -78,22 +78,15 @@ class DocumentServive {
 
   Future<Map<String, dynamic>?> uploadDocument({
     required File file,
-    required String filename,
-    required String classe,
-    required String subject,
-    required String year,
-    required String categorie,
+    required String path,
+
     required String userId,
     void Function(int, int)? onProgress,
   }) async {
     final dio = Dio();
 
     final formData = FormData.fromMap({
-      'filename': filename,
-      'classe': classe,
-      'subject': subject,
-      'year': year,
-      'categorie': categorie,
+      'path': path,
       'user_id': userId,
       'doc': await MultipartFile.fromFile(
         file.path,

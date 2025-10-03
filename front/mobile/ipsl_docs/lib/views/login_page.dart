@@ -311,7 +311,11 @@ class _LoginPageState extends State<LoginPage> {
       numberContribution: int.tryParse(userInfo['number_contribution'])!,
     );
     await StorageService.setBool("isLoged", true);
-    userViewModel.addUser(user);
+    try {
+      await userViewModel.addUser(user);
+    } catch (e) {
+      logInfo("Can't add user");
+    }
 
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(

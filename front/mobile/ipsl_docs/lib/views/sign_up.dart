@@ -418,7 +418,7 @@ class _SignUpPageState extends State<SignUpPage> {
       classe: selectedClasse!,
       numberContribution: userData['number_contribution'],
     );
-    userViewModel.addUser(user);
+    await userViewModel.addUser(user);
     StorageService.setBool("isLoged", true);
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(

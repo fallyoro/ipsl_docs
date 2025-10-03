@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ipsl_docs/models/document.dart';
 import 'package:ipsl_docs/models/user.dart';
 import 'package:path/path.dart' as p;
@@ -37,18 +39,13 @@ class DatabaseHelper {
       CREATE TABLE IF NOT EXISTS documents (
         id TEXT PRIMARY KEY,
         user_id TEXT,
-        filename TEXT,
-        subject TEXT,
-        classe TEXT,
-        categorie TEXT,
-        year TEXT
+        path TEXT
       );
     ''');
     db.execute('''
-      CREATE TABLE IF NOT EXISTS user (
+      CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         user_name TEXT,
-        email TEXT,
         classe TEXT,
         number_contribution INT
       );
@@ -57,7 +54,7 @@ class DatabaseHelper {
 
   Future<void> updateUser(String classe, String userName) async {
     Database db = await instance.database;
-    await db.update("documents", {"user_name": userName, "classe": classe});
+    await db.update("users", {"user_name": userName, "classe": classe});
   }
 
   Future<void> updateDocument(String filename, String id) async {
@@ -108,11 +105,20 @@ class DatabaseHelper {
     return rawDocs.map((row) => Document.fromJson(row)).toList();
   }
 
-  Future<User> getUser() async {
+  Future<User?> getUser() async {
     Database db = await instance.database;
     List<Map<String, dynamic>> rawUsers = await db.query("users");
+    logInfo(rawUsers.toString());
+    if (rawUsers.isEmpty) {
+      return null;
+    }
+
     Map<String, dynamic> rawUser = rawUsers.first;
+
+    logInfo(rawUser.toString());
     User user = User.fromJson(rawUser);
+    logInfo("There is a user");
+
     return user;
   }
 
@@ -152,7 +158,7 @@ class DatabaseHelper {
 
   Future<void> insertUser(User user) async {
     Database db = await instance.database;
-    deleteAllUsers();
+    await deleteAllUsers();
     await db.insert(
       "users",
       user.toJson(),

@@ -164,16 +164,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     service.editProfile(
       selectedClasse,
-      userViewModel.userNotifier.value.userName,
+      userViewModel.userNotifier.value!.userName,
 
       userNameController.text,
     );
-    userViewModel.updateUser(userNameController.text, selectedClasse);
+    await userViewModel.updateUser(userNameController.text, selectedClasse);
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Profile modifier avec succes')));
-
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
 }

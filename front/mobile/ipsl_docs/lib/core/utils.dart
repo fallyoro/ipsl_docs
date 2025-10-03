@@ -3,8 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/models/document.dart';
+import 'package:ipsl_docs/services/document.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+
+import '../database/database.dart';
 
 void logInfo(String message) {
   print('\x1B[32m$message\x1B[0m'); // Vert
@@ -46,7 +49,6 @@ bool isDarkModePrefer() {
 }
 
 Future<String> getSavePath(Document doc) async {
-  final String fileName = p.basename(doc.path);
   final baseDir = await getApplicationDocumentsDirectory();
   final docDir = Directory(
     p.join(baseDir.path, "ipsl_docs", p.dirname(doc.path)),
@@ -54,6 +56,6 @@ Future<String> getSavePath(Document doc) async {
   if (!await docDir.exists()) {
     await docDir.create(recursive: true);
   }
-  final savePath = p.join(docDir.path, fileName);
+  final savePath = p.join(docDir.path, doc.name);
   return savePath;
 }

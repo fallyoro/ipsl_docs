@@ -10,12 +10,18 @@ import 'package:ipsl_docs/stokage_service.dart';
 import 'package:ipsl_docs/views/introduction/onboarding.dart';
 import 'package:ipsl_docs/widget_tree.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+import 'models/user.dart';
 
+Future<void> main() async {
+  logInfo("In the main");
+  WidgetsFlutterBinding.ensureInitialized();
+try {
+  logInfo("Try to setup the dependencies");
   await setupDependencies();
+} catch (e) {
+  logError("Error during setupDependencies: $e");}
   await StorageService.init();
-  var userData = DatabaseHelper.instance.getUser();
+  User? userData =await DatabaseHelper.instance.getUser();
   if (userData == null) {
     await StorageService.setBool("isLoged", false);
     await StorageService.setBool("isDark", isDarkModePrefer());
