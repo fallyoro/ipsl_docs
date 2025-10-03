@@ -17,8 +17,14 @@ class WidgetTree extends StatefulWidget {
 }
 
 class _WidgetTreeState extends State<WidgetTree> {
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(initialPage: 0);
   int _selectedPage = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   void _onItemSelected(int index) {
     setState(() => _selectedPage = index);

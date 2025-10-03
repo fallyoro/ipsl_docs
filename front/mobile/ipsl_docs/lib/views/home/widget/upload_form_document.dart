@@ -94,18 +94,6 @@ class _UploadFormContentState extends State<UploadFormContent> {
       return;
     }
 
-    final responseUpload = await service.uploadDocument(
-      file: File(pickedFile!.path!),
-      filename: filenameController.text,
-      classe: selectedClasse,
-      subject: subjectController.text,
-      year: yearController.text,
-      categorie: selectedCategory,
-      userId: userViewModel.userNotifier.value.id,
-      onProgress: (received, total) {
-        setState(() => progress = total > 0 ? received / total : 0);
-      },
-    );
     final path = join(
       selectedClasse,
       subjectController.text,
@@ -113,23 +101,31 @@ class _UploadFormContentState extends State<UploadFormContent> {
       selectedCategory,
       filenameController.text,
     );
+    final responseUpload = await service.uploadDocument(
+      file: File(pickedFile!.path!),
+      path: path,
+      userId: userViewModel.userNotifier.value!.id,
+      onProgress: (received, total) {
+        setState(() => progress = total > 0 ? received / total : 0);
+      },
+    );
 
     final doc = Document(
       id: responseUpload!['id'],
-      idUploader: userViewModel.userNotifier.value.id,
+      idUploader: userViewModel.userNotifier.value!.id,
       path: path,
     );
-    viewModel.addDocument(doc);
+    await viewModel.addDocument(doc);
 
     final int numberContribution = responseUpload['number_contribution'];
-    userViewModel.updateNumberContribution(numberContribution);
+    await userViewModel.updateNumberContribution(numberContribution);
 
     setState(() => isSending = false);
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
-    viewModel.loadDocuments();
+    await viewModel.loadDocuments();
 
     widget.onSuccess(); // ← déclenche la fermeture si besoin
   }
@@ -152,11 +148,12 @@ class _UploadFormContentState extends State<UploadFormContent> {
               optionsBuilder: (TextEditingValue textEditingValue) {
                 final input = textEditingValue.text;
                 if (input.isEmpty) return const <String>[];
-                List<String> subjects =
+                /*  List<String> subjects =
                     viewModel.documents.value
                         .map((e) => e.path.split("/").elementAt(2))
                         .toSet()
-                        .toList();
+                        .toList();*/
+                List<String> subjects = ['hello', 'yoro'];
 
                 return subjects.where(
                   (s) => s.toLowerCase().contains(input.toLowerCase()),
