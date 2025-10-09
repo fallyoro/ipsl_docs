@@ -41,9 +41,8 @@ class UserViewModel {
   Future<User?> getUser() async {
     final User? user = await _db.getUser();
     if (user != null) {
-
       user.toString();
-     // userNotifier.value = user;
+      // userNotifier.value = user;
     }
 
     return user;

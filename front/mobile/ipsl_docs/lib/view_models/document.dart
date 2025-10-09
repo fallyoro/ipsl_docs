@@ -17,6 +17,15 @@ class DocumentViewModel {
   DocumentViewModel(this._db);
 
   bool get canGoBack => _stack.isNotEmpty;
+  //getter if the current directory in name General
+  bool get isInGeneral {
+    if (currentDirectory.value == null) return false;
+    return currentDirectory.value!.name == "Général";
+  }
+  bool get isInConcours {
+    if (currentDirectory.value == null) return false;
+    return currentDirectory.value!.name == "Concours";
+  }
 
   //get current path for the breadcrumb.
   List<String> get currentPath {
@@ -68,10 +77,10 @@ class DocumentViewModel {
     }
 
     logInfo("the root node : ${root.subDirectories.toString()}");
-//    root.subDirectories.sort((a, b) => a.name.compareTo(b.name));
+    //    root.subDirectories.sort((a, b) => a.name.compareTo(b.name));
     root.subDirectories.sort((a, b) {
-      if (a.name == "General") return -1;
-      if (b.name == "General") return 1;
+      if (a.name == "Général") return -1;
+      if (b.name == "Général") return 1;
       return a.name.compareTo(b.name);
     });
     return root;

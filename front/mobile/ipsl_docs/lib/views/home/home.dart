@@ -13,6 +13,8 @@ import 'package:ipsl_docs/view_models/user.dart';
 import 'package:ipsl_docs/view_models/document.dart';
 import 'package:ipsl_docs/views/home/widget/bottom_sheet.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ipsl_docs/views/upload_concour_document_page.dart';
+import 'package:ipsl_docs/views/upload_general_document_page.dart';
 import '../../database/database.dart';
 import '../../services/document.dart';
 
@@ -25,7 +27,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late UserViewModel userViewModel = GetIt.instance<UserViewModel>();
-  late DocumentViewModel documentViewModel = GetIt.instance<DocumentViewModel>();
+  late DocumentViewModel documentViewModel =
+      GetIt.instance<DocumentViewModel>();
   bool isLoading = false;
   bool _hasFetched = false;
   String errorMessage = "";
@@ -43,7 +46,7 @@ class _HomeState extends State<Home> {
     userViewModel = GetIt.instance<UserViewModel>();
     //userViewModel.getUser();
     documentViewModel = GetIt.instance<DocumentViewModel>();
-  _fetchDocuments();
+    _fetchDocuments();
   }
 
   Future<bool> _onWillPop() async {
@@ -57,23 +60,20 @@ class _HomeState extends State<Home> {
   Future<void> _fetchDocuments() async {
     final bool isConnected = await isConnectedToInternet();
     try {
-      if (isConnected && _hasFetched == false ) {
-        //TODO remove the object document_service from ToggleTheme
-        final data = await document_service.fetchDocuments();
+      //   if (isConnected) {
+      //TODO remove the object document_service from ToggleTheme
+      final data = await document_service.fetchDocuments();
 
-        DatabaseHelper.instance.deleteAlldoc();
-        DatabaseHelper.instance.insertAllDoc(data);
-        documentViewModel.loadDocuments();
+      await DatabaseHelper.instance.deleteAlldoc();
+      await DatabaseHelper.instance.insertAllDoc(data);
 
-        _hasFetched = true;
-      }
+      //  }
     } catch (e) {
       errorMessage = 'Erreur lors du chargement : $e';
       logInfo(errorMessage);
     }
 
-    documentViewModel.loadDocuments();
-    _hasFetched = true;
+    await documentViewModel.loadDocuments();
   }
 
   @override
@@ -91,16 +91,22 @@ class _HomeState extends State<Home> {
           return Center(child: Text("Aucun document trouve"));
         }
         return Scaffold(
-          floatingActionButton: FloatingActionButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
-            ),
-            backgroundColor: AppColors.primaryColor,
-            onPressed: () {
-              builBottomSheetUpload(context);
-            },
-            child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
-          ),
+          floatingActionButton:
+              !documentViewModel.canGoBack
+                  ? FloatingActionButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    backgroundColor: AppColors.primaryColor,
+                    onPressed: () {
+                      builBottomSheetUpload(context);
+                    },
+                    child: const Icon(
+                      FontAwesomeIcons.plus,
+                      color: Colors.white,
+                    ),
+                  )
+                  : null,
           appBar: CustomAppBar(
             ctx: context,
             title: current.name,
@@ -133,7 +139,7 @@ class _HomeState extends State<Home> {
                           children: [
                             Text.rich(
                               TextSpan(
-                                text: 'Bienvenue 👋, ',
+                                text: 'Salut 👋, ',
                                 style: TextStyle(
                                   fontSize: 22,
                                   color: Colors.white,
@@ -166,6 +172,7 @@ class _HomeState extends State<Home> {
                       documentViewModel: documentViewModel,
                     )
                     : DocumentListWidget(service: service),
+                SizedBox(height: 40),
               ],
             ),
           ),
@@ -205,7 +212,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-     backgroundColor: canGoBack ? (isDark ? AppColors.darkSecondarySystemBackground: Colors.white) : AppColors.primaryColor,
+      backgroundColor:
+          canGoBack
+              ? (isDark
+                  ? AppColors.darkSecondarySystemBackground
+                  : Colors.white)
+              : AppColors.primaryColor,
       leading:
           canGoBack
               ? IconButton(
@@ -213,11 +225,36 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 icon: const Icon(Icons.arrow_back),
               )
               : null,
+
       actions: [
+        documentViewModel.isInConcours ?
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UploadConcoursDocumentPage(),
+              ),
+            );
+          },
+          icon: Icon(Icons.add, size: 35),
+        ):
+        documentViewModel.isInGeneral
+            ? IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UploadGeneralDocumentPage(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.add, size: 35),
+            )
+            : Container(),
         !canGoBack
             ? IconButton(
               onPressed: () => ThemeController.toggleTheme(),
-
               icon:
                   isDark
                       ? const Icon(Icons.light_mode, color: Colors.white)
@@ -302,13 +339,15 @@ class BreadcrumbsCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     // Si pas ou un seul élément, on affiche juste le dernier (ou rien)
     if (items.isEmpty) {
       return SizedBox.shrink();
     }
 
     final defaultStyle =
-        textStyle ?? TextStyle(color: Colors.black, fontSize: 16);
+        textStyle ??
+        TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16);
     final defaultLastStyle =
         lastItemStyle ??
         TextStyle(

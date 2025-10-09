@@ -14,9 +14,9 @@ import 'package:ipsl_docs/views/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 
 class UploadFormContent extends StatefulWidget {
-  final VoidCallback onSuccess;
+  //  final VoidCallback onSuccess;
 
-  const UploadFormContent({super.key, required this.onSuccess});
+  const UploadFormContent({super.key});
 
   @override
   State<UploadFormContent> createState() => _UploadFormContentState();
@@ -71,7 +71,6 @@ class _UploadFormContentState extends State<UploadFormContent> {
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles();
-
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.single;
 
@@ -126,8 +125,8 @@ class _UploadFormContentState extends State<UploadFormContent> {
       context,
     ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
     await viewModel.loadDocuments();
-
-    widget.onSuccess(); // ← déclenche la fermeture si besoin
+    if (!context.mounted) return;
+    Navigator.pop(context);
   }
 
   @override

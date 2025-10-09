@@ -40,7 +40,7 @@ dynamic builBottomSheetUpload(BuildContext context) {
                     ),
                   ),
 
-                  UploadFormContent(onSuccess: () => Navigator.pop(context)),
+                  UploadFormContent(),
                 ],
               ),
             ),

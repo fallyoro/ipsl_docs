@@ -15,13 +15,14 @@ import 'models/user.dart';
 Future<void> main() async {
   logInfo("In the main");
   WidgetsFlutterBinding.ensureInitialized();
-try {
-  logInfo("Try to setup the dependencies");
-  await setupDependencies();
-} catch (e) {
-  logError("Error during setupDependencies: $e");}
+  try {
+    logInfo("Try to setup the dependencies");
+    await setupDependencies();
+  } catch (e) {
+    logError("Error during setupDependencies: $e");
+  }
   await StorageService.init();
-  User? userData =await DatabaseHelper.instance.getUser();
+  User? userData = await DatabaseHelper.instance.getUser();
   if (userData == null) {
     await StorageService.setBool("isLoged", false);
     await StorageService.setBool("isDark", isDarkModePrefer());
