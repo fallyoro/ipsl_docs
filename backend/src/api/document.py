@@ -68,6 +68,7 @@ async def upload_doc(
         "id": document.id,
         "path": str(complete_path),
         "number_contribution": number_contribution,
+        "updated_at": str(document.updated_at),
     }
 
 
