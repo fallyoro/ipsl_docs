@@ -8,14 +8,12 @@ class DocumentBase(BaseModel):
     path: str
 
 
-class DocumentDownload(DocumentBase):
-    id: UUID
-
-
 class DocumentOut(DocumentBase):
     id: UUID
     upload_at: datetime
+    is_deleted: bool
+    updated_at: datetime
 
 
-class DocumentIn(DocumentBase):
+class DocumentCreate(DocumentBase):
     pass

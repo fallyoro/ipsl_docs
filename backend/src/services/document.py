@@ -1,7 +1,7 @@
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.models.document import Document
-from src.schemas.document import DocumentIn
+from src.schemas.document import DocumentCreate
 from uuid import UUID
 from pathlib import Path
 
@@ -26,7 +26,7 @@ class DocumentService:
         result = await session.exec(statement)
         return result.all()
 
-    async def upload_doc(self, session: AsyncSession, doc_data: DocumentIn):
+    async def upload_doc(self, session: AsyncSession, doc_data: DocumentCreate):
         doc_data_dict = doc_data.model_dump()
         new_doc = Document(**doc_data_dict)
         session.add(new_doc)

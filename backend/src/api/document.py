@@ -6,7 +6,7 @@ from src.services.document import DocumentService
 from fastapi.responses import FileResponse
 import shutil
 from pathlib import Path
-from src.schemas.document import DocumentDownload, DocumentIn
+from src.schemas.document import DocumentOut, DocumentCreate
 from uuid import UUID
 from src.services.user import UserService
 
@@ -14,7 +14,7 @@ service = DocumentService()
 doc_router = APIRouter()
 
 
-@doc_router.get("/documents", response_model=List[DocumentDownload])
+@doc_router.get("/documents", response_model=List[DocumentOut])
 async def get_all_documents(session: AsyncSession = Depends(create_session)):
     try:
         documents = await service.get_all_documents(session=session)
@@ -34,7 +34,7 @@ async def upload_doc(
     session: AsyncSession = Depends(create_session),
 ):
 
-    doc_data = DocumentIn(user_id=user_id, path=path)  # type: ignore
+    doc_data = DocumentCreate(user_id=user_id, path=path)  # type: ignore
 
     documents_path = Path(__file__).resolve().parent.parents[1] / "documents"
     documents_path.mkdir(parents=True, exist_ok=True)
