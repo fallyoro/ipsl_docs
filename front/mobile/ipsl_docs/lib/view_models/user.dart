@@ -20,7 +20,7 @@ class UserViewModel {
 
   Future<void> updateNumberContribution(int numberContribution) async {
     await _db.updateNumberContribution(numberContribution);
-    await getUser();
+    await init();
   }
 
   Future<void> init() async {

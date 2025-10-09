@@ -9,21 +9,25 @@ Future<void> setupDependencies() async {
   final getIt = GetIt.instance;
   final db = DatabaseHelper.instance;
 
-  final DocumentViewModel documentViewModel = DocumentViewModel(db);
+  final DocumentServive documentService = DocumentServive();
+  final DocumentViewModel documentViewModel = DocumentViewModel(
+    db,
+    documentService,
+  );
 
-  await documentViewModel.deleteAlldoc();
+  //  await documentViewModel.deleteAlldoc();
 
-  await documentViewModel.loadDocuments();
+  //await documentViewModel.loadDocuments();
+  // await documentViewModel.syncDocumentFromServer();
 
   final userViewModel = UserViewModel(db);
 
   logInfo("Before getting the user in the setup dependencies");
-  final DocumentServive documentServive = DocumentServive();
   await userViewModel.init();
 
   logInfo("After getting the user in the setup dependencies");
 
   getIt.registerSingleton<DocumentViewModel>(documentViewModel);
   getIt.registerSingleton<UserViewModel>(userViewModel);
-  getIt.registerSingleton<DocumentServive>(documentServive);
+  getIt.registerSingleton<DocumentServive>(documentService);
 }
