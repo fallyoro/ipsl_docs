@@ -1,4 +1,4 @@
-name: fastapi-env
+name: ipsl_docs
 channels:
   - defaults
 dependencies:
