@@ -108,11 +108,15 @@ class _UploadFormContentState extends State<UploadFormContent> {
         setState(() => progress = total > 0 ? received / total : 0);
       },
     );
-
+    logInfo("response upload ${responseUpload?.toString()}");
+    DateTime updatedAt = DateTime.parse(
+      responseUpload?['updated_at'] as String,
+    );
     final doc = Document(
       id: responseUpload!['id'],
       idUploader: userViewModel.userNotifier.value!.id,
       path: path,
+      updatedAt: updatedAt,
     );
     await viewModel.addDocument(doc);
 

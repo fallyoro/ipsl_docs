@@ -60,14 +60,10 @@ class _HomeState extends State<Home> {
   Future<void> _fetchDocuments() async {
     final bool isConnected = await isConnectedToInternet();
     try {
-      //   if (isConnected) {
-      //TODO remove the object document_service from ToggleTheme
-      final data = await document_service.fetchDocuments();
-
-      await DatabaseHelper.instance.deleteAlldoc();
-      await DatabaseHelper.instance.insertAllDoc(data);
-
-      //  }
+      if (isConnected) {
+        //TODO remove the object document_service from ToggleTheme
+        await documentViewModel.syncDocumentFromServer();
+      }
     } catch (e) {
       errorMessage = 'Erreur lors du chargement : $e';
       logInfo(errorMessage);
@@ -227,19 +223,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               : null,
 
       actions: [
-        documentViewModel.isInConcours ?
-        IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UploadConcoursDocumentPage(),
-              ),
-            );
-          },
-          icon: Icon(Icons.add, size: 35),
-        ):
-        documentViewModel.isInGeneral
+        documentViewModel.isInConcours
+            ? IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UploadConcoursDocumentPage(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.add, size: 35),
+            )
+            : documentViewModel.isInGeneral
             ? IconButton(
               onPressed: () {
                 Navigator.push(

@@ -39,7 +39,8 @@ class DatabaseHelper {
       CREATE TABLE IF NOT EXISTS documents (
         id TEXT PRIMARY KEY,
         user_id TEXT,
-        path TEXT
+        path TEXT,
+        updated_at TEXT
       );
     ''');
     db.execute('''
@@ -57,7 +58,7 @@ class DatabaseHelper {
     await db.update("users", {"user_name": userName, "classe": classe});
   }
 
-  Future<void> updateDocument(String filename, String id) async {
+  Future<void> updateDocumentName(String filename, String id) async {
     Database db = await instance.database;
     await db.update(
       "documents",
@@ -65,6 +66,22 @@ class DatabaseHelper {
       whereArgs: [id],
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  Future<void> updateDocument(Document doc) async {
+    Database db = await instance.database;
+    await db.update(
+      "documents",
+      doc.toJson(),
+      where: 'id = ?',
+      whereArgs: [doc.id],
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> deleteDocument(String id) async {
+    Database db = await instance.database;
+    await db.delete("documents", where: 'id = ?', whereArgs: [id]);
   }
 
   Future<List<Document>> loadDirectory(String parentPath) async {

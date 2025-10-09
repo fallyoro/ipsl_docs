@@ -38,6 +38,23 @@ class DocumentServive {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchRawDocuments() async {
+    try {
+      final response = await dio.get('/documents', cancelToken: _cancelToken);
+
+      if (response.statusCode == 200) {
+        final data = response.data as List;
+        return data.map((json) => json as Map<String, dynamic>).toList();
+      } else {
+        throw Exception("Faild to load documents");
+      }
+    } on DioException catch (e) {
+      throw Exception(" Failed to fetch document. Error: $e");
+    } catch (e) {
+      throw Exception("Error unexpected: $e");
+    }
+  }
+
   Future<void> downloadFile(
     Document doc,
     CancelToken cancelToken,
@@ -107,6 +124,7 @@ class DocumentServive {
         return {
           'id': data['id']?.toString(),
           'number_contribution': data['number_contribution'],
+          'updated_at': data['updated_at']?.toString(),
         };
         // return data['id']?.toString();
       } else {

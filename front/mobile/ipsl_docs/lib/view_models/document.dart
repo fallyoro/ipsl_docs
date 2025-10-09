@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/document.dart';
+import 'package:ipsl_docs/services/document.dart';
 import 'package:path/path.dart' as p;
 import 'package:ipsl_docs/view_models/directory_node.dart';
 
@@ -14,7 +15,8 @@ class DocumentViewModel {
   final ValueNotifier<DirectoryNode?> root = ValueNotifier(null);
   final List<DirectoryNode> _stack = [];
   final ValueNotifier<bool> canGoBackNotifier = ValueNotifier(false);
-  DocumentViewModel(this._db);
+  final DocumentServive service;
+  DocumentViewModel(this._db, this.service);
 
   bool get canGoBack => _stack.isNotEmpty;
   //getter if the current directory in name General
@@ -22,6 +24,7 @@ class DocumentViewModel {
     if (currentDirectory.value == null) return false;
     return currentDirectory.value!.name == "Général";
   }
+
   bool get isInConcours {
     if (currentDirectory.value == null) return false;
     return currentDirectory.value!.name == "Concours";
@@ -131,7 +134,7 @@ class DocumentViewModel {
   }
 
   Future<void> updateDocumentName(String newFilename, Document doc) async {
-    await _db.updateDocument(newFilename, doc.id);
+    await _db.updateDocumentName(newFilename, doc.id);
     await loadDocuments();
 
     final dirDoc = p.dirname(doc.path);
@@ -139,5 +142,33 @@ class DocumentViewModel {
 
     final File file = File(doc.path);
     file.rename(newPath);
+  }
+
+  //sync documents from remote server using the variable updatedAt(each document has its own value) in the document model
+  Future<void> syncDocumentFromServer() async {
+    final List<Document> localDocument = await _db.getDocuments();
+    final List<Map<String, dynamic>> docFetch =
+        await service.fetchRawDocuments();
+    logInfo(docFetch.toString());
+    for (Map<String, dynamic> doc in docFetch) {
+      if (doc['is_deleted'] == true) {
+        await _db.deleteDocument(doc['id']);
+      } else {
+        Document updatedDoc = Document.fromJson(doc);
+        await _db.insertDocument(updatedDoc);
+      }
+    }
+    //await loadDocuments();
+    /*for (Document doc in localDocument) {
+      Map<String, dynamic>? remoteDoc = docFetch.firstWhere((element) {
+       return doc.id == element['id'];
+
+      } );
+      if (remoteDoc != null) {
+
+        DateTime remoteDocumentupDateAt = DateTime.parse(remoteDoc['updated_at']);
+
+      }
+    }*/
   }
 }
