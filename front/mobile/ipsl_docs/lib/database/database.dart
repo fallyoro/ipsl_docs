@@ -90,11 +90,15 @@ class DatabaseHelper {
     //  deleteAlldoc();
 
     for (var doc in data) {
-      db.insert(
-        "documents",
-        doc.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      try {
+        db.insert(
+          "documents",
+          doc.toJson(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      } catch (e) {
+        logInfo("Error inserting document: $e");
+      }
     }
   }
 
