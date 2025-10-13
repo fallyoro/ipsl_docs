@@ -1,4 +1,4 @@
-from sqlmodel import Relationship, SQLModel, Field, false
+from sqlmodel import Relationship, SQLModel, Field
 from datetime import datetime, timezone
 from uuid import uuid4, UUID
 

@@ -50,12 +50,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     userViewModel = GetIt.instance<UserViewModel>();
     userNameController = TextEditingController(text: widget.userName);
     selectedClasse = widget.userClass;
-    options = BaseOptions(
-      baseUrl: 'http://$host:$port/auth/',
-      connectTimeout: Duration(seconds: 10),
-      receiveTimeout: Duration(minutes: 3),
-    );
-    dio = Dio(options);
     service = UserService(dio: dio);
   }
 

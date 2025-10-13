@@ -1,6 +1,6 @@
 from typing import List
 from src.models.document import Document
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship, null
 
 # from src.models.document import Document
 from datetime import datetime, timezone
@@ -13,6 +13,7 @@ class User(SQLModel, table=True):
     user_name: str
     classe: str
     password_hash: str
+    notification_token: str = Field(default=None, nullable=True)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),

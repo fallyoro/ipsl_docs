@@ -1,3 +1,4 @@
+from curses import tparm
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Depends, status
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.database.database import create_session
@@ -9,6 +10,8 @@ from pathlib import Path
 from src.schemas.document import DocumentOut, DocumentCreate
 from uuid import UUID
 from src.services.user import UserService
+from src.services.notification import NotificationService
+from firebase_admin import messaging
 
 service = DocumentService()
 doc_router = APIRouter()
@@ -50,25 +53,42 @@ async def upload_doc(
             status_code=500, detail=f"{complete_path} est déjà un dossier"
         )
 
-    # Upload si nécessaire
-    # if not complete_path.is_file():
-    # await service.upload_doc(doc_data=doc_data, session=session)
     document = await service.upload_doc(doc_data=doc_data, session=session)
-    # Warning Vefrfkelvfe jv
     # Copie le contenu du fichier entrant
     with open(complete_path, "wb") as buffer:
         shutil.copyfileobj(doc.file, buffer)
 
     user_service = UserService()
+    user_name = await user_service.get_user_name(id=UUID(user_id), session=session)
     number_contribution = await user_service.get_number_contribution(
         session=session, user_id=UUID(user_id)
     )
-
+    topic = path.split("/")[0]
+    print(f"=====================The path of the doc {path}")
+    if topic == "Concours" or topic == "Général":
+        print(f"The topic is : {topic}")
+        tokens = await user_service.get_tokens(session=session)
+    else:
+        tokens = await user_service.get_tokens(session=session, classe=topic)
+    print(f"The list of tokens: {tokens}")
+    notification_service = NotificationService()
+    response = notification_service.send_notification(
+        tokens=tokens, path=path, user_name=user_name
+    )
+    # message = messaging.MulticastMessage(
+    #     notification=messaging.Notification(
+    #         title="Nouveau document", body=f"User vient de partager un document"
+    #     ),
+    #     tokens=tokens,
+    # )
+    # response = messaging.send_each_for_multicast(message)
     return {
         "id": document.id,
         "path": str(complete_path),
         "number_contribution": number_contribution,
         "updated_at": str(document.updated_at),
+        # "succes_count": response.success_count,
+        # "failure_count": response.failure_count,
     }
 
 
@@ -91,17 +111,18 @@ async def download_doc(doc_id: str, session: AsyncSession = Depends(create_sessi
     if not doc_path:
         raise HTTPException(status_code=404, detail="Document not found")
 
-    documents_path = Path(__file__).resolve().parent.parents[1] / "documents"
-    complete_path = documents_path / doc_path
+    base_dir = Path(__file__).resolve().parent.parents[1] / "documents"
+    full_path = base_dir / doc_path
 
-    if complete_path.is_file():
-        return FileResponse(
-            path=complete_path,
-            media_type="application/octet-stream",
-            filename=complete_path.name,
+    # if it's not a file we just throw an error
+    if not full_path.is_file:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": "file not found", "file_path": str(full_path)},
         )
 
-    raise HTTPException(
-        status_code=404,
-        detail={"error": "file not found", "file_path": str(complete_path)},
+    return FileResponse(
+        path=full_path,
+        media_type="application/octet-stream",
+        filename=full_path.name,
     )
