@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:ipsl_docs/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +8,7 @@ import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/models/user.dart';
+import 'package:ipsl_docs/notification_service.dart';
 import 'package:ipsl_docs/services/auth_service.dart';
 import 'package:ipsl_docs/stokage_service.dart';
 import 'package:ipsl_docs/views/login_page.dart';
@@ -426,7 +428,10 @@ class _SignUpPageState extends State<SignUpPage> {
       MaterialPageRoute(builder: (_) => WidgetTree()),
       (route) => false,
     );
+    userViewModel.updateFcmToken();
   }
+
+
 }
 
 class ActionButton extends StatelessWidget {

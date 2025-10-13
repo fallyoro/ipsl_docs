@@ -6,20 +6,28 @@ import 'package:ipsl_docs/core/notifiers.dart';
 import 'package:ipsl_docs/core/theme.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/database/database.dart';
+import 'package:ipsl_docs/notification_service.dart';
 import 'package:ipsl_docs/stokage_service.dart';
 import 'package:ipsl_docs/views/introduction/onboarding.dart';
 import 'package:ipsl_docs/widget_tree.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'models/user.dart';
 
 Future<void> main() async {
-  logInfo("In the main");
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   try {
-    logInfo("Try to setup the dependencies");
     await setupDependencies();
   } catch (e) {
     logError("Error during setupDependencies: $e");
+  }
+  try {
+
+   await  NotificationService.init();
+  } catch (e) {
+    logError("Error during NotificationService.init: $e");
   }
   await StorageService.init();
   User? userData = await DatabaseHelper.instance.getUser();
@@ -28,10 +36,6 @@ Future<void> main() async {
     await StorageService.setBool("isDark", isDarkModePrefer());
   }
   ThemeController.loadTheme();
-
-  // final dir = await getApplicationDocumentsDirectory();
-
-  // logInfo('DB path: ${dir.path}/ipsl_docs.db');
 
   runApp(const MyApp());
 }

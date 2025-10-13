@@ -56,6 +56,9 @@ dependencies:
   mask_text_input_formatter: ^2.9.0
   sqflite: ^2.4.2
   share_plus: ^12.0.0
+  firebase_core: ^4.1.1
+  firebase_messaging: ^16.0.2
+  flutter_local_notifications: ^19.4.2
   
  
   

@@ -61,7 +61,7 @@ class _HomeState extends State<Home> {
     final bool isConnected = await isConnectedToInternet();
     try {
       if (isConnected) {
-        //TODO remove the object document_service from ToggleTheme
+        //TODO remove the object document_service from ToggleTheme that's weird
         await documentViewModel.syncDocumentFromServer();
       }
     } catch (e) {

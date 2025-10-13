@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:ipsl_docs/core/utils.dart';
+import 'package:ipsl_docs/notification_service.dart';
 
 class UserService {
   Dio dio;
@@ -27,6 +29,19 @@ class UserService {
       return {"error": "Erreur inconnue : $e"};
     }
   }
+
+  Future<void> updateFcmToken(String userName, String fcmToken) async {
+    try {
+      await dio.put(
+        "/update-fcm-token/$userName",
+        data: jsonEncode({'fcm_token': fcmToken}),
+      );
+    } on DioException catch (e) {
+      logError(e.response?.data['detail'] ?? "Erreur inconnue" );
+    } catch (e) {
+      logError("Erreur inconnue : $e");
+    }
+  }
 }
 
 class AuthService {
@@ -38,7 +53,7 @@ class AuthService {
     try {
       final response = await dio.post(
         "/login",
-        data: jsonEncode({'user_name': userName, 'password': password}),
+        data: jsonEncode({'user_name': userName, 'password': password, 'fcm_token': NotificationService.token}),
       );
 
       /*

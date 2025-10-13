@@ -2,12 +2,17 @@ import 'package:flutter/widgets.dart';
 import 'package:ipsl_docs/core/utils.dart';
 import 'package:ipsl_docs/database/database.dart';
 import 'package:ipsl_docs/models/user.dart';
+import 'package:ipsl_docs/notification_service.dart';
+
+import '../services/auth_service.dart';
 
 class UserViewModel {
   final DatabaseHelper _db;
+  //TODO use dependency injection
+  final UserService _userService;
   ValueNotifier<User?> userNotifier = ValueNotifier(null);
 
-  UserViewModel(this._db);
+  UserViewModel(this._db, this._userService);
   Future<void> addUser(User user) async {
     await _db.insertUser(user);
     userNotifier.value = user;
@@ -46,8 +51,21 @@ class UserViewModel {
     }
 
     return user;
-    //WidgetsBinding.instance.addPostFrameCallback((_) {
-    //userNotifier.value = user;
-    //});
   }
+
+  Future<void> updateFcmToken() async {
+    String? fcmToken = NotificationService.token;
+    String userName = userNotifier.value?.userName ?? "";
+    if (userName.isNotEmpty && fcmToken != null) {
+      try {
+        await _userService.updateFcmToken(userName, fcmToken);
+        logInfo("FCM token registered for user: $userName");
+      } catch (e) {
+        logError("Failed to register FCM token: $e");
+      }
+    } else {
+      logError("No user found to register FCM token or token is null");
+    }
+  }
+
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "510427170931",
+    "project_id": "ipsldocs",
+    "storage_bucket": "ipsldocs.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510427170931:android:79e1b083b6c00a5ee4c206",
+        "android_client_info": {
+          "package_name": "com.example.ipsl_docs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5aAPgT0_BMVmjq3AbsERPuF-3Pqk5qvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

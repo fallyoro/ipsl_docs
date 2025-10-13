@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ipsl_docs/core/constant.dart';
 import 'package:ipsl_docs/views/home/widget/upload_form_document.dart';
 
-dynamic builBottomSheetUpload(BuildContext context) {
+void builBottomSheetUpload(BuildContext context) {
   bool isDark = Theme.of(context).brightness == Brightness.dark;
-  return showModalBottomSheet(
+  showModalBottomSheet(
     context: context,
     isScrollControlled: true,
 
@@ -40,7 +40,7 @@ dynamic builBottomSheetUpload(BuildContext context) {
                     ),
                   ),
 
-                  UploadFormContent(),
+                  const UploadFormContent(),
                 ],
               ),
             ),
