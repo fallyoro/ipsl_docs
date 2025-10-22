@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ipsl_docs/core/constant.dart';
-import 'package:ipsl_docs/core/global.dart';
-import 'package:ipsl_docs/core/notifiers.dart';
-import 'package:ipsl_docs/core/theme.dart';
-import 'package:ipsl_docs/core/utils.dart';
-import 'package:ipsl_docs/database/database.dart';
-import 'package:ipsl_docs/notification_service.dart';
-import 'package:ipsl_docs/stokage_service.dart';
-import 'package:ipsl_docs/views/introduction/onboarding.dart';
-import 'package:ipsl_docs/widget_tree.dart';
+import 'package:ipsl_docs/src/core/constant.dart';
+import 'package:ipsl_docs/src/core/global.dart';
+import 'package:ipsl_docs/src/core/notifiers.dart';
+import 'package:ipsl_docs/src/core/theme.dart';
+import 'package:ipsl_docs/src/core/utils.dart';
+import 'package:ipsl_docs/src/database/database.dart';
+import 'package:ipsl_docs/src/models/user.dart';
+import 'package:ipsl_docs/src/core/notification_service.dart';
+import 'package:ipsl_docs/src/core/stokage_service.dart';
+import 'package:ipsl_docs/src/pages/introduction/onboarding.dart';
+import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-
-import 'models/user.dart';
+import 'src/core/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,8 +23,7 @@ Future<void> main() async {
     logError("Error during setupDependencies: $e");
   }
   try {
-
-   await  NotificationService.init();
+    await NotificationService.init();
   } catch (e) {
     logError("Error during NotificationService.init: $e");
   }
