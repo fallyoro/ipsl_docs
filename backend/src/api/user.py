@@ -3,15 +3,17 @@ from datetime import timedelta
 from dns import update
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.responses import JSONResponse
-import uuid
+from uuid import UUID
+from starlette.status import HTTP_400_BAD_REQUEST
 from src.models.user import User
+
+from src.schemas.notification_token import NotificationToken
 from src.schemas.user import UserCreate, UserOut, UserLogin, UserEdit
 from src.services.user import UserService
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.database.database import create_session
 from src.utils import create_acess_token, decode_token, passwd_context, verify_password
 from typing import List
-
 
 user_router = APIRouter()
 user_service = UserService()
@@ -64,7 +66,10 @@ async def login_user(
 ):
     user_name = login_data.user_name
     password = login_data.password
-
+    fcm_token = login_data.fcm_token
+    await user_service.update_token(
+        token=fcm_token, user_name=user_name, session=session
+    )
     user = await user_service.get_user_by_user_name(
         user_name=user_name, session=session
     )
@@ -105,3 +110,16 @@ async def login_user(
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED, detail="Identifiant invalide"
     )
+
+
+@user_router.put("/update-fcm-token/{user_name}")
+async def update_fcm_token(
+    token: NotificationToken, user_name: str, session=Depends(create_session)
+):
+    try:
+        await user_service.update_token(token.token, user_name, session)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Impossible d'enregistrer le token: {e}",
+        )

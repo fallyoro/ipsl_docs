@@ -1,0 +1,33 @@
+import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/src/core/utils.dart';
+import '../database/database.dart';
+import '../services/auth_service.dart';
+import '../services/document.dart';
+import '../view_models/document.dart';
+import '../view_models/user.dart';
+
+Future<void> setupDependencies() async {
+  final getIt = GetIt.instance;
+  final db = DatabaseHelper.instance;
+
+  final DocumentService documentService = DocumentService();
+  final DocumentViewModel documentViewModel = DocumentViewModel(
+    db,
+    documentService,
+  );
+
+  await documentViewModel.loadDocuments();
+  // await documentViewModel.syncDocumentFromServer();
+  final UserService userService = UserService();
+  final userViewModel = UserViewModel(db, userService);
+
+  logInfo("Before getting the user in the setup dependencies");
+  await userViewModel.init();
+
+  logInfo("After getting the user in the setup dependencies");
+
+  getIt.registerSingleton<DocumentViewModel>(documentViewModel);
+  getIt.registerSingleton<UserViewModel>(userViewModel);
+  getIt.registerSingleton<DocumentService>(documentService);
+  getIt.registerSingleton<UserService>(userService);
+}

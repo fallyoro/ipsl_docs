@@ -1,0 +1,137 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
+import 'package:path/path.dart';
+
+import '../core/constant.dart';
+import '../core/utils.dart';
+import '../models/document.dart';
+import '../services/document.dart';
+import '../view_models/document.dart';
+import '../view_models/user.dart';
+
+class UploadGeneralDocumentPage extends StatefulWidget {
+  const UploadGeneralDocumentPage({super.key});
+
+  @override
+  State<UploadGeneralDocumentPage> createState() =>
+      _UploadGeneralDocumentPageState();
+}
+
+class _UploadGeneralDocumentPageState extends State<UploadGeneralDocumentPage> {
+  final _formKeySubmit = GlobalKey<FormState>();
+  double progress = 0;
+  bool isSending = false;
+  final viewModel = GetIt.I<DocumentViewModel>();
+  final userViewModel = GetIt.I<UserViewModel>();
+  final documentServive = GetIt.I<DocumentService>();
+  final filenameController = TextEditingController();
+  PlatformFile? pickedFile;
+
+  Future<void> _pickFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.isNotEmpty) {
+      final file = result.files.single;
+
+      setState(() {
+        pickedFile = file;
+        filenameController.text = file.name;
+      });
+    }
+  }
+
+  Future<void> _submit(BuildContext context) async {
+    if (!_formKeySubmit.currentState!.validate() || pickedFile == null) return;
+    FocusScope.of(context).unfocus();
+
+    setState(() => isSending = true);
+    if (!await isConnectedToInternet()) {
+      setState(() => isSending = false);
+      if (!context.mounted) return;
+      showNoConnectionMessage(context);
+      return;
+    }
+
+    final path = join("Général", filenameController.text);
+    final responseUpload = await documentServive.uploadDocument(
+      file: File(pickedFile!.path!),
+      path: path,
+      userId: userViewModel.userNotifier.value!.id,
+      onProgress: (received, total) {
+        setState(() => progress = total > 0 ? received / total : 0);
+      },
+    );
+
+    final doc = Document(
+      id: responseUpload!['id'],
+      idUploader: userViewModel.userNotifier.value!.id,
+      path: path,
+      updatedAt: DateTime.parse(responseUpload['updated_at'] as String),
+    );
+    await viewModel.addDocument(doc);
+
+    final int numberContribution = responseUpload['number_contribution'];
+    await userViewModel.updateNumberContribution(numberContribution);
+
+    setState(() => isSending = false);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
+    await viewModel.loadDocuments();
+    if (!context.mounted) return;
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Partage de document")),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          spacing: 30,
+          children: [
+            Form(
+              key: _formKeySubmit,
+              child: TextFormField(
+                controller: filenameController,
+                decoration: const InputDecoration(labelText: 'Nom du fichier'),
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty ? 'Champ requis' : null,
+              ),
+            ),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+              ),
+              onPressed: _pickFile,
+              child: const Text(
+                'Choisir un fichier',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+              ),
+              onPressed: isSending ? null : () => _submit(context),
+              child: const Text(
+                'Envoyer',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+
+            if (isSending) customLinearProgressSending(progress),
+          ],
+        ),
+      ),
+    );
+  }
+}

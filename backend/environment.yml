@@ -1,4 +1,4 @@
-name: fastapi-env
+name: ipsl_docs
 channels:
   - defaults
 dependencies:
@@ -71,4 +71,4 @@ dependencies:
       - uvloop==0.21.0
       - watchfiles==1.0.5
       - websockets==15.0.1
-prefix: /home/yoro/anaconda3/envs/fastapi-env
+prefix: /home/yoro/miniconda3/envs/ipsl_docs

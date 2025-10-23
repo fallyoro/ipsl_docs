@@ -1,39 +1,38 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.schemas.user import UserCreate, UserOut, UserBase
+from src.schemas.user import UserCreate
 from src.models.user import User
 from src.models.document import Document
 
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select
-from sqlalchemy import update
+from sqlmodel import select, update
 from src.utils import generate_passord_hash
 from uuid import UUID
 
 
 class UserService:
-    async def get_user_by_user_name(self, user_name: str, session: AsyncSession) -> User | None:
+    async def get_user_by_user_name(
+        self, user_name: str, session: AsyncSession
+    ) -> User | None:
         statement = select(User).where(User.user_name == user_name)
         result = await session.exec(statement)
         user = result.first()
         return user
-    
-    
-    async def update_user(self, session: AsyncSession, user_name: str, new_user_name: str, new_classe: str) -> None:
-        statement = update(User).where(User.user_name == user_name).values(user_name = new_user_name, classe = new_classe) # type: ignore
-        await session.exec(statement) # type: ignore
+
+    async def update_user(
+        self, session: AsyncSession, user_name: str, new_user_name: str, new_classe: str
+    ) -> None:
+        statement = update(User).where(User.user_name == user_name).values(user_name=new_user_name, classe=new_classe)  # type: ignore
+        await session.exec(statement)  # type: ignore
         await session.commit()  # Permet que les changements prennent effet
-        
-    
-    async def get_number_contribution(self, user_id:UUID, session: AsyncSession) -> int:
+
+    async def get_number_contribution(
+        self, user_id: UUID, session: AsyncSession
+    ) -> int:
         statement = select(Document).where(Document.user_id == user_id)
         result = await session.exec(statement)
         documents = result.all()
         return len(documents)
-    
 
-    
-
-        
     async def user_exist(self, user_name: str, session: AsyncSession) -> bool:
         user = await self.get_user_by_user_name(user_name, session)
         return True if user else False
@@ -46,8 +45,34 @@ class UserService:
 
         session.add(new_user)
         await session.commit()
-        await session.refresh(new_user)  
+        await session.refresh(new_user)
         return new_user
 
+    async def update_token(self, token: str, user_name: str, session: AsyncSession):
+        statement = update(User).where(User.user_name == user_name).values(notification_token=token)  # type: ignore
+        await session.exec(statement)  # type: ignore
+        await session.commit()
 
+    # async def get_all_token(self, session: AsyncSession) -> list[str]:
+    #     statement = select(User.notification_token)
+    #     result = await session.exec(statement)
+    #     tokens = [row[0] for row in result.all() if row[0] is not None]
+    #     return tokens
+    async def get_tokens(
+        self, session: AsyncSession, classe: str | None = None
+    ) -> list[str]:
+        if classe:
+            print("------------this notif is for a classe")
+            statement = select(User.notification_token).where(User.classe == classe)
+        else:
+            print("------------this notif is general")
+            statement = select(User.notification_token)
+        result = await session.exec(statement)
+        tokens = [row for row in result.all()]
+        return tokens
 
+    async def get_user_name(self, id: UUID, session: AsyncSession) -> str | None:
+        statement = select(User.user_name).where(User.id == id)
+        result = await session.exec(statement)
+        user_name = result.one_or_none()
+        return user_name
