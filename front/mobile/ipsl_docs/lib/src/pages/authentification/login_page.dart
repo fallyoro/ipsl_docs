@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/pages/authentification/widget/build_textfield.dart';
 import 'package:ipsl_docs/src/pages/widgets/actions_button.dart';
+import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:ipsl_docs/src/pages/authentification/sign_up.dart';
 import 'package:ipsl_docs/src/widget_tree.dart';
@@ -22,12 +24,14 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _obscurePassword = false;
+  late DocumentViewModel documentViewModel;
   late UserViewModel userViewModel;
 
   @override
   void initState() {
     super.initState();
     userViewModel = GetIt.I<UserViewModel>();
+    documentViewModel = GetIt.I<DocumentViewModel>();
     // Listen for error messages. I prefer this way to show SnackBars via the initState
     // rather than using a ValueListenableBuilder in the build method to avoid rebuilding
     userViewModel.errorNotifier.addListener(() {
@@ -81,6 +85,18 @@ class _LoginPageState extends State<LoginPage> {
                   buildTextField(
                     controller: passwordController,
                     label: "Mot de passe",
+                    obscure: _obscurePassword,
+                    suffix: IconButton(
+                      icon:
+                      _obscurePassword
+                          ? Icon(FontAwesomeIcons.eyeSlash)
+                          : Icon(FontAwesomeIcons.eye),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                     validator:
                         (value) =>
                             value == null || value.isEmpty
@@ -148,6 +164,8 @@ class _LoginPageState extends State<LoginPage> {
       userNameController.text.trim(),
       passwordController.text.trim(),
     );
+    await documentViewModel.syncDocumentFromServer();
+    await documentViewModel.loadDocuments();
     if (userViewModel.authState.value != ViewState.success) return;
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(

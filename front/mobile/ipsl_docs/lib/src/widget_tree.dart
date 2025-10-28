@@ -6,7 +6,7 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'core/constant.dart';
-import 'core/notifiers.dart';
+import 'core/theme_controller.dart';
 
 List<Widget> pages = [HomePage(), UploadTabBar(), const Profile()];
 

@@ -4,10 +4,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
-import 'package:ipsl_docs/src/core/notifiers.dart';
+import 'package:ipsl_docs/src/core/theme_controller.dart';
 import 'package:ipsl_docs/src/pages/authentification/widget/build_textfield.dart';
 import 'package:ipsl_docs/src/pages/widgets/actions_button.dart';
 import 'package:ipsl_docs/src/pages/authentification/login_page.dart';
+import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:page_transition/page_transition.dart';
 import '../../view_models/user.dart';
@@ -21,6 +22,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   late UserViewModel userViewModel;
+  late DocumentViewModel documentViewModel;
   bool isLoading = false;
   final _formKeySign = GlobalKey<FormState>();
   TextEditingController passwordController = TextEditingController();
@@ -46,6 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
     super.initState();
 
     userViewModel = GetIt.I<UserViewModel>();
+    documentViewModel = GetIt.I<DocumentViewModel>();
     // Listen for error messages. I prefer this way to show SnackBars via the initState
     // rather than using a ValueListenableBuilder in the build method to avoid rebuilding
     userViewModel.errorNotifier.addListener(() {
@@ -116,6 +119,18 @@ class _SignUpPageState extends State<SignUpPage> {
                 buildTextField(
                   controller: passwordController,
                   label: "Mot de passe",
+                  obscure: _obscurePassword,
+                  suffix: IconButton(
+                    icon:
+                    _obscurePassword
+                        ? Icon(FontAwesomeIcons.eyeSlash)
+                        : Icon(FontAwesomeIcons.eye),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                   validator:
                       (value) =>
                           value == null || value.isEmpty
@@ -216,6 +231,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+
   Future<void> _onSignUpPressed(BuildContext context) async {
     FocusScope.of(context).unfocus();
     if (!_formKeySign.currentState!.validate()) return;
@@ -224,6 +240,8 @@ class _SignUpPageState extends State<SignUpPage> {
       passwordController.text.trim(),
       selectedClasse!,
     );
+    await documentViewModel.syncDocumentFromServer();
+    await documentViewModel.loadDocuments();
     if (userViewModel.authState.value != ViewState.success) return;
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(

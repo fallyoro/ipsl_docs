@@ -5,15 +5,10 @@ import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/utils.dart';
-import 'package:ipsl_docs/src/core/notifiers.dart';
-import 'package:ipsl_docs/src/core/Responsive.dart';
-import 'package:ipsl_docs/src/pages/upload/upload_tab_bar.dart';
+import 'package:ipsl_docs/src/core/theme_controller.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
-import 'package:ipsl_docs/src/pages/home/widget/bottom_sheet.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../services/document.dart';
-//import 'home.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,24 +18,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late UserViewModel userViewModel = GetIt.instance<UserViewModel>();
-  late DocumentViewModel documentViewModel =
-      GetIt.instance<DocumentViewModel>();
+  UserViewModel userViewModel = GetIt.instance<UserViewModel>();
+  DocumentViewModel documentViewModel = GetIt.instance<DocumentViewModel>();
   bool isLoading = false;
-  String errorMessage = "";
   DocumentService service = DocumentService();
-  //late CancelToken _cancelToken;
 
-  Responsive responsive = Responsive();
-
-  @override
-  void initState() {
-    super.initState();
-    userViewModel = GetIt.instance<UserViewModel>();
-    documentViewModel = GetIt.instance<DocumentViewModel>();
-    //  _fetchDocuments();
-  }
-
+  //TODO put this in the viewmodel
   Future<void> _fetchDocuments() async {
     logInfo("Fetching documents...");
     final bool isConnected = await isConnectedToInternet();
@@ -49,7 +32,7 @@ class _HomePageState extends State<HomePage> {
         await documentViewModel.syncDocumentFromServer();
       }
     } catch (e) {
-      errorMessage = 'Erreur lors du chargement : $e';
+   String   errorMessage = 'Erreur lors du chargement : $e';
       logInfo(errorMessage);
     }
 
@@ -82,7 +65,6 @@ class _HomePageState extends State<HomePage> {
       body: RefreshIndicator(
         color: AppColors.primaryColor,
         backgroundColor: Colors.white,
-        displacement: 30,
         strokeWidth: 3,
         triggerMode: RefreshIndicatorTriggerMode.onEdge,
         onRefresh: _fetchDocuments,
@@ -108,30 +90,35 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text.rich(
-                        TextSpan(
-                          text: 'Salut 👋, ',
-                          style: TextStyle(fontSize: 22, color: Colors.white),
-                          children: [
-                            TextSpan(
-                              text: userViewModel.userNotifier.value!.userName,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
                       //Search(documents: documentsList),
+                      ValueListenableBuilder(valueListenable: userViewModel.userNotifier, builder: (context, user, child) {
+                        return
+                          Text.rich(
+                            TextSpan(
+                              text: 'Salut 👋, ',
+                              style: TextStyle(fontSize: 22, color: Colors.white),
+                              children: [
+                                TextSpan(
+                                  text: user!.userName,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                      },)
                     ],
                   ),
                 ),
               ),
-              DirectoryGrid(
-                subDirectories: documentViewModel.root.value!.subDirectories,
-              ),
+              ValueListenableBuilder(valueListenable: documentViewModel.root, builder: (context, root, child) {
+                return
+                  DirectoryGrid(
+                    subDirectories: root!.subDirectories
+                  );
+              },)
             ],
           ),
         ),
