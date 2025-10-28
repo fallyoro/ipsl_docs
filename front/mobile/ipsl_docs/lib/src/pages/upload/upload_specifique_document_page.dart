@@ -140,220 +140,222 @@ class _UploadSpecifiqueDocumentPageState
   @override
   Widget build(BuildContext context) {
     List<String> subjects = matiere[selectedClasse] ?? [];
-    return Form(
-      key: _formKeySubmit,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Documents specifique a une classe",
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            SizedBox(height: 8),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 262),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Classe",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const Spacer(),
-                        DropdownMenu<String>(
-                          textAlign: TextAlign.end,
-                          inputDecorationTheme: InputDecorationTheme(
-                            border: InputBorder.none,
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKeySubmit,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Documents specifique a une classe",
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              SizedBox(height: 8),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 262),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+      
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "Classe",
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
-
-                          initialSelection: selectedClasse,
-                          onSelected: (String? value) {
-                            setState(() {
-                              selectedClasse = value!;
-                            });
-                          },
-                          dropdownMenuEntries:
-                              classes
-                                  .map(
-                                    (c) => DropdownMenuEntry<String>(
-                                      value: c,
-                                      label: c,
-                                    ),
-                                  )
-                                  .toList(),
-                        ),
-                      ],
-                    ),
-
-                    Row(
-                      children: [
-                        Text(
-                          "Catégorie",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const Spacer(),
-                        DropdownMenu<String>(
-                          width: 160,
-                          textAlign: TextAlign.end,
-                          inputDecorationTheme: InputDecorationTheme(
-                            border: InputBorder.none,
+                          const Spacer(),
+                          DropdownMenu<String>(
+                            textAlign: TextAlign.end,
+                            inputDecorationTheme: InputDecorationTheme(
+                              border: InputBorder.none,
+                            ),
+      
+                            initialSelection: selectedClasse,
+                            onSelected: (String? value) {
+                              setState(() {
+                                selectedClasse = value!;
+                              });
+                            },
+                            dropdownMenuEntries:
+                                classes
+                                    .map(
+                                      (c) => DropdownMenuEntry<String>(
+                                        value: c,
+                                        label: c,
+                                      ),
+                                    )
+                                    .toList(),
                           ),
-                          initialSelection: selectedCategory,
-                          onSelected: (String? value) {
-                            setState(() {
-                              selectedCategory = value!;
-                            });
-                          },
-                          dropdownMenuEntries:
-                              categories
-                                  .map(
-                                    (c) => DropdownMenuEntry<String>(
-                                      value: c,
-                                      label: c,
-                                    ),
-                                  )
-                                  .toList(),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+      
+                      Row(
+                        children: [
+                          Text(
+                            "Catégorie",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const Spacer(),
+                          DropdownMenu<String>(
+                            width: 160,
+                            textAlign: TextAlign.end,
+                            inputDecorationTheme: InputDecorationTheme(
+                              border: InputBorder.none,
+                            ),
+                            initialSelection: selectedCategory,
+                            onSelected: (String? value) {
+                              setState(() {
+                                selectedCategory = value!;
+                              });
+                            },
+                            dropdownMenuEntries:
+                                categories
+                                    .map(
+                                      (c) => DropdownMenuEntry<String>(
+                                        value: c,
+                                        label: c,
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            DropdownButtonHideUnderline(
-              child: DropdownButton2<String>(
-                isExpanded: true,
-                hint: Text(
-                  'Matière',
-                  // style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                items:
-                    subjects.map<DropdownMenuItem<String>>((String subject) {
-                      return DropdownMenuItem<String>(
-                        value: subject,
-                        child: Text(
-                          subject,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      );
-                    }).toList(),
-                value:
-                    subjectController.text.isNotEmpty
-                        ? subjectController.text
-                        : null,
-                onChanged: (String? value) {
-                  if (value == null) return;
-                  setState(() {
-                    subjectController.text = value;
-                  });
-                },
-                buttonStyleData: const ButtonStyleData(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  height: 40,
-                  width: 200,
-                ),
-                dropdownStyleData: const DropdownStyleData(maxHeight: 200),
-                menuItemStyleData: const MenuItemStyleData(height: 40),
-                dropdownSearchData: DropdownSearchData(
-                  searchController: subjectController,
-                  searchInnerWidgetHeight: 50,
-                  searchInnerWidget: Container(
-                    height: 50,
-                    padding: const EdgeInsets.only(
-                      top: 8,
-                      bottom: 4,
-                      right: 8,
-                      left: 8,
-                    ),
-                    child: TextFormField(
-                      controller: subjectController,
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
-                        ),
-                        hintText: 'Rechercher une matière…',
-                        hintStyle: const TextStyle(fontSize: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+              DropdownButtonHideUnderline(
+                child: DropdownButton2<String>(
+                  isExpanded: true,
+                  hint: Text(
+                    'Matière',
+                    // style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  items:
+                      subjects.map<DropdownMenuItem<String>>((String subject) {
+                        return DropdownMenuItem<String>(
+                          value: subject,
+                          child: Text(
+                            subject,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        );
+                      }).toList(),
+                  value:
+                      subjectController.text.isNotEmpty
+                          ? subjectController.text
+                          : null,
+                  onChanged: (String? value) {
+                    if (value == null) return;
+                    setState(() {
+                      subjectController.text = value;
+                    });
+                  },
+                  buttonStyleData: const ButtonStyleData(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    height: 40,
+                    width: 200,
+                  ),
+                  dropdownStyleData: const DropdownStyleData(maxHeight: 200),
+                  menuItemStyleData: const MenuItemStyleData(height: 40),
+                  dropdownSearchData: DropdownSearchData(
+                    searchController: subjectController,
+                    searchInnerWidgetHeight: 50,
+                    searchInnerWidget: Container(
+                      height: 50,
+                      padding: const EdgeInsets.only(
+                        top: 8,
+                        bottom: 4,
+                        right: 8,
+                        left: 8,
+                      ),
+                      child: TextFormField(
+                        controller: subjectController,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          hintText: 'Rechercher une matière…',
+                          hintStyle: const TextStyle(fontSize: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                     ),
+                    searchMatchFn: (item, searchValue) {
+                      return item.value!.toLowerCase().contains(
+                        searchValue.toLowerCase(),
+                      );
+                    },
                   ),
-                  searchMatchFn: (item, searchValue) {
-                    return item.value!.toLowerCase().contains(
-                      searchValue.toLowerCase(),
-                    );
+                  onMenuStateChange: (bool isOpen) {
+                    if (!isOpen) {
+                      // clair l’input de recherche quand on ferme le menu
+                      subjectController.clear();
+                    }
                   },
                 ),
-                onMenuStateChange: (bool isOpen) {
-                  if (!isOpen) {
-                    // clair l’input de recherche quand on ferme le menu
-                    subjectController.clear();
+              ),
+      
+              TextFormField(
+                controller: filenameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nom du fichier',
+                  labelStyle: TextStyle(fontSize: 16),
+                ),
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty ? 'Champ requis' : null,
+              ),
+      
+              TextFormField(
+                controller: yearController,
+                inputFormatters: [yearMaskFormatter],
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Année universitaire',
+                  labelStyle: TextStyle(fontSize: 16),
+                  hintText: "Exemple 2024-2025",
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      yearController.clear();
+                    },
+                    icon: const Icon(FontAwesomeIcons.circleXmark),
+                  ),
+                ),
+                validator: (value) {
+                  final parts = value?.split('-') ?? [];
+                  if (value == null || value.isEmpty) return 'Champ requis';
+                  if (!RegExp(r'^\d{4}-\d{4}$').hasMatch(value)) {
+                    return 'Format invalide';
                   }
+                  if (int.parse(parts[1]) != int.parse(parts[0]) + 1) {
+                    return 'Années incohérentes';
+                  }
+                  return null;
                 },
               ),
-            ),
-
-            TextFormField(
-              controller: filenameController,
-              decoration: const InputDecoration(
-                labelText: 'Nom du fichier',
-                labelStyle: TextStyle(fontSize: 16),
-              ),
-              validator:
-                  (value) =>
-                      value == null || value.isEmpty ? 'Champ requis' : null,
-            ),
-
-            TextFormField(
-              controller: yearController,
-              inputFormatters: [yearMaskFormatter],
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Année universitaire',
-                labelStyle: TextStyle(fontSize: 16),
-                hintText: "Exemple 2024-2025",
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    yearController.clear();
-                  },
-                  icon: const Icon(FontAwesomeIcons.circleXmark),
-                ),
-              ),
-              validator: (value) {
-                final parts = value?.split('-') ?? [];
-                if (value == null || value.isEmpty) return 'Champ requis';
-                if (!RegExp(r'^\d{4}-\d{4}$').hasMatch(value)) {
-                  return 'Format invalide';
-                }
-                if (int.parse(parts[1]) != int.parse(parts[0]) + 1) {
-                  return 'Années incohérentes';
-                }
-                return null;
-              },
-            ),
-
-            const SizedBox(height: 16),
-
-            pickedFile != null
-                ? previewWidget(localPath: pickedFile!.path!, context: context)
-                : PickFileButtun(onpress: pickFile),
-
-            const SizedBox(height: 16),
-            buildSendButton(context, () => _submit(context)),
-
-            if (isSending) customLinearProgressSending(progress),
-          ],
+      
+              const SizedBox(height: 16),
+      
+              pickedFile != null
+                  ? previewWidget(localPath: pickedFile!.path!, context: context)
+                  : PickFileButtun(onpress: pickFile),
+      
+              const SizedBox(height: 16),
+              buildSendButton(context, () => _submit(context)),
+      
+              if (isSending) customLinearProgressSending(progress),
+            ],
+          ),
         ),
       ),
     );
