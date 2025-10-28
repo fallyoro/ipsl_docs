@@ -8,7 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'core/constant.dart';
 import 'core/notifiers.dart';
 
-List<Widget> pages = [HomePage(),UploadTabBar(), const Profile()];
+List<Widget> pages = [HomePage(), UploadTabBar(), const Profile()];
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
@@ -20,7 +20,6 @@ class WidgetTree extends StatefulWidget {
 class _WidgetTreeState extends State<WidgetTree> {
   final PageController _pageController = PageController(initialPage: 0);
   int _selectedPage = 0;
-
 
   void _onItemSelected(int index) {
     setState(() => _selectedPage = index);
@@ -49,7 +48,7 @@ class _WidgetTreeState extends State<WidgetTree> {
             children: pages,
           ),
           bottomNavigationBar: SalomonBottomBar(
-            selectedItemColor:  AppColors.primaryColor,
+            selectedItemColor: AppColors.primaryColor,
             unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
             backgroundColor:
                 isDark ? AppColors.darkSecondarySystemBackground : Colors.white,
@@ -61,8 +60,9 @@ class _WidgetTreeState extends State<WidgetTree> {
                 title: const Text('Accueil'),
               ),
               SalomonBottomBarItem(
-                  icon: Icon(FontAwesomeIcons.share, size: 23,),
-                  title: const Text("Partager")),
+                icon: Icon(FontAwesomeIcons.share, size: 23),
+                title: const Text("Partager"),
+              ),
               SalomonBottomBarItem(
                 icon: const Icon(FontAwesomeIcons.userLarge, size: 23),
                 title: const Text('Profil'),

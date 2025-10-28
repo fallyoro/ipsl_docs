@@ -16,8 +16,6 @@ class DocumentViewModel {
   final DocumentService service;
   DocumentViewModel(this._db, this.service);
 
-
-
   //get current path for the breadcrumb.
   List<String> get currentPath {
     if (currentDirectory.value == null) return [];

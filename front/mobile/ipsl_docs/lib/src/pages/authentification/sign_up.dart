@@ -103,14 +103,26 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               spacing: 30,
               children: [
-                buildTextField(controller: userNameController, label: "Nom d'utilisateur", validator:    (value) =>
-                value == null || value.isEmpty
-                    ? "Veuillez entrer votre nom d'utilisateur"
-                    : null, isDark: isDark),
-                buildTextField(controller: passwordController, label:"Mot de passe" , validator: (value) =>
+                buildTextField(
+                  controller: userNameController,
+                  label: "Nom d'utilisateur",
+                  validator:
+                      (value) =>
+                          value == null || value.isEmpty
+                              ? "Veuillez entrer votre nom d'utilisateur"
+                              : null,
+                  isDark: isDark,
+                ),
+                buildTextField(
+                  controller: passwordController,
+                  label: "Mot de passe",
+                  validator:
+                      (value) =>
                           value == null || value.isEmpty
                               ? 'Veuillez entrer votre mot de pasee'
-                              : null, isDark: isDark),
+                              : null,
+                  isDark: isDark,
+                ),
               ],
             ),
           ),

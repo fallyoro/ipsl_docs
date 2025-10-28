@@ -55,89 +55,89 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      body:
-          SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 55),
-            child: Column(
-              spacing: 25,
-              mainAxisSize: MainAxisSize.min,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 55),
+        child: Column(
+          spacing: 25,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Se connecter", style: GoogleFonts.poppins(fontSize: 30)),
+
+            Form(
+              key: _formKeyLog,
+              child: Column(
+                spacing: 30,
+                children: [
+                  buildTextField(
+                    controller: userNameController,
+                    label: "Nom d'utilisateur",
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Veuillez entrer votre nom utilisateur'
+                                : null,
+                    isDark: isDark,
+                  ),
+                  buildTextField(
+                    controller: passwordController,
+                    label: "Mot de passe",
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Veuillez entrer votre mot de pasee'
+                                : null,
+                    isDark: isDark,
+                  ),
+                ],
+              ),
+            ),
+
+            ValueListenableBuilder(
+              valueListenable: userViewModel.authState,
+              builder: (context, state, child) {
+                return AuthButton(
+                  onPressed: () async {
+                    handleLogin(context);
+                  },
+                  child:
+                      state == ViewState.loading
+                          ? SpinKitThreeBounce(color: Colors.white, size: 25)
+                          : Text(
+                            "Se connecter",
+                            style: TextStyle(
+                              fontSize: 19,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                );
+              },
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "Se connecter",
-                  style: GoogleFonts.poppins(
-                    fontSize: 30,
-                  ),
-                ),
-
-                Form(
-                  key: _formKeyLog,
-                  child: Column(
-                    spacing: 30,
-                    children: [
-                      buildTextField(controller: userNameController, label: "Nom d'utilisateur", validator:
-                          (value) =>
-                      value == null || value.isEmpty
-                          ? 'Veuillez entrer votre nom utilisateur'
-                          : null,
- isDark: isDark),
-                      buildTextField(controller: passwordController, label:"Mot de passe" , validator: (value) =>
-                      value == null || value.isEmpty
-                          ? 'Veuillez entrer votre mot de pasee'
-                          : null, isDark: isDark),
-                    ],
-                  ),
-                ),
-
-                ValueListenableBuilder(
-                  valueListenable: userViewModel.authState,
-                  builder: (context, state, child) {
-                    return AuthButton(
-                      onPressed: () async {
-                        handleLogin(context);
-                      },
-                      child:
-                          state == ViewState.loading
-                              ? SpinKitThreeBounce(
-                                color: Colors.white,
-                                size: 25,
-                              )
-                              : Text(
-                                "Se connecter",
-                                style: TextStyle(
-                                  fontSize: 19,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                Text("Vous n'avez pas de compte?  "),
+                InkWell(
+                  onTap: () async {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.fade,
+                        child: SignUpPage(),
+                      ),
                     );
                   },
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Vous n'avez pas de compte?  "),
-                    InkWell(
-                      onTap: () async {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.fade,
-                            child: SignUpPage(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        "S'inscrire",
-                        style: TextStyle(color: AppColors.primaryColor),
-                      ),
-                    ),
-                  ],
+                  child: Text(
+                    "S'inscrire",
+                    style: TextStyle(color: AppColors.primaryColor),
+                  ),
                 ),
               ],
             ),
-          )
-
+          ],
+        ),
+      ),
     );
   }
 

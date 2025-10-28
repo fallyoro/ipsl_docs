@@ -72,8 +72,7 @@ class _UploadSpecifiqueDocumentPageState
   }
 
   Future<void> _submit(BuildContext context) async {
-    if (!_formKeySubmit.currentState!.validate()
-     ) {
+    if (!_formKeySubmit.currentState!.validate()) {
       return;
     }
     FocusScope.of(context).unfocus();
@@ -234,7 +233,7 @@ class _UploadSpecifiqueDocumentPageState
                 isExpanded: true,
                 hint: Text(
                   'Matière',
-                 // style: Theme.of(context).textTheme.bodyLarge,
+                  // style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 items:
                     subjects.map<DropdownMenuItem<String>>((String subject) {

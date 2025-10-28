@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/pages/home/widget/custom_curve.dart';
 import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
 import 'package:flutter/material.dart';
@@ -37,11 +38,11 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     userViewModel = GetIt.instance<UserViewModel>();
     documentViewModel = GetIt.instance<DocumentViewModel>();
-    _fetchDocuments();
+    //  _fetchDocuments();
   }
 
   Future<void> _fetchDocuments() async {
-    isLoading =true;
+    logInfo("Fetching documents...");
     final bool isConnected = await isConnectedToInternet();
     try {
       if (isConnected) {
@@ -53,23 +54,19 @@ class _HomePageState extends State<HomePage> {
     }
 
     await documentViewModel.loadDocuments();
-    isLoading =false;
-    setState(() {
-
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "IPSL DOCS",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: AppColors.primaryColor,
         actions: [
@@ -82,51 +79,61 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipPath(
-              clipper: CustomCurvedEdges(),
-              child: Container(
-                color: AppColors.primaryColor,
-                height: 120,
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.only(
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
-                  top: 30,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        text: 'Salut 👋, ',
-                        style: TextStyle(fontSize: 22, color: Colors.white),
-                        children: [
-                          TextSpan(
-                            text: userViewModel.userNotifier.value!.userName,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
+      body: RefreshIndicator(
+        color: AppColors.primaryColor,
+        backgroundColor: Colors.white,
+        displacement: 30,
+        strokeWidth: 3,
+        triggerMode: RefreshIndicatorTriggerMode.onEdge,
+        onRefresh: _fetchDocuments,
+        child: SingleChildScrollView(
+          physics:
+              const AlwaysScrollableScrollPhysics(), //Make the refresh indicator working
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipPath(
+                clipper: CustomCurvedEdges(),
+                child: Container(
+                  color: AppColors.primaryColor,
+                  height: 120,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.only(
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                    top: 30,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text.rich(
+                        TextSpan(
+                          text: 'Salut 👋, ',
+                          style: TextStyle(fontSize: 22, color: Colors.white),
+                          children: [
+                            TextSpan(
+                              text: userViewModel.userNotifier.value!.userName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    //Search(documents: documentsList),
-                  ],
+                      SizedBox(height: 20),
+                      //Search(documents: documentsList),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            DirectoryGrid(
-              subDirectories: documentViewModel.root.value!.subDirectories,
-            ),
-          ],
+              DirectoryGrid(
+                subDirectories: documentViewModel.root.value!.subDirectories,
+              ),
+            ],
+          ),
         ),
       ),
     );

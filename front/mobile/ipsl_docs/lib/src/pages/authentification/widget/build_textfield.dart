@@ -17,9 +17,10 @@ Widget buildTextField({
     decoration: InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: isDark
-          ? AppColors.darkSystemBackground
-          : AppColors.lightSecondarySystemBackground,
+      fillColor:
+          isDark
+              ? AppColors.darkSystemBackground
+              : AppColors.lightSecondarySystemBackground,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
