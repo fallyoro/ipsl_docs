@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -8,6 +7,9 @@ import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/matiere.dart';
 import 'package:ipsl_docs/src/core/utils.dart';
 import 'package:ipsl_docs/src/models/document.dart';
+import 'package:ipsl_docs/src/pages/home/widget/preview_widget.dart';
+import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
+import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
 import 'package:ipsl_docs/src/services/document.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
@@ -15,18 +17,19 @@ import 'package:ipsl_docs/src/pages/home/widget/year_formater.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 
-class UploadFormContent extends StatefulWidget {
-  //  final VoidCallback onSuccess;
+import '../home/widget/send_button.dart';
 
-  const UploadFormContent({super.key});
+class UploadSpecifiqueDocumentPage extends StatefulWidget {
+  const UploadSpecifiqueDocumentPage({super.key});
 
   @override
-  State<UploadFormContent> createState() => _UploadFormContentState();
+  State<UploadSpecifiqueDocumentPage> createState() =>
+      _UploadSpecifiqueDocumentPageState();
 }
 
-class _UploadFormContentState extends State<UploadFormContent> {
+class _UploadSpecifiqueDocumentPageState
+    extends BaseUploadPage<UploadSpecifiqueDocumentPage> {
   final _formKeySubmit = GlobalKey<FormState>();
-  final filenameController = TextEditingController();
   final yearController = TextEditingController();
   final subjectController = TextEditingController();
   final yearMaskFormatter = YearInputFormatter();
@@ -37,7 +40,6 @@ class _UploadFormContentState extends State<UploadFormContent> {
   String selectedCategory = 'cour';
   double progress = 0;
   bool isSending = false;
-  PlatformFile? pickedFile;
 
   final classes = [
     'Cpi1',
@@ -62,40 +64,32 @@ class _UploadFormContentState extends State<UploadFormContent> {
     'rattrapage',
   ];
 
-
-
   @override
   void dispose() {
-    filenameController.dispose();
     yearController.dispose();
     subjectController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.isNotEmpty) {
-      final file = result.files.single;
-
-      setState(() {
-        pickedFile = file;
-        filenameController.text = file.name;
-      });
-    }
-  }
-
   Future<void> _submit(BuildContext context) async {
+    if (!_formKeySubmit.currentState!.validate()
+     ) {
+      return;
+    }
+    FocusScope.of(context).unfocus();
     if (pickedFile == null) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Veuillez choisir un fichier')),
       );
       return;
     }
-    if (!_formKeySubmit.currentState!.validate()) return;
-    FocusScope.of(context).unfocus();
+    if (subjectController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veillez selectioner une matiere')),
+      );
+      return;
+    }
 
     setState(() => isSending = true);
     if (!await isConnectedToInternet()) {
@@ -120,7 +114,6 @@ class _UploadFormContentState extends State<UploadFormContent> {
         setState(() => progress = total > 0 ? received / total : 0);
       },
     );
-    logInfo("response upload ${responseUpload?.toString()}");
     DateTime updatedAt = DateTime.parse(
       responseUpload?['updated_at'] as String,
     );
@@ -151,14 +144,13 @@ class _UploadFormContentState extends State<UploadFormContent> {
     return Form(
       key: _formKeySubmit,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 15),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              FontAwesomeIcons.cloudArrowUp,
-              size: 40,
-              color: AppColors.primaryColor,
+            Text(
+              "Documents specifique a une classe",
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             SizedBox(height: 8),
             Align(
@@ -242,20 +234,22 @@ class _UploadFormContentState extends State<UploadFormContent> {
                 isExpanded: true,
                 hint: Text(
                   'Matière',
-                  ///style: Theme.of(context).textTheme.bodyLarge,
+                 // style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                items: subjects.map<DropdownMenuItem<String>>((String subject) {
-                  return DropdownMenuItem<String>(
-                    value: subject,
-                    child: Text(
-                      subject,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                  );
-                }).toList(),
-                value: subjectController.text.isNotEmpty ? subjectController.text : null,
+                items:
+                    subjects.map<DropdownMenuItem<String>>((String subject) {
+                      return DropdownMenuItem<String>(
+                        value: subject,
+                        child: Text(
+                          subject,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                value:
+                    subjectController.text.isNotEmpty
+                        ? subjectController.text
+                        : null,
                 onChanged: (String? value) {
                   if (value == null) return;
                   setState(() {
@@ -267,12 +261,8 @@ class _UploadFormContentState extends State<UploadFormContent> {
                   height: 40,
                   width: 200,
                 ),
-                dropdownStyleData: const DropdownStyleData(
-                  maxHeight: 200,
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 40,
-                ),
+                dropdownStyleData: const DropdownStyleData(maxHeight: 200),
+                menuItemStyleData: const MenuItemStyleData(height: 40),
                 dropdownSearchData: DropdownSearchData(
                   searchController: subjectController,
                   searchInnerWidgetHeight: 50,
@@ -301,7 +291,9 @@ class _UploadFormContentState extends State<UploadFormContent> {
                     ),
                   ),
                   searchMatchFn: (item, searchValue) {
-                    return item.value!.toLowerCase().contains(searchValue.toLowerCase());
+                    return item.value!.toLowerCase().contains(
+                      searchValue.toLowerCase(),
+                    );
                   },
                 ),
                 onMenuStateChange: (bool isOpen) {
@@ -315,10 +307,9 @@ class _UploadFormContentState extends State<UploadFormContent> {
 
             TextFormField(
               controller: filenameController,
-              decoration: const InputDecoration(labelText: 'Nom du fichier',
-              labelStyle:  TextStyle(
-                fontSize: 16,
-              )
+              decoration: const InputDecoration(
+                labelText: 'Nom du fichier',
+                labelStyle: TextStyle(fontSize: 16),
               ),
               validator:
                   (value) =>
@@ -331,9 +322,7 @@ class _UploadFormContentState extends State<UploadFormContent> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Année universitaire',
-                labelStyle:  TextStyle(
-                  fontSize: 16,
-                ),
+                labelStyle: TextStyle(fontSize: 16),
                 hintText: "Exemple 2024-2025",
                 suffixIcon: IconButton(
                   onPressed: () {
@@ -357,29 +346,12 @@ class _UploadFormContentState extends State<UploadFormContent> {
 
             const SizedBox(height: 16),
 
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: pickedFile != null ? Color.fromARGB(60, 184, 92, 52) : AppColors.primaryColor,
-              ),
-              onPressed: _pickFile,
-              child: const Text(
-                'Choisir un fichier',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+            pickedFile != null
+                ? previewWidget(localPath: pickedFile!.path!, context: context)
+                : PickFileButtun(onpress: pickFile),
 
             const SizedBox(height: 16),
-
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-              ),
-              onPressed: () => _submit(context),
-              child: const Text(
-                'Envoyer',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+            buildSendButton(context, () => _submit(context)),
 
             if (isSending) customLinearProgressSending(progress),
           ],
@@ -387,5 +359,4 @@ class _UploadFormContentState extends State<UploadFormContent> {
       ),
     );
   }
-
 }

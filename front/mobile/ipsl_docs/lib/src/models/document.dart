@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 class Document {
   final String id;
@@ -32,4 +36,15 @@ class Document {
   };
 
   String get name => path.split("/").last;
+
+  String get extension => p.extension(name).replaceFirst('.', '');
+
+  Future<String> get localPath async {
+    final baseDir = await getApplicationDocumentsDirectory();
+    final docDir = Directory(
+      p.join(baseDir.path, "ipsl_docs", p.dirname(path)),
+    );
+    final savePath = p.join(docDir.path, name);
+    return savePath;
+  }
 }

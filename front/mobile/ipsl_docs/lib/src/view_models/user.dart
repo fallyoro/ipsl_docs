@@ -5,10 +5,14 @@ import '../database/database.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 
+enum ViewState { idle, loading, success, error }
+
 class UserViewModel {
   final DatabaseHelper _db;
   final UserService _userService;
   ValueNotifier<User?> userNotifier = ValueNotifier(null);
+  ValueNotifier<String?> errorNotifier = ValueNotifier(null);
+  ValueNotifier<ViewState> authState = ValueNotifier(ViewState.idle);
 
   UserViewModel(this._db, this._userService);
   Future<void> addUser(User user) async {
@@ -41,6 +45,11 @@ class UserViewModel {
     }
   }
 
+  Future<bool> userExist() async {
+    final User? user = await _db.getUser();
+    return user != null;
+  }
+
   /*Future<User?> getUser() async {
     final User? user = await _db.getUser();
     if (user != null) {
@@ -67,20 +76,51 @@ class UserViewModel {
   }
 
   Future<void> login(String userName, String password) async {
-    Map<String, dynamic> userData = await _userService.login(
-      userName,
-      password,
+    authState.value = ViewState.loading;
+    final result = await _userService.login(userName, password);
+    result.fold(
+      (failure) {
+        authState.value = ViewState.error;
+        logError("Login failed: ${failure.message}");
+        errorNotifier.value = failure.message;
+      },
+      (userData) async {
+        authState.value = ViewState.success;
+        User newUser = User(
+          id: userData['id'],
+          userName: userName,
+          classe: userData['classe'],
+          numberContribution: userData['number_contribution'],
+        );
+
+        //      StorageService.setBool("isLoged", true);
+        await addUser(newUser);
+        authState.value = ViewState.success;
+      },
     );
-    User newUser = User(
-      id: userData['id'],
-      userName: userName,
-      classe: userData['classe'],
-      numberContribution: userData['number_contribution'],
-    );
-    await addUser(newUser);
   }
 
-  /* Future<Map<String, dynamic>> signUp(String userName, String password, String classe) async {
-   Map<String, dynamic> response =  await _userService.signUp(userName, password, classe);
-  }*/
+  Future<void> signUp(String userName, String password, String classe) async {
+    authState.value = ViewState.loading;
+    final result = await _userService.signUp(userName, password, classe);
+    result.fold(
+      (failure) {
+        authState.value = ViewState.error;
+        logError("SignUp failed: ${failure.message}");
+        errorNotifier.value = failure.message;
+      },
+      (userData) async {
+        authState.value = ViewState.success;
+        User newUser = User(
+          id: userData['id'],
+          userName: userName,
+          classe: userData['classe'],
+          numberContribution: userData['number_contribution'],
+        );
+
+        //      StorageService.setBool("isLoged", true);
+        await addUser(newUser);
+      },
+    );
+  }
 }

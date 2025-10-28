@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:ipsl_docs/src/pages/home/widget/preview_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,13 @@ import '../../../core/utils.dart';
 import '../../../models/document.dart';
 import '../../../services/document.dart';
 import '../../../view_models/document.dart';
-import '../component/custom_circular_progress.dart';
-import '../component/delete_dialog.dart';
-import 'build_preview.dart';
+import 'custom_circular_progress.dart';
+import 'delete_dialog.dart';
+
+/*TODO: Ce fichier utilise directement le service DocumentService,
+   il faudrait passer par le ViewModel pour respecter le pattern MVVM.
+   Par consequent, refactoriser ce code pour utiliser le DocumentViewModel à la place du service directement.
+   */
 
 class DocumentListWidget extends StatefulWidget {
   final List<Document> documents;
@@ -24,7 +29,6 @@ class DocumentListWidget extends StatefulWidget {
 
 Future<void> cancelDoc(Document doc, DocumentService service) async {
   service.cancelDownload('Cancel by the user');
-  // setState(() {});
   doc.isDownloading.value = false;
   await deleteFile(doc);
 }
@@ -70,14 +74,12 @@ class _DocumentListWidgetState extends State<DocumentListWidget> {
       itemCount: widget.documents.length,
       itemBuilder: (context, index) {
         final doc = widget.documents[index];
-
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
-            final isMobileDevice = Responsive.isMobileDevice(
-              context,
-            ); // ta logique
-            final ext = getFileExtension(doc.name);
+            final isMobileDevice = Responsive.isMobileDevice(context);
+            final ext = doc.extension;
+            final String docPath = await doc.localPath;
             if (ext == 'wxmx' && isMobileDevice) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -86,8 +88,6 @@ class _DocumentListWidgetState extends State<DocumentListWidget> {
               );
               return;
             }
-
-            String docPath = await getSavePath(doc);
             if (await isExistFile(docPath) == false) {
               final bool isConnected = await isConnectedToInternet();
               if (!isConnected) {
@@ -142,30 +142,9 @@ class _DocumentListWidgetState extends State<DocumentListWidget> {
                             },
                           ),
                         )
-                        : FutureBuilder<Widget>(
-                          future: buildDocumentPreview(doc, context),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox(
-                                height: 100,
-                                width: 100,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              );
-                            } else if (snapshot.hasError || !snapshot.hasData) {
-                              // log l’erreur si tu as une méthode
-                              return const Icon(
-                                Icons.insert_drive_file,
-                                size: 64,
-                              );
-                            } else {
-                              return snapshot.data!;
-                            }
-                          },
+                        : previewWidget(
+                          relativePath: doc.path,
+                          context: context,
                         );
                   },
                 ),

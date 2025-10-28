@@ -8,7 +8,6 @@ import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:ipsl_docs/src/pages/profile/edit_profile_page.dart';
 import 'package:page_transition/page_transition.dart';
 
-
 class Profile extends StatefulWidget {
   const Profile({super.key});
 

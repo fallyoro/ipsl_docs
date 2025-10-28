@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ipsl_docs/src/pages/home/home_page.dart';
 import 'package:ipsl_docs/src/pages/profile/profile_page.dart';
+import 'package:ipsl_docs/src/pages/upload/upload_tab_bar.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'core/constant.dart';
 import 'core/notifiers.dart';
 
-List<Widget> pages = [HomePage2(), const Profile()];
+List<Widget> pages = [HomePage(),UploadTabBar(), const Profile()];
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
@@ -20,11 +21,6 @@ class _WidgetTreeState extends State<WidgetTree> {
   final PageController _pageController = PageController(initialPage: 0);
   int _selectedPage = 0;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   void _onItemSelected(int index) {
     setState(() => _selectedPage = index);
@@ -53,7 +49,7 @@ class _WidgetTreeState extends State<WidgetTree> {
             children: pages,
           ),
           bottomNavigationBar: SalomonBottomBar(
-            selectedItemColor: isDark ? Colors.white : AppColors.primaryColor,
+            selectedItemColor:  AppColors.primaryColor,
             unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
             backgroundColor:
                 isDark ? AppColors.darkSecondarySystemBackground : Colors.white,
@@ -64,6 +60,9 @@ class _WidgetTreeState extends State<WidgetTree> {
                 icon: const Icon(FontAwesomeIcons.house, size: 23),
                 title: const Text('Accueil'),
               ),
+              SalomonBottomBarItem(
+                  icon: Icon(FontAwesomeIcons.share, size: 23,),
+                  title: const Text("Partager")),
               SalomonBottomBarItem(
                 icon: const Icon(FontAwesomeIcons.userLarge, size: 23),
                 title: const Text('Profil'),

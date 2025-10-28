@@ -1,4 +1,3 @@
-
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 import '../core/utils.dart';
@@ -129,6 +128,7 @@ class DatabaseHelper {
     List<Map<String, dynamic>> rawUsers = await db.query("users");
     logInfo(rawUsers.toString());
     if (rawUsers.isEmpty) {
+      logError("No user found");
       return null;
     }
 
@@ -146,24 +146,18 @@ class DatabaseHelper {
     //db.dispose();
   }*/
 
-  Future<void> deleteAllUsers() async {
-    Database db = await instance.database;
-    db.delete("users");
-  }
-
-  Future<void> deleteAlldoc() async {
-    Database db = await instance.database;
-    db.delete("documents");
-  }
-
   Future<void> insertUser(User user) async {
     Database db = await instance.database;
-    await deleteAllUsers();
-    await db.insert(
-      "users",
-      user.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.delete("users");
+    try {
+      await db.insert(
+        "users",
+        user.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      logInfo("Error inserting user: $e");
+    }
   }
 
   Future<void> insertDocument(Document doc) async {
@@ -173,21 +167,5 @@ class DatabaseHelper {
       doc.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-  }
-
-  Future<List<String>> getSubjects() async {
-    Database db = await instance.database;
-    List<Map<String, dynamic>> result = await db.query(
-      "documents",
-      distinct: true,
-      columns: ['path'],
-    );
-    List<String> subject = result.map((e) => e['path'] as String).toList();
-    //We do not want concour and general documents. This is wierd but I will refactor all the code later.
-    subject.removeWhere((element) => element.split("/").length != 5);
-    //for path return the second element
-    subject.map((e) => e.split("/")[1]).toSet().toList();
-    subject.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    return subject;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/global.dart';
 import 'package:ipsl_docs/src/core/notifiers.dart';
@@ -10,6 +11,7 @@ import 'package:ipsl_docs/src/models/user.dart';
 import 'package:ipsl_docs/src/core/notification_service.dart';
 import 'package:ipsl_docs/src/core/stokage_service.dart';
 import 'package:ipsl_docs/src/pages/introduction/onboarding.dart';
+import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'src/core/firebase_options.dart';
@@ -28,9 +30,10 @@ Future<void> main() async {
     logError("Error during NotificationService.init: $e");
   }
   await StorageService.init();
-  User? userData = await DatabaseHelper.instance.getUser();
-  if (userData == null) {
-    await StorageService.setBool("isLoged", false);
+  UserViewModel userViewModel = await GetIt.I<UserViewModel>();
+  final bool isLoged = await userViewModel.userExist();
+  await StorageService.setBool("isLoged", isLoged);
+  if (!isLoged) {
     await StorageService.setBool("isDark", isDarkModePrefer());
   }
   ThemeController.loadTheme();

@@ -74,7 +74,13 @@ class NotificationService {
     });
   }
 
+  static String? _lastMessageId;
   static Future<void> _showNotification(RemoteMessage message) async {
+    if (message.messageId == _lastMessageId) {
+      logInfo("Notification déjà affichée : ${message.messageId}");
+      return; // 🔒 évite un doublon
+    }
+    _lastMessageId = message.messageId;
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
           'default_channel_id',
@@ -86,9 +92,12 @@ class NotificationService {
     const NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
     );
-
+    //make the id notification unique by using the hashcode of the message
+    final int notificationId = message.messageId.hashCode;
+    logInfo("Notification ID: $notificationId=================");
+    //  final int notificationId =  DateTime.now().millisecondsSinceEpoch;
     await _localNotifications.show(
-      0,
+      notificationId,
       message.notification?.title ?? 'Nouvelle notification',
       message.notification?.body ?? '',
       notificationDetails,
