@@ -32,4 +32,13 @@ class User {
       'number_contribution': numberContribution,
     };
   }
+   User copyWith({String? userName, String? classe}) {
+    return User(
+      id: id,
+      userName: userName ?? this.userName,
+      email: email,
+      classe: classe ?? this.classe,
+      numberContribution: numberContribution,
+    );
+   }
 }

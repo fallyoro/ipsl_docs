@@ -53,10 +53,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
-    bool isMobileDevice =
-        Theme.of(context).platform == TargetPlatform.android ||
-        Theme.of(context).platform == TargetPlatform.iOS;
-    if (isMobileDevice) {
       return Scaffold(
         appBar: AppBar(title: Text("Profil"), centerTitle: true),
         body: Padding(
@@ -89,8 +85,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ? AppColors.darkSystemBackground
                                 : AppColors.lightSecondarySystemBackground,
                         labelText: "Nom d'utillisateur",
-
-                        // suffixIcon: Icon(FontAwesomeIcons.word),)
                       ),
                     ),
 
@@ -141,8 +135,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ),
       );
-    }
-    return Text("Desktop");
   }
 
   Future<void> editProfile(BuildContext context) async {

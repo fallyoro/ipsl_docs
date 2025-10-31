@@ -16,28 +16,7 @@ class Profile extends StatefulWidget {
 }
 
 class _HomeState extends State<Profile> {
-  late final UserViewModel userViewModel;
-  late String userName;
-  late String userClass;
-  bool _hasFetched = false;
-  @override
-  void initState() {
-    super.initState();
-
-    userViewModel = GetIt.instance<UserViewModel>();
-    try {
-      logInfo(userViewModel.userNotifier.value!.toJson().toString());
-    } catch (e) {
-      logInfo("merde-------swwdd: ${e.toString()}");
-    }
-    if (userViewModel.userNotifier.value != null) {
-      userName = userViewModel.userNotifier.value!.userName;
-      userClass = userViewModel.userNotifier.value!.classe;
-    }
-    //  userName = "Maty";
-    //userClass = "CP";
-    _hasFetched = true;
-  }
+  UserViewModel userViewModel = GetIt.instance<UserViewModel>();
 
   @override
   Widget build(BuildContext context) {
@@ -174,8 +153,8 @@ class _HomeState extends State<Profile> {
                               PageTransition(
                                 type: PageTransitionType.bottomToTop,
                                 child: EditProfilePage(
-                                  userName: userName,
-                                  userClass: userClass,
+                                  userName: userViewModel.userNotifier.value!.userName,
+                                  userClass: userViewModel.userNotifier.value!.classe,
                                 ),
                               ),
                             ).then((value) {

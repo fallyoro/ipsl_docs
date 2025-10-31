@@ -15,9 +15,8 @@ from src.services.user import UserService
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.database.database import create_session
 from src.utils import create_acess_token, decode_token, passwd_context, verify_password
-from typing import List
+from uuid import UUID
 from src.core.config import settings
-import unicodedata
 
 user_router = APIRouter()
 user_service = UserService()
@@ -29,11 +28,11 @@ async def edit_profile(
 ):
     await user_service.update_user(
         session=session,
-        user_id=user_data.id,
+        user_id=UUID(user_data.id),
         new_classe=user_data.classe,
         new_user_name=user_data.new_user_name,
     )
-    user = await user_service.get_user_by_id(id=user_data.id, session=session)
+    user = await user_service.get_user_by_id(id=UUID(user_data.id), session=session)
     return user
 
 

@@ -10,7 +10,7 @@ class UserBase(BaseModel):
 
 
 class UserEdit(BaseModel):
-    id :UUID
+    id: str
     new_user_name: str
     classe: str
 

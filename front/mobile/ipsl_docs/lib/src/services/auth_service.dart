@@ -31,12 +31,12 @@ class UserService {
   ) async {
     try {
       final response = await dio.put(
-        "edit-profile",
-        data: jsonEncode({
+        "/edit-profile",
+        data: {
           'id': userId,
           'new_user_name': newUserName,
           "classe": classe,
-        }),
+        },
       );
       return {
         'user_name': response.data['user_name'],

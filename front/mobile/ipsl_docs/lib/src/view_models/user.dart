@@ -23,7 +23,10 @@ class UserViewModel {
 
   Future<void> updateUser(String userName, String classe) async {
     await _db.updateUser(classe, userName);
-    userNotifier.value = await _db.getUser();
+    userNotifier.value = userNotifier.value!.copyWith(
+      userName: userName,
+      classe: classe,
+    );
   }
 
   Future<void> updateNumberContribution(int numberContribution) async {
