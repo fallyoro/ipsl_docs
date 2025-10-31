@@ -21,7 +21,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKeyLog = GlobalKey<FormState>();
-  TextEditingController userNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _obscurePassword = false;
   late DocumentViewModel documentViewModel;
@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       if (message != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(message),
+            content: Text(message, style: TextStyle(color: Colors.white)),
             backgroundColor: AppColors.darkSecondarySystemBackground,
           ),
         );
@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    userNameController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -66,19 +66,18 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text("Se connecter", style: GoogleFonts.poppins(fontSize: 30)),
-
             Form(
               key: _formKeyLog,
               child: Column(
                 spacing: 30,
                 children: [
                   buildTextField(
-                    controller: userNameController,
-                    label: "Nom d'utilisateur",
+                    controller: emailController,
+                    label: "Email",
                     validator:
                         (value) =>
                             value == null || value.isEmpty
-                                ? 'Veuillez entrer votre nom utilisateur'
+                                ? 'Veuillez entrer votre nom email'
                                 : null,
                     isDark: isDark,
                   ),
@@ -88,9 +87,9 @@ class _LoginPageState extends State<LoginPage> {
                     obscure: _obscurePassword,
                     suffix: IconButton(
                       icon:
-                      _obscurePassword
-                          ? Icon(FontAwesomeIcons.eyeSlash)
-                          : Icon(FontAwesomeIcons.eye),
+                          _obscurePassword
+                              ? Icon(FontAwesomeIcons.eyeSlash)
+                              : Icon(FontAwesomeIcons.eye),
                       onPressed: () {
                         setState(() {
                           _obscurePassword = !_obscurePassword;
@@ -161,8 +160,8 @@ class _LoginPageState extends State<LoginPage> {
     FocusScope.of(context).unfocus();
     if (!_formKeyLog.currentState!.validate()) return;
     await userViewModel.login(
-      userNameController.text.trim(),
-      passwordController.text.trim(),
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
     );
     await documentViewModel.syncDocumentFromServer();
     await documentViewModel.loadDocuments();

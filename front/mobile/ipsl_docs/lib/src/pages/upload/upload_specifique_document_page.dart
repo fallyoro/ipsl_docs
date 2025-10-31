@@ -113,6 +113,14 @@ class _UploadSpecifiqueDocumentPageState
         setState(() => progress = total > 0 ? received / total : 0);
       },
     );
+    yearController.clear();
+    filenameController.clear();
+    subjectController.clear();
+    pickedFile = null;
+    isSending = false;
+    progress = 0;
+
+    setState(() {});
     DateTime updatedAt = DateTime.parse(
       responseUpload?['updated_at'] as String,
     );
@@ -126,15 +134,13 @@ class _UploadSpecifiqueDocumentPageState
 
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
-
-    setState(() => isSending = false);
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Fichier envoyé, merci de votre contribution'),
+      ),
+    );
     await viewModel.loadDocuments();
-    if (!context.mounted) return;
-    Navigator.pop(context);
   }
 
   @override
@@ -160,7 +166,7 @@ class _UploadSpecifiqueDocumentPageState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
-      
+
                     children: [
                       Row(
                         children: [
@@ -174,7 +180,7 @@ class _UploadSpecifiqueDocumentPageState
                             inputDecorationTheme: InputDecorationTheme(
                               border: InputBorder.none,
                             ),
-      
+
                             initialSelection: selectedClasse,
                             onSelected: (String? value) {
                               setState(() {
@@ -193,7 +199,7 @@ class _UploadSpecifiqueDocumentPageState
                           ),
                         ],
                       ),
-      
+
                       Row(
                         children: [
                           Text(
@@ -304,7 +310,7 @@ class _UploadSpecifiqueDocumentPageState
                   },
                 ),
               ),
-      
+
               TextFormField(
                 controller: filenameController,
                 decoration: const InputDecoration(
@@ -315,7 +321,7 @@ class _UploadSpecifiqueDocumentPageState
                     (value) =>
                         value == null || value.isEmpty ? 'Champ requis' : null,
               ),
-      
+
               TextFormField(
                 controller: yearController,
                 inputFormatters: [yearMaskFormatter],
@@ -343,16 +349,19 @@ class _UploadSpecifiqueDocumentPageState
                   return null;
                 },
               ),
-      
+
               const SizedBox(height: 16),
-      
+
               pickedFile != null
-                  ? previewWidget(localPath: pickedFile!.path!, context: context)
+                  ? previewWidget(
+                    localPath: pickedFile!.path!,
+                    context: context,
+                  )
                   : PickFileButtun(onpress: pickFile),
-      
+
               const SizedBox(height: 16),
               buildSendButton(context, () => _submit(context)),
-      
+
               if (isSending) customLinearProgressSending(progress),
             ],
           ),

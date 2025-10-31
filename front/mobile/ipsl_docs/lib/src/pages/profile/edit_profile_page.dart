@@ -155,8 +155,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     userService.editProfile(
       selectedClasse,
-      userViewModel.userNotifier.value!.userName,
-
+      userViewModel.userNotifier.value!.id,
       userNameController.text,
     );
     await userViewModel.updateUser(userNameController.text, selectedClasse);

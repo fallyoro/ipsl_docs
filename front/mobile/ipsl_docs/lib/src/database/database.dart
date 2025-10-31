@@ -43,6 +43,7 @@ class DatabaseHelper {
     db.execute('''
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
+        email TEST,
         user_name TEXT,
         classe TEXT,
         number_contribution INT

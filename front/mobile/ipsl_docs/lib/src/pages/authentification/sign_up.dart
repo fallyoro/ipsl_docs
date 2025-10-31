@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -26,6 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool isLoading = false;
   final _formKeySign = GlobalKey<FormState>();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
   String? selectedClasse = 'Cpi1';
   bool _obscurePassword = true;
@@ -56,11 +59,25 @@ class _SignUpPageState extends State<SignUpPage> {
       if (message != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(message),
+            content: Text(message, style: TextStyle(color: Colors.white)),
             backgroundColor: AppColors.darkSystemBackground,
           ),
         );
         userViewModel.errorNotifier.value = null;
+      }
+    });
+
+    userViewModel.authState.addListener(() {
+      if (userViewModel.authState.value == ViewState.success) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return WidgetTree();
+            },
+          ),
+          (route) => false,
+        );
       }
     });
   }
@@ -101,11 +118,36 @@ class _SignUpPageState extends State<SignUpPage> {
               fontSize: 30,
             ),
           ),
+          SignInButton(
+            Buttons.Google,
+            onPressed: () {
+              userViewModel.authState.value == ViewState.loading
+                  ? null
+                  : userViewModel.loginWithGoogle();
+              /* if (userViewModel.authState.value == ViewState.success) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => WidgetTree()),
+                  (route) => false,);
+
+              }*/
+            },
+          ),
           Form(
             key: _formKeySign,
             child: Column(
               spacing: 30,
               children: [
+                buildTextField(
+                  controller: emailController,
+                  label: "Email",
+                  validator:
+                      (value) =>
+                          value == null || value.isEmpty
+                              ? "Veuillez entrer votre email"
+                              : null,
+                  isDark: isDark,
+                ),
                 buildTextField(
                   controller: userNameController,
                   label: "Nom d'utilisateur",
@@ -122,9 +164,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   obscure: _obscurePassword,
                   suffix: IconButton(
                     icon:
-                    _obscurePassword
-                        ? Icon(FontAwesomeIcons.eyeSlash)
-                        : Icon(FontAwesomeIcons.eye),
+                        _obscurePassword
+                            ? Icon(FontAwesomeIcons.eyeSlash)
+                            : Icon(FontAwesomeIcons.eye),
                     onPressed: () {
                       setState(() {
                         _obscurePassword = !_obscurePassword;
@@ -231,13 +273,13 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-
   Future<void> _onSignUpPressed(BuildContext context) async {
     FocusScope.of(context).unfocus();
     if (!_formKeySign.currentState!.validate()) return;
     await userViewModel.signUp(
       userNameController.text.trim(),
       passwordController.text.trim(),
+      emailController.text.trim(),
       selectedClasse!,
     );
     await documentViewModel.syncDocumentFromServer();

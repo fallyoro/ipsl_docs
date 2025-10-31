@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
         await documentViewModel.syncDocumentFromServer();
       }
     } catch (e) {
-   String   errorMessage = 'Erreur lors du chargement : $e';
+      String errorMessage = 'Erreur lors du chargement : $e';
       logInfo(errorMessage);
     }
 
@@ -91,12 +91,16 @@ class _HomePageState extends State<HomePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       //Search(documents: documentsList),
-                      ValueListenableBuilder(valueListenable: userViewModel.userNotifier, builder: (context, user, child) {
-                        return
-                          Text.rich(
+                      ValueListenableBuilder(
+                        valueListenable: userViewModel.userNotifier,
+                        builder: (context, user, child) {
+                          return Text.rich(
                             TextSpan(
                               text: 'Salut 👋, ',
-                              style: TextStyle(fontSize: 22, color: Colors.white),
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
                               children: [
                                 TextSpan(
                                   text: user!.userName,
@@ -108,17 +112,23 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                           );
-                      },)
+                        },
+                      ),
                     ],
                   ),
                 ),
               ),
-              ValueListenableBuilder(valueListenable: documentViewModel.root, builder: (context, root, child) {
-                return
-                  DirectoryGrid(
-                    subDirectories: root!.subDirectories
-                  );
-              },)
+              ValueListenableBuilder(
+                valueListenable: documentViewModel.root,
+                builder: (context, root, child) {
+                  if (root!.subDirectories.isEmpty) {
+                    return Center(child:
+                      Text("Vous n'avez aucun document"),);
+                  }
+
+                  return DirectoryGrid(subDirectories: root!.subDirectories);
+                },
+              ),
             ],
           ),
         ),

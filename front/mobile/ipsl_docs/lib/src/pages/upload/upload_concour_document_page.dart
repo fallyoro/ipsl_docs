@@ -1,13 +1,10 @@
 import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
-
 import '../../core/constant.dart';
 import '../../core/utils.dart';
 import '../../models/document.dart';
@@ -32,7 +29,7 @@ class _UploadConcoursDocumentPageState
   double progress = 0;
   bool isSending = false;
   final viewModel = GetIt.I<DocumentViewModel>();
-  final yearMaskFormatter = YearInputFormatter(); // ton formatter custom
+  final yearMaskFormatter = YearInputFormatter();
   final userViewModel = GetIt.I<UserViewModel>();
   final yearController = TextEditingController();
   final documentServive = GetIt.I<DocumentService>();
@@ -42,7 +39,7 @@ class _UploadConcoursDocumentPageState
     "Anglais",
     "Français",
   ];
-  PlatformFile? pickedFile;
+  //PlatformFile? pickedFile;
 
   Future<void> _submit(BuildContext context) async {
     if (!_formKeySubmit.currentState!.validate() || pickedFile == null) return;
@@ -77,6 +74,9 @@ class _UploadConcoursDocumentPageState
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
 
+    filenameController.clear();
+    yearController.clear();
+    pickedFile = null;
     setState(() => isSending = false);
     if (!context.mounted) return;
     ScaffoldMessenger.of(

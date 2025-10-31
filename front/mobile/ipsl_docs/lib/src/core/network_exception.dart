@@ -36,10 +36,10 @@ class NetworkException implements Exception {
             "Erreur interne du serveur. Veuillez réessayer plus tard.",
           );
         } else {
-          return NetworkException("Erreur serveur inconnue : $statusCode");
+          return NetworkException("Erreur serveur inconnue");
         }
       default:
-        return NetworkException("Erreur inattendue : ${e.message}");
+        return NetworkException("Erreur inattendue");
     }
   }
 }

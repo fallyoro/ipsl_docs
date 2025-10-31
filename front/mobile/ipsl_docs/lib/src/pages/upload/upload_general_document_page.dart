@@ -54,7 +54,9 @@ class _UploadGeneralDocumentPageState
         setState(() => progress = total > 0 ? received / total : 0);
       },
     );
-
+    filenameController.clear();
+    pickedFile = null;
+    setState(() => isSending = false);
     final doc = Document(
       id: responseUpload!['id'],
       idUploader: userViewModel.userNotifier.value!.id,
@@ -66,14 +68,11 @@ class _UploadGeneralDocumentPageState
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
 
-    setState(() => isSending = false);
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
     await viewModel.loadDocuments();
-    if (!context.mounted) return;
-    Navigator.pop(context);
   }
 
   @override

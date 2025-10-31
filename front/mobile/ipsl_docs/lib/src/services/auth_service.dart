@@ -26,14 +26,14 @@ class UserService {
 
   Future<Map<String, dynamic>> editProfile(
     String classe,
-    String userName,
+    String userId,
     String newUserName,
   ) async {
     try {
       final response = await dio.put(
         "edit-profile",
         data: jsonEncode({
-          'user_name': userName,
+          'id': userId,
           'new_user_name': newUserName,
           "classe": classe,
         }),
@@ -60,15 +60,15 @@ class UserService {
     }
   }
 
-  Future<Either<NetworkFailure, Map<String, dynamic>>> login(
-    String userName,
-    String password,
-  ) async {
+  Future<Either<NetworkFailure, Map<String, dynamic>>> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       final response = await dio.post(
         "/login",
         data: jsonEncode({
-          'user_name': userName,
+          'email': email,
           'password': password,
           'fcm_token': NotificationService.token,
         }),
@@ -89,6 +89,7 @@ class UserService {
         'user_name': response.data['user']['user_name'],
         'number_contribution': response.data['user']['number_contribution'],
         'classe': response.data['user']['classe'],
+        'email': response.data['user']['email'],
       });
     } on DioException catch (e) {
       final error = NetworkException.fromDioError(e);
@@ -98,15 +99,43 @@ class UserService {
     }
   }
 
-  Future<Either<NetworkFailure, Map<String, dynamic>>> signUp(
-    String userName,
-    String password,
-    String classe,
+  Future<Either<NetworkFailure, Map<String, dynamic>>> loginWithGoogle(
+    String googleIdToken,
   ) async {
+    try {
+      final resp = await dio.post(
+        "/google",
+        data: {
+          "id_token": googleIdToken,
+          'fcm_token': NotificationService.token,
+        },
+      );
+      return Right({
+        'id': resp.data['user']['id'],
+        'user_name': resp.data['user']['user_name'],
+        'email': resp.data['user']['email'],
+        'number_contribution': resp.data['user']['number_contribution'],
+        'classe': resp.data['user']['classe'],
+      });
+    } on DioException catch (e) {
+      final String error = NetworkException.fromDioError(e).message;
+      return Left(NetworkFailure(error));
+    } catch (e) {
+      return Left(NetworkFailure("Erreur réseau ou inconnue : $e"));
+    }
+  }
+
+  Future<Either<NetworkFailure, Map<String, dynamic>>> signUp({
+    required String email,
+    required String userName,
+    required String password,
+    required String classe,
+  }) async {
     try {
       final resp = await dio.post(
         "/sign-up",
         data: {
+          'email': email,
           'user_name': userName,
           'password': password,
           'classe': classe,

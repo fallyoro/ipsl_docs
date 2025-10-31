@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ipsl_docs/src/core/notification_service.dart';
 import '../core/utils.dart';
 import '../database/database.dart';
@@ -38,6 +39,7 @@ class UserViewModel {
       // Gérer le cas où l'utilisateur est null
       userNotifier.value = User(
         id: "23",
+        email: "N/A",
         classe: "N/A",
         numberContribution: 000,
         userName: "N/A",
@@ -50,15 +52,6 @@ class UserViewModel {
     return user != null;
   }
 
-  /*Future<User?> getUser() async {
-    final User? user = await _db.getUser();
-    if (user != null) {
-      user.toString();
-      // userNotifier.value = user;
-    }
-
-    return user;
-  }*/
 
   Future<void> updateFcmToken() async {
     String? fcmToken = NotificationService.token;
@@ -75,34 +68,97 @@ class UserViewModel {
     }
   }
 
-  Future<void> login(String userName, String password) async {
+  Future<void> login({required String email, required String password}) async {
     authState.value = ViewState.loading;
-    final result = await _userService.login(userName, password);
+    final result = await _userService.login(email: email, password: password);
     result.fold(
       (failure) {
+        logInfo("Login failed: ${failure.message}");
         authState.value = ViewState.error;
         logError("Login failed: ${failure.message}");
         errorNotifier.value = failure.message;
       },
       (userData) async {
         authState.value = ViewState.success;
-        User newUser = User(
-          id: userData['id'],
-          userName: userName,
-          classe: userData['classe'],
-          numberContribution: userData['number_contribution'],
-        );
-
-        //      StorageService.setBool("isLoged", true);
-        await addUser(newUser);
-        authState.value = ViewState.success;
+        logInfo("Login successfuly");
+        try {
+          User newUser = User(
+            id: userData['id'],
+            userName: userData['user_name'],
+            email: userData['email'],
+            classe: userData['classe'],
+            numberContribution: userData['number_contribution'],
+          );
+          await addUser(newUser);
+        } catch (e) {
+          logError("Can't create a user : ${e.toString()}");
+        }
       },
     );
   }
 
-  Future<void> signUp(String userName, String password, String classe) async {
+  Future<void> loginWithGoogle() async {
     authState.value = ViewState.loading;
-    final result = await _userService.signUp(userName, password, classe);
+
+    final googleSignIn = GoogleSignIn.instance;
+    googleSignIn.authorizationClient;
+    googleSignIn.initialize(
+      serverClientId:
+          '510427170931-b854nar8etjugl0704t4b86cndu8smhp.apps.googleusercontent.com',
+    );
+    try {
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate(
+        scopeHint: ['email'],
+      );
+      logInfo(googleUser.toString());
+      final String idToken = googleUser.authentication.idToken!;
+      final result = await _userService.loginWithGoogle(idToken);
+      result.fold(
+        (failure) {
+          authState.value = ViewState.error;
+          logError("Login with google failed: ${failure.message}");
+          errorNotifier.value = failure.message;
+        },
+        (userData) async {
+          logInfo("User data ${userData.toString()}");
+          User newUser = User(
+            id: userData['id'],
+            userName: userData['user_name'],
+            email: userData['email'],
+            classe: userData['classe'],
+            numberContribution: userData['number_contribution'],
+          );
+          await addUser(newUser);
+          authState.value = ViewState.success;
+        },
+      );
+    } on GoogleSignInException catch (e) {
+      if (e.code.name == 'canceled') {
+        authState.value = ViewState.idle;
+        logError("Connexion Google annulée ${e.toString()}");
+        errorNotifier.value = 'Connexion Google annulée';
+      } else {
+        logError("Error login google ${e.toString()}");
+        authState.value = ViewState.error;
+        errorNotifier.value = 'Erreur connexion Google';
+      }
+      return;
+    }
+  }
+
+  Future<void> signUp(
+    String userName,
+    String password,
+    String email,
+    String classe,
+  ) async {
+    authState.value = ViewState.loading;
+    final result = await _userService.signUp(
+      email: email,
+      userName: userName,
+      password: password,
+      classe: classe,
+    );
     result.fold(
       (failure) {
         authState.value = ViewState.error;
@@ -114,11 +170,11 @@ class UserViewModel {
         User newUser = User(
           id: userData['id'],
           userName: userName,
+          email: email,
           classe: userData['classe'],
           numberContribution: userData['number_contribution'],
         );
 
-        //      StorageService.setBool("isLoged", true);
         await addUser(newUser);
       },
     );

@@ -28,7 +28,7 @@ Future<void> main() async {
     logError("Error during NotificationService.init: $e");
   }
   await StorageService.init();
-  UserViewModel userViewModel = await GetIt.I<UserViewModel>();
+  UserViewModel userViewModel = GetIt.I<UserViewModel>();
   final bool isLoged = await userViewModel.userExist();
   await StorageService.setBool("isLoged", isLoged);
   if (!isLoged) {
