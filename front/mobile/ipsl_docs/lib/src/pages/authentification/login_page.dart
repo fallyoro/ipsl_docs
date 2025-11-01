@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -46,6 +48,19 @@ class _LoginPageState extends State<LoginPage> {
         userViewModel.errorNotifier.value = null;
       }
     });
+    userViewModel.authState.addListener(() {
+      if (userViewModel.authState.value == ViewState.success) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return WidgetTree();
+            },
+          ),
+              (route) => false,
+        );
+      }
+    });
   }
 
   @override
@@ -66,6 +81,15 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text("Se connecter", style: GoogleFonts.poppins(fontSize: 30)),
+            SignInButton(
+              Buttons.Google,
+              text: "Se connecter avec google",
+              onPressed: () {
+                userViewModel.authState.value == ViewState.loading
+                    ? null
+                    : userViewModel.loginWithGoogle();
+              },
+            ),
             Form(
               key: _formKeyLog,
               child: Column(
@@ -165,12 +189,5 @@ class _LoginPageState extends State<LoginPage> {
     );
     await documentViewModel.syncDocumentFromServer();
     await documentViewModel.loadDocuments();
-    if (userViewModel.authState.value != ViewState.success) return;
-    if (!context.mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => WidgetTree()),
-      (route) => false,
-    );
   }
 }

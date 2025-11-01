@@ -120,17 +120,11 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           SignInButton(
             Buttons.Google,
+            text: "Se connecter avec google",
             onPressed: () {
               userViewModel.authState.value == ViewState.loading
                   ? null
                   : userViewModel.loginWithGoogle();
-              /* if (userViewModel.authState.value == ViewState.success) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => WidgetTree()),
-                  (route) => false,);
-
-              }*/
             },
           ),
           Form(
@@ -284,12 +278,5 @@ class _SignUpPageState extends State<SignUpPage> {
     );
     await documentViewModel.syncDocumentFromServer();
     await documentViewModel.loadDocuments();
-    if (userViewModel.authState.value != ViewState.success) return;
-    if (!context.mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => WidgetTree()),
-      (route) => false,
-    );
   }
 }
