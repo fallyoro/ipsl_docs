@@ -35,23 +35,3 @@ FutureBuilder<Widget> previewWidget({
   );
 }
 
-FutureBuilder<Widget> previewWidget2(String path, BuildContext context) {
-  final extension = p.extension(path).replaceFirst('.', '');
-  return FutureBuilder<Widget>(
-    future: buildDocumentPreview2(path, context),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const SizedBox(
-          height: 100,
-          width: 100,
-          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-        );
-      } else if (snapshot.hasError || !snapshot.hasData) {
-        // log l’erreur si tu as une méthode
-        return const Icon(Icons.insert_drive_file, size: 64);
-      } else {
-        return snapshot.data!;
-      }
-    },
-  );
-}
