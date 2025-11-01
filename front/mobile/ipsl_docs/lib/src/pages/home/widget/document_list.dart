@@ -68,7 +68,7 @@ class _DocumentListWidgetState extends State<DocumentListWidget> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return ListView.separated(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      //physics: NeverScrollableScrollPhysics(),
       separatorBuilder: (context, index) => const SizedBox(height: 30),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       itemCount: widget.documents.length,

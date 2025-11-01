@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
+import 'package:ipsl_docs/src/pages/upload/upload_specifique_document_page.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 
@@ -55,9 +56,6 @@ class _UploadGeneralDocumentPageState
         setState(() => progress = total > 0 ? received / total : 0);
       },
     );
-    filenameController.clear();
-    pickedFile = null;
-    setState(() => isSending = false);
     final doc = Document(
       id: responseUpload!['id'],
       idUploader: userViewModel.userNotifier.value!.id,
@@ -70,9 +68,7 @@ class _UploadGeneralDocumentPageState
     await userViewModel.updateNumberContribution(numberContribution);
 
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
+    confirmSending(context);
     await viewModel.loadDocuments();
     Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) => WidgetTree(),), (route) => false,);
   }

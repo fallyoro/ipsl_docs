@@ -17,6 +17,7 @@ import 'package:ipsl_docs/src/pages/home/widget/year_formater.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 
+import '../../widget_tree.dart';
 import '../home/widget/send_button.dart';
 
 class UploadSpecifiqueDocumentPage extends StatefulWidget {
@@ -113,14 +114,7 @@ class _UploadSpecifiqueDocumentPageState
         setState(() => progress = total > 0 ? received / total : 0);
       },
     );
-    yearController.clear();
-    filenameController.clear();
-    subjectController.clear();
-    pickedFile = null;
-    isSending = false;
-    progress = 0;
 
-    setState(() {});
     DateTime updatedAt = DateTime.parse(
       responseUpload?['updated_at'] as String,
     );
@@ -134,14 +128,14 @@ class _UploadSpecifiqueDocumentPageState
 
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
+    Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) => WidgetTree(),), (route) => false,);
+
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Fichier envoyé, merci de votre contribution'),
-      ),
-    );
+    confirmSending(context);
     await viewModel.loadDocuments();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -369,4 +363,11 @@ class _UploadSpecifiqueDocumentPageState
       ),
     );
   }
+}
+void confirmSending(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Fichier envoyé, merci de votre contribution'),
+    ),
+  );
 }

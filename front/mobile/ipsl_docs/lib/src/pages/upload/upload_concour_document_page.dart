@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
+import 'package:ipsl_docs/src/pages/upload/upload_specifique_document_page.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 import '../../core/constant.dart';
@@ -11,6 +12,7 @@ import '../../models/document.dart';
 import '../../services/document.dart';
 import '../../view_models/document.dart';
 import '../../view_models/user.dart';
+import '../../widget_tree.dart';
 import '../home/widget/preview_widget.dart';
 import '../home/widget/send_button.dart';
 import '../home/widget/year_formater.dart';
@@ -39,7 +41,6 @@ class _UploadConcoursDocumentPageState
     "Anglais",
     "Français",
   ];
-  //PlatformFile? pickedFile;
 
   Future<void> _submit(BuildContext context) async {
     if (!_formKeySubmit.currentState!.validate() || pickedFile == null) return;
@@ -74,14 +75,10 @@ class _UploadConcoursDocumentPageState
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
 
-    filenameController.clear();
-    yearController.clear();
-    pickedFile = null;
-    setState(() => isSending = false);
+    Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) => WidgetTree(),), (route) => false,);
+
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
+    confirmSending(context);
     await viewModel.loadDocuments();
     if (!context.mounted) return;
     Navigator.pop(context);
