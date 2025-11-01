@@ -13,6 +13,7 @@ import '../../models/document.dart';
 import '../../services/document.dart';
 import '../../view_models/document.dart';
 import '../../view_models/user.dart';
+import '../../widget_tree.dart';
 import '../home/widget/preview_widget.dart';
 import 'base_upload.dart';
 
@@ -73,6 +74,7 @@ class _UploadGeneralDocumentPageState
       context,
     ).showSnackBar(const SnackBar(content: Text('Fichier envoyé')));
     await viewModel.loadDocuments();
+    Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) => WidgetTree(),), (route) => false,);
   }
 
   @override

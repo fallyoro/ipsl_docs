@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/src/pages/home/widget/custom_appbar.dart';
 import 'package:ipsl_docs/src/pages/home/widget/document_list.dart';
 import 'package:ipsl_docs/src/view_models/directory_node.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
@@ -17,7 +18,7 @@ class DocumentListPage extends StatelessWidget {
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text("Documents")),
+        appBar: CustomAppBar(),
         body: DocumentListWidget(documents: node.documents),
       ),
     );

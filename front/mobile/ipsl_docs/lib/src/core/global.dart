@@ -13,7 +13,7 @@ Future<void> setupDependencies() async {
   final DocumentService documentService = DocumentService();
   final DocumentViewModel documentViewModel = DocumentViewModel(
     db,
-    documentService
+    documentService,
   );
 
   try {
