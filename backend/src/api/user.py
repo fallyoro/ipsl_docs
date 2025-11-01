@@ -122,6 +122,7 @@ async def login_with_google(
     sub = idinfo["sub"]
     email = idinfo.get("email")
     name = (idinfo.get("name") or "").split(" ")[0]
+    picture_url = idinfo.get("picture")
 
     user = await user_service.find_user_by_google_id(google_id=sub, session=session)
     if user:
@@ -136,6 +137,7 @@ async def login_with_google(
                     "user_name": user.user_name,
                     "email": user.email,
                     "classe": user.classe,
+                    "picture_url": picture_url,
                     "number_contribution": number_contribution,
                 },
             }
@@ -145,6 +147,7 @@ async def login_with_google(
             google_id=sub,
             user_name=name,
             email=email,
+            picture_url=picture_url,
             classe="Cpi1",
             notification_token=login_data.fcm_token,
             session=session,
@@ -156,6 +159,7 @@ async def login_with_google(
                     "id": str(new_user.id),
                     "email": new_user.email,
                     "user_name": new_user.user_name,
+                    "picture_url": new_user.picture_url,
                     "classe": new_user.classe,
                     "number_contribution": 0,
                 },

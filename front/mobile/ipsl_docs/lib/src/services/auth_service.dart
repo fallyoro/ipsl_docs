@@ -32,11 +32,7 @@ class UserService {
     try {
       final response = await dio.put(
         "/edit-profile",
-        data: {
-          'id': userId,
-          'new_user_name': newUserName,
-          "classe": classe,
-        },
+        data: {'id': userId, 'new_user_name': newUserName, "classe": classe},
       );
       return {
         'user_name': response.data['user_name'],
@@ -116,6 +112,7 @@ class UserService {
         'email': resp.data['user']['email'],
         'number_contribution': resp.data['user']['number_contribution'],
         'classe': resp.data['user']['classe'],
+        'picture_url': resp.data['user']['picture_url'],
       });
     } on DioException catch (e) {
       final String error = NetworkException.fromDioError(e).message;

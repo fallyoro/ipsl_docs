@@ -63,6 +63,7 @@ dependencies:
   dropdown_button2: ^2.3.9
   google_sign_in: ^7.2.0
   flutter_signin_button: ^2.1.1
+  cached_network_image: ^3.4.1
   
  
   

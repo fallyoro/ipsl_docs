@@ -3,8 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/Responsive.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
-import 'package:ipsl_docs/src/core/utils.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ipsl_docs/src/pages/profile/edit_profile_page.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -53,7 +53,23 @@ class _HomeState extends State<Profile> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.person_outline, size: 100, color: Colors.white),
+                  userViewModel.userNotifier.value?.pictureUrl != null
+                      ? CachedNetworkImage(
+                        height: 100,
+                        imageUrl: userViewModel.userNotifier.value!.pictureUrl!
+                            .replaceAll('s96-c', 's400-c'),
+                        imageBuilder: (context, imageProvider) {
+                          return CircleAvatar(
+                            radius: 50,
+                            backgroundImage: imageProvider,
+                          );
+                        },
+                      )
+                      : Icon(
+                        Icons.person_outline,
+                        size: 100,
+                        color: Colors.white,
+                      ),
 
                   // SizedBox(height: 20),
                   ValueListenableBuilder(
@@ -67,10 +83,6 @@ class _HomeState extends State<Profile> {
                           fontWeight: FontWeight.bold,
                         ),
                       );
-                      /*    Text(
-                    userClass,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),*/
                     },
                   ),
                   ValueListenableBuilder(
@@ -153,8 +165,13 @@ class _HomeState extends State<Profile> {
                               PageTransition(
                                 type: PageTransitionType.bottomToTop,
                                 child: EditProfilePage(
-                                  userName: userViewModel.userNotifier.value!.userName,
-                                  userClass: userViewModel.userNotifier.value!.classe,
+                                  userName:
+                                      userViewModel
+                                          .userNotifier
+                                          .value!
+                                          .userName,
+                                  userClass:
+                                      userViewModel.userNotifier.value!.classe,
                                 ),
                               ),
                             ).then((value) {

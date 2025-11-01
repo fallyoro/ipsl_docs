@@ -59,11 +59,13 @@ class UserService:
         email: str,
         classe: str,
         notification_token: str,
+        picture_url: str,
         session: AsyncSession,
     ) -> User:
         new_user = User(
             user_name=user_name,
             email=email,
+            picture_url=picture_url,
             google_id=google_id,
             classe=classe,
             notification_token=notification_token,

@@ -9,6 +9,7 @@ class User(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     email: str = Field(index=True, unique=True)
     user_name: str
+    picture_url: str
     classe: str
     password_hash: Optional[str] = None
     notification_token: str = Field(default=None, nullable=True)

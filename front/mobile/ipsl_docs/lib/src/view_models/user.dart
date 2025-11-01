@@ -55,7 +55,6 @@ class UserViewModel {
     return user != null;
   }
 
-
   Future<void> updateFcmToken() async {
     String? fcmToken = NotificationService.token;
     String userName = userNotifier.value?.userName ?? "";
@@ -124,13 +123,7 @@ class UserViewModel {
         },
         (userData) async {
           logInfo("User data ${userData.toString()}");
-          User newUser = User(
-            id: userData['id'],
-            userName: userData['user_name'],
-            email: userData['email'],
-            classe: userData['classe'],
-            numberContribution: userData['number_contribution'],
-          );
+          User newUser = User.fromJson(userData);
           await addUser(newUser);
           authState.value = ViewState.success;
         },

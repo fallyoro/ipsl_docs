@@ -122,8 +122,7 @@ class _HomePageState extends State<HomePage> {
                 valueListenable: documentViewModel.root,
                 builder: (context, root, child) {
                   if (root!.subDirectories.isEmpty) {
-                    return Center(child:
-                      Text("Vous n'avez aucun document"),);
+                    return Center(child: Text("Vous n'avez aucun document"));
                   }
 
                   return DirectoryGrid(subDirectories: root!.subDirectories);

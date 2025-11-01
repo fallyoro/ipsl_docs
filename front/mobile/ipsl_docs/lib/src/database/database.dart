@@ -46,7 +46,8 @@ class DatabaseHelper {
         email TEST,
         user_name TEXT,
         classe TEXT,
-        number_contribution INT
+        number_contribution INT,
+        picture_url TEXT
       );
     ''');
   }
@@ -82,18 +83,6 @@ class DatabaseHelper {
     await db.delete("documents", where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<List<Document>> loadDirectory(String parentPath) async {
-    Database db = await instance.database;
-    final List<Map<String, dynamic>> rawDocuments = await db.query(
-      "documents",
-      where: 'path LIKE ?',
-      whereArgs: ["$parentPath%"],
-    );
-    final List<Document> allDocuments =
-        rawDocuments.map((e) => Document.fromJson(e)).toList();
-    return allDocuments;
-  }
-
   Future<void> updateNumberContribution(int numberContribution) async {
     Database db = await instance.database;
     await db.update("users", {"number_contribution": numberContribution});
@@ -101,8 +90,6 @@ class DatabaseHelper {
 
   Future<void> insertAllDoc(List<Document> data) async {
     Database db = await instance.database;
-    // final data = await document_service.fetchDocuments();
-    //  deleteAlldoc();
 
     for (var doc in data) {
       try {

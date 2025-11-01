@@ -10,7 +10,7 @@ import '../models/document.dart';
 
 final options = BaseOptions(
   baseUrl: 'http://$host:$port/document',
-  connectTimeout: Duration(seconds: 10),
+  connectTimeout: Duration(seconds: 3),
   receiveTimeout: Duration(minutes: 3),
 );
 final dio = Dio(options);
