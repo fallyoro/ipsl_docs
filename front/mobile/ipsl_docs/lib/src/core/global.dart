@@ -16,7 +16,11 @@ Future<void> setupDependencies() async {
     documentService
   );
 
-  await documentViewModel.syncDocumentFromServer();
+  try {
+    await documentViewModel.syncDocumentFromServer();
+  } catch (e) {
+    logError("Can't sync document from the server");
+  }
   await documentViewModel.loadDocuments();
   final UserService userService = UserService();
   final userViewModel = UserViewModel(db, userService);
