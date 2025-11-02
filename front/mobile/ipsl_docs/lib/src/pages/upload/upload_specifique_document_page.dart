@@ -139,7 +139,7 @@ class _UploadSpecifiqueDocumentPageState
 
   @override
   Widget build(BuildContext context) {
-    List<String> subjects = matiere[selectedClasse] ?? [];
+    List<String> subjects = matiere[selectedClasse]!.toSet().toList();
     return SingleChildScrollView(
       child: Form(
         key: _formKeySubmit,
@@ -179,6 +179,7 @@ class _UploadSpecifiqueDocumentPageState
                             onSelected: (String? value) {
                               setState(() {
                                 selectedClasse = value!;
+                                subjectController.text = '';
                               });
                             },
                             dropdownMenuEntries:
