@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ipsl_docs/src/pages/home/widget/upload_form_document.dart';
+import 'package:ipsl_docs/src/pages/upload/upload_specifique_document_page.dart';
+import 'package:ipsl_docs/src/pages/upload/upload_tab_bar.dart';
 
 import '../../../core/constant.dart';
 
@@ -40,8 +41,8 @@ void builBottomSheetUpload(BuildContext context) {
                       ),
                     ),
                   ),
-
-                  const UploadFormContent(),
+                  const UploadTabBar(),
+                  // const UploadSpecifiqueDocumentPage(),
                 ],
               ),
             ),

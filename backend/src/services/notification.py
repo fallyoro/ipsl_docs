@@ -8,6 +8,12 @@ class NotificationService:
             return None
         notification_data = self.build_notification(path=path, user_name=user_name)
         message = messaging.MulticastMessage(
+            # data={
+            #     "title": notification_data[0],
+            #     "body": notification_data[1],
+            #     "path": path,
+            #     "user_name": user_name,
+            # },
             notification=messaging.Notification(
                 title=notification_data[0], body=notification_data[1]
             ),

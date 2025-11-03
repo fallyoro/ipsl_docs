@@ -1,8 +1,7 @@
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
-    id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
+    id("com.google.gms.google-services")// version "4.4.4" apply false    // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
@@ -11,9 +10,18 @@ plugins {
 android {
     namespace = "com.example.ipsl_docs"
     compileSdk = 35
-    buildToolsVersion = "35.0.1"
+    buildToolsVersion = "36.0.0"
     ndkVersion = "28.1.13356709"
 
+
+    signingConfigs {
+        getByName("debug").apply {
+            keyAlias = "androidkey"
+            keyPassword = "android"
+            storeFile = file("mykey.jks")
+           // storePassword = "domada"
+        }
+    }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
@@ -21,6 +29,8 @@ android {
     }
 
     dependencies {
+        implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+        implementation("com.google.android.gms:play-services-auth:21.2.0")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5") // ✅ Kotlin DSL utilise des parenthèses
     }
@@ -43,6 +53,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.

@@ -65,11 +65,17 @@ async def upload_doc(
     )
     topic = path.split("/")[0]
     print(f"=====================The path of the doc {path}")
+    # Si le document est de type general ou concours une notification est envoye a tout le monde. Par contre
+    # si elle est specifique a une classe la notif est envoye seulement aux concerne.
     if topic == "Concours" or topic == "Général":
         print(f"The topic is : {topic}")
         tokens = await user_service.get_tokens(session=session)
+        tokens = list(set(tokens))
+
     else:
         tokens = await user_service.get_tokens(session=session, classe=topic)
+        tokens = list(set(tokens))
+
     print(f"The list of tokens: {tokens}")
     notification_service = NotificationService()
     response = notification_service.send_notification(

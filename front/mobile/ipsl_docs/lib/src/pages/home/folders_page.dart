@@ -8,17 +8,18 @@ import 'package:ipsl_docs/src/view_models/document.dart';
 class FoldersPage extends StatelessWidget {
   final DocumentViewModel documentViewModel = GetIt.I<DocumentViewModel>();
   final List<DirectoryNode> subDirectories;
-   FoldersPage({super.key, required this.subDirectories});
+  FoldersPage({super.key, required this.subDirectories});
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(canPop: true,
+    return PopScope(
+      canPop: true,
       onPopInvokedWithResult: (didPop, result) {
-     documentViewModel.goBack() ;
+        documentViewModel.goBack();
       },
 
       child: Scaffold(
-        appBar: CustomAppBar( ctx: context),
+        appBar: CustomAppBar(),
 
         body: DirectoryGrid(subDirectories: subDirectories),
       ),

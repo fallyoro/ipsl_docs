@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
-import 'package:ipsl_docs/src/core/notifiers.dart';
-import 'package:ipsl_docs/src/core/utils.dart';
-import 'package:ipsl_docs/src/models/user.dart';
+import 'package:ipsl_docs/src/core/theme_controller.dart';
+import 'package:ipsl_docs/src/pages/authentification/widget/build_textfield.dart';
 import 'package:ipsl_docs/src/pages/widgets/actions_button.dart';
-import 'package:ipsl_docs/src/services/auth_service.dart';
-import 'package:ipsl_docs/src/core/stokage_service.dart';
 import 'package:ipsl_docs/src/pages/authentification/login_page.dart';
+import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:page_transition/page_transition.dart';
-
-final auth = AuthService();
+import '../../view_models/user.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -22,9 +23,12 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  bool isLoding = false;
+  late UserViewModel userViewModel;
+  late DocumentViewModel documentViewModel;
+  bool isLoading = false;
   final _formKeySign = GlobalKey<FormState>();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
   String? selectedClasse = 'Cpi1';
   bool _obscurePassword = true;
@@ -42,14 +46,52 @@ class _SignUpPageState extends State<SignUpPage> {
     'GeC2',
     'GeC3',
   ];
+  @override
+  void initState() {
+    super.initState();
+
+    userViewModel = GetIt.I<UserViewModel>();
+    documentViewModel = GetIt.I<DocumentViewModel>();
+    // Listen for error messages. I prefer this way to show SnackBars via the initState
+    // rather than using a ValueListenableBuilder in the build method to avoid rebuilding
+    userViewModel.errorNotifier.addListener(() {
+      final message = userViewModel.errorNotifier.value;
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message, style: TextStyle(color: Colors.white)),
+            backgroundColor: AppColors.darkSystemBackground,
+          ),
+        );
+        userViewModel.errorNotifier.value = null;
+      }
+    });
+
+    userViewModel.authState.addListener(() {
+      if (userViewModel.authState.value == ViewState.success) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return WidgetTree();
+            },
+          ),
+          (route) => false,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    userNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkSecondarySystemBackground
-              : Colors.white,
       body: ValueListenableBuilder(
         valueListenable: ThemeController.isDarkModeNotifier,
         builder: (context, isDark, child) {
@@ -67,81 +109,75 @@ class _SignUpPageState extends State<SignUpPage> {
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 55),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-
+        spacing: 25,
         children: [
           Text(
-            "Bienvenue sur Ipsl Docs",
+            "Creer un compte",
             style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              fontSize: 36,
-              color: isDark ? AppColors.darkLabel : Colors.black,
+              //fontWeight: FontWeight.bold,
+              fontSize: 30,
             ),
           ),
-          Container(height: 30),
+          SignInButton(
+            Buttons.Google,
+            text: "Se connecter avec google",
+            onPressed: () {
+              userViewModel.authState.value == ViewState.loading
+                  ? null
+                  : userViewModel.loginWithGoogle();
+            },
+          ),
           Form(
             key: _formKeySign,
             child: Column(
               spacing: 30,
               children: [
-                TextFormField(
+                buildTextField(
+                  controller: emailController,
+                  label: "Email",
+                  validator:
+                      (value) =>
+                          value == null || value.isEmpty
+                              ? "Veuillez entrer votre email"
+                              : null,
+                  isDark: isDark,
+                ),
+                buildTextField(
                   controller: userNameController,
+                  label: "Nom d'utilisateur",
                   validator:
                       (value) =>
                           value == null || value.isEmpty
                               ? "Veuillez entrer votre nom d'utilisateur"
                               : null,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-
-                    filled: true,
-                    fillColor:
-                        isDark
-                            ? AppColors.darkSystemBackground
-                            : AppColors.lightSecondarySystemBackground,
-                    labelText: "Nom d'utillisateur",
-                  ),
+                  isDark: isDark,
                 ),
-
-                TextFormField(
+                buildTextField(
                   controller: passwordController,
-                  obscureText: _obscurePassword ? false : true,
+                  label: "Mot de passe",
+                  obscure: _obscurePassword,
+                  suffix: IconButton(
+                    icon:
+                        _obscurePassword
+                            ? Icon(FontAwesomeIcons.eyeSlash)
+                            : Icon(FontAwesomeIcons.eye),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                   validator:
                       (value) =>
                           value == null || value.isEmpty
                               ? 'Veuillez entrer votre mot de pasee'
                               : null,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor:
-                        isDark
-                            ? AppColors.darkSystemBackground
-                            : AppColors.lightSecondarySystemBackground,
-                    labelText: "Mot de passe",
-                    suffixIcon: IconButton(
-                      icon:
-                          _obscurePassword
-                              ? Icon(FontAwesomeIcons.eyeSlash)
-                              : Icon(FontAwesomeIcons.eye),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                  ),
+                  isDark: isDark,
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 20),
           Row(
             spacing: 10,
             children: [
@@ -175,19 +211,28 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
             ],
           ),
-          const SizedBox(height: 30),
-          ActionButton(
-            onPressed: () async {
-              _onSignUpPressed(context);
+          ValueListenableBuilder(
+            valueListenable: userViewModel.authState,
+            builder: (context, state, child) {
+              return AuthButton(
+                onPressed: () async {
+                  _onSignUpPressed(context);
+                },
+                child:
+                    state == ViewState.loading
+                        ? SpinKitThreeBounce(color: Colors.white, size: 25)
+                        : Text(
+                          "S'inscrire",
+                          style: TextStyle(
+                            fontSize: 19,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+              );
             },
-            action: "S'inscrire",
-            height: 50,
-            width: 300,
-            isLoading: isLoding,
-            actionFontSize: 19,
           ),
 
-          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -224,53 +269,14 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<void> _onSignUpPressed(BuildContext context) async {
     FocusScope.of(context).unfocus();
-    final bool isConnected = await isConnectedToInternet();
-    if (!isConnected) {
-      if (!context.mounted) return;
-      showNoConnectionMessage(context);
-      return;
-    }
     if (!_formKeySign.currentState!.validate()) return;
-
-    setState(() => isLoding = true);
-    final userData = await auth.signUp(
-      userNameController.text,
-      passwordController.text,
+    await userViewModel.signUp(
+      userNameController.text.trim(),
+      passwordController.text.trim(),
+      emailController.text.trim(),
       selectedClasse!,
     );
-    setState(() => isLoding = false);
-
-    auth.login(userNameController.text, passwordController.text);
-
-    if (userData['error'] != null) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            userData['error'],
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: AppColors.darkSecondarySystemBackground,
-        ),
-      );
-      return;
-    }
-
-    User user = User(
-      id: userData['id'],
-      userName: userNameController.text,
-      classe: selectedClasse!,
-      numberContribution: userData['number_contribution'],
-    );
-    await userViewModel.addUser(user);
-    StorageService.setBool("isLoged", true);
-    if (!context.mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => WidgetTree()),
-      (route) => false,
-    );
-   await userViewModel.updateFcmToken();
+    await documentViewModel.syncDocumentFromServer();
+    await documentViewModel.loadDocuments();
   }
 }
-

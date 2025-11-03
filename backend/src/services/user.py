@@ -10,20 +10,24 @@ from uuid import UUID
 
 
 class UserService:
-    async def get_user_by_user_name(
-        self, user_name: str, session: AsyncSession
-    ) -> User | None:
-        statement = select(User).where(User.user_name == user_name)
+    async def get_user_by_id(self, id: UUID, session: AsyncSession) -> User | None:
+        statement = select(User).where(User.id == id)
+        result = await session.exec(statement)
+        user = result.first()
+        return user
+
+    async def get_user_by_email(self, email: str, session: AsyncSession) -> User | None:
+        statement = select(User).where(User.email == email)
         result = await session.exec(statement)
         user = result.first()
         return user
 
     async def update_user(
-        self, session: AsyncSession, user_name: str, new_user_name: str, new_classe: str
+        self, session: AsyncSession, user_id: UUID, new_user_name: str, new_classe: str
     ) -> None:
-        statement = update(User).where(User.user_name == user_name).values(user_name=new_user_name, classe=new_classe)  # type: ignore
+        statement = update(User).where(User.id == user_id).values(user_name=new_user_name, classe=new_classe)  # type: ignore
         await session.exec(statement)  # type: ignore
-        await session.commit()  # Permet que les changements prennent effet
+        await session.commit()
 
     async def get_number_contribution(
         self, user_id: UUID, session: AsyncSession
@@ -33,8 +37,8 @@ class UserService:
         documents = result.all()
         return len(documents)
 
-    async def user_exist(self, user_name: str, session: AsyncSession) -> bool:
-        user = await self.get_user_by_user_name(user_name, session)
+    async def user_exist(self, email: str, session: AsyncSession) -> bool:
+        user = await self.get_user_by_email(email, session)
         return True if user else False
 
     async def create_user(self, user_data: UserCreate, session: AsyncSession):
@@ -48,16 +52,42 @@ class UserService:
         await session.refresh(new_user)
         return new_user
 
-    async def update_token(self, token: str, user_name: str, session: AsyncSession):
-        statement = update(User).where(User.user_name == user_name).values(notification_token=token)  # type: ignore
+    async def create_user_from_google(
+        self,
+        google_id: str,
+        user_name: str,
+        email: str,
+        classe: str,
+        notification_token: str,
+        picture_url: str,
+        session: AsyncSession,
+    ) -> User:
+        new_user = User(
+            user_name=user_name,
+            email=email,
+            picture_url=picture_url,
+            google_id=google_id,
+            classe=classe,
+            notification_token=notification_token,
+        )
+        session.add(new_user)
+        await session.commit()
+        await session.refresh(new_user)
+        return new_user
+
+    async def find_user_by_google_id(
+        self, google_id: str, session: AsyncSession
+    ) -> User | None:
+        statement = select(User).where(User.google_id == google_id)
+        result = await session.exec(statement)
+        user = result.first()
+        return user
+
+    async def update_token(self, token: str, email: str, session: AsyncSession):
+        statement = update(User).where(User.email == email).values(notification_token=token)  # type: ignore
         await session.exec(statement)  # type: ignore
         await session.commit()
 
-    # async def get_all_token(self, session: AsyncSession) -> list[str]:
-    #     statement = select(User.notification_token)
-    #     result = await session.exec(statement)
-    #     tokens = [row[0] for row in result.all() if row[0] is not None]
-    #     return tokens
     async def get_tokens(
         self, session: AsyncSession, classe: str | None = None
     ) -> list[str]:
@@ -68,7 +98,7 @@ class UserService:
             print("------------this notif is general")
             statement = select(User.notification_token)
         result = await session.exec(statement)
-        tokens = [row for row in result.all()]
+        tokens = [row for row in result.all() if row]
         return tokens
 
     async def get_user_name(self, id: UUID, session: AsyncSession) -> str | None:

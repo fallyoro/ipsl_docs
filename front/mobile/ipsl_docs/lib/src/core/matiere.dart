@@ -4,41 +4,32 @@ Map<String, List<String>> matiere = {
   "Cpi1": [
     "Analyse 1",
     "Algèbre 1",
-    "Mathématiques 1",
-    "Informatique 1",
     "Algorithmique",
     "Architecture des ordinateurs",
-    "Physique 1",
     "Mécanique 1",
     "Électrocinétique",
     "Français 1",
     "Anglais 1",
     "Outils de communication",
     "Humanités 1",
-    "Sport 1",
 
     // Semestre 2
     "Analyse 2",
     "Algèbre 2",
-    "Mathématiques 2",
     "Informatique 2",
     "Introduction à la POO",
     "Bases de Données ",
-    "Physique 2",
     "Optique géométrique",
     "Électromagnétisme )",
     "Chimie",
-    "Humanités 2",
     "Français 2",
     "Anglais 2",
     "Culture et communication 1",
-    "Sport 2",
   ],
   "Cpi2": [
     // --- Semestre 1 ---
     "Analyse 3",
     "Algèbre 3",
-    "Mathématiques 3",
     "Probabilités",
     "Analyse numérique",
     "Calcul formel",
@@ -48,16 +39,12 @@ Map<String, List<String>> matiere = {
     "Électronique",
     "Français 3",
     "Anglais 3",
-    "Humanités 3",
     "Culture et communication 2",
-    "Sport 3",
 
     // --- Semestre 2 ---
     "Français 4",
     "Anglais 4",
-    "Humanités 4",
     "Culture et communication 3",
-    "Sport 4",
     // --Specialité---
     "Electronique de puissance",
     "Electrotechnique",
@@ -67,8 +54,8 @@ Map<String, List<String>> matiere = {
     "Dessin technique",
     "Mecanique des fluides",
     "Réseau",
-    "Signaux et Système"
-        "Initiation aux Bases de données"
+    "Signaux et Système",
+    "Initiation aux Bases de données"
         "Système d’information",
   ],
 

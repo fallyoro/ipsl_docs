@@ -10,7 +10,7 @@ class UserBase(BaseModel):
 
 
 class UserEdit(BaseModel):
-    user_name: str
+    id: str
     new_user_name: str
     classe: str
 
@@ -21,6 +21,13 @@ class UserUpdate(UserBase):
 
 class UserCreate(UserBase):
     pass
+    email: str
+    fcm_token: str
+
+
+class GoogleLoginRequest(BaseModel):
+    id_token: str
+    fcm_token: str
 
 
 class UserOut(BaseModel):
@@ -32,6 +39,6 @@ class UserOut(BaseModel):
 
 
 class UserLogin(BaseModel):
+    email: str
     password: str
-    user_name: str
     fcm_token: str

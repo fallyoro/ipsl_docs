@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path/path.dart' as p;
-
 import '../core/utils.dart';
 import '../database/database.dart';
 import '../models/document.dart';
@@ -16,18 +15,6 @@ class DocumentViewModel {
   final List<DirectoryNode> _stack = [];
   final DocumentService service;
   DocumentViewModel(this._db, this.service);
-
-  bool get canGoBack => _stack.isNotEmpty;
-  //getter if the current directory in name General
-  bool get isInGeneral {
-    if (currentDirectory.value == null) return false;
-    return currentDirectory.value!.name == "Général";
-  }
-
-  bool get isInConcours {
-    if (currentDirectory.value == null) return false;
-    return currentDirectory.value!.name == "Concours";
-  }
 
   //get current path for the breadcrumb.
   List<String> get currentPath {
@@ -78,8 +65,6 @@ class DocumentViewModel {
       }
     }
 
-  //  logInfo("the root node : ${root.subDirectories.toString()}");
-    //    root.subDirectories.sort((a, b) => a.name.compareTo(b.name));
     root.subDirectories.sort((a, b) {
       if (a.name == "Général") return -1;
       if (b.name == "Général") return 1;
@@ -123,11 +108,6 @@ class DocumentViewModel {
     await loadDocuments();
   }
 
-  Future<void> deleteAlldoc() async {
-    await _db.deleteAlldoc();
-    root.value = null;
-  }
-
   Future<void> updateDocumentName(String newFilename, Document doc) async {
     await _db.updateDocumentName(newFilename, doc.id);
     await loadDocuments();
@@ -165,10 +145,5 @@ class DocumentViewModel {
 
       }
     }*/
-  }
-
-  Future<List<String>> getSubjects() async {
-    final subjects = await _db.getSubjects();
-    return subjects;
   }
 }

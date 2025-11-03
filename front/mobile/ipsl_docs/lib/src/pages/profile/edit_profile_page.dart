@@ -53,96 +53,88 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
-    bool isMobileDevice =
-        Theme.of(context).platform == TargetPlatform.android ||
-        Theme.of(context).platform == TargetPlatform.iOS;
-    if (isMobileDevice) {
-      return Scaffold(
-        appBar: AppBar(title: Text("Profil"), centerTitle: true),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 55),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Form(
-                key: _formKeyEdit,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 30,
-                  children: [
-                    TextFormField(
-                      controller: userNameController,
-                      validator:
-                          (value) =>
-                              value == null || value.isEmpty
-                                  ? "Veuillez entrer votre nom d'utilisateur"
-                                  : null,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-
-                        filled: true,
-                        fillColor:
-                            isDark
-                                ? AppColors.darkSystemBackground
-                                : AppColors.lightSecondarySystemBackground,
-                        labelText: "Nom d'utillisateur",
-
-                        // suffixIcon: Icon(FontAwesomeIcons.word),)
+    return Scaffold(
+      appBar: AppBar(title: Text("Profil"), centerTitle: true),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 55),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Form(
+              key: _formKeyEdit,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 30,
+                children: [
+                  TextFormField(
+                    controller: userNameController,
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? "Veuillez entrer votre nom d'utilisateur"
+                                : null,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
                       ),
+
+                      filled: true,
+                      fillColor:
+                          isDark
+                              ? AppColors.darkSystemBackground
+                              : AppColors.lightSecondarySystemBackground,
+                      labelText: "Nom d'utillisateur",
                     ),
+                  ),
 
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 200),
-                      child: Row(
-                        children: [
-                          const Text("Classe"),
-                          const Spacer(),
-                          DropdownMenu<String>(
-                            textAlign: TextAlign.end,
-                            inputDecorationTheme: InputDecorationTheme(
-                              border: InputBorder.none,
-                            ),
-
-                            initialSelection: selectedClasse,
-                            onSelected: (String? value) {
-                              setState(() {
-                                selectedClasse = value!;
-                              });
-                            },
-                            dropdownMenuEntries:
-                                classes
-                                    .map(
-                                      (c) => DropdownMenuEntry<String>(
-                                        value: c,
-                                        label: c,
-                                      ),
-                                    )
-                                    .toList(),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 200),
+                    child: Row(
+                      children: [
+                        const Text("Classe"),
+                        const Spacer(),
+                        DropdownMenu<String>(
+                          textAlign: TextAlign.end,
+                          inputDecorationTheme: InputDecorationTheme(
+                            border: InputBorder.none,
                           ),
-                        ],
-                      ),
+
+                          initialSelection: selectedClasse,
+                          onSelected: (String? value) {
+                            setState(() {
+                              selectedClasse = value!;
+                            });
+                          },
+                          dropdownMenuEntries:
+                              classes
+                                  .map(
+                                    (c) => DropdownMenuEntry<String>(
+                                      value: c,
+                                      label: c,
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 45),
-                ),
-                onPressed: () async {
-                  await editProfile(context);
-                },
-                child: Text("Modifier", style: TextStyle(color: Colors.white)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 45),
               ),
-            ],
-          ),
+              onPressed: () async {
+                await editProfile(context);
+              },
+              child: Text("Modifier", style: TextStyle(color: Colors.white)),
+            ),
+          ],
         ),
-      );
-    }
-    return Text("Desktop");
+      ),
+    );
   }
 
   Future<void> editProfile(BuildContext context) async {
@@ -155,8 +147,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     userService.editProfile(
       selectedClasse,
-      userViewModel.userNotifier.value!.userName,
-
+      userViewModel.userNotifier.value!.id,
       userNameController.text,
     );
     await userViewModel.updateUser(userNameController.text, selectedClasse);
