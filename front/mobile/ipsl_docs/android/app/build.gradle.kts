@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.ipsl_docs"
-    compileSdk = 35
+    compileSdk = 36
     buildToolsVersion = "36.0.0"
     ndkVersion = "28.1.13356709"
 
@@ -44,7 +44,7 @@ android {
         applicationId = "com.example.ipsl_docs"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
