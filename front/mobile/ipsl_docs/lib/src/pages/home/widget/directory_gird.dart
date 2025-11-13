@@ -21,7 +21,6 @@ class _DirectoryGridState extends State<DirectoryGrid> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     documentViewModel = GetIt.I<DocumentViewModel>();
   }

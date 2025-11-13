@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../core/constant.dart';
-
 class CardFolder extends StatefulWidget {
   const CardFolder({super.key, required this.folder});
 
@@ -16,34 +14,16 @@ class _CardFolderState extends State<CardFolder> {
   bool isHover = false;
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor;
 
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (isDark) {
-      backgroundColor =
-          isHover
-              ? AppColors.darkSystemBackground
-              : AppColors.darkSecondarySystemBackground;
-    } else {
-      backgroundColor =
-          isHover
-              ? AppColors.lightSecondarySystemBackground
-              : AppColors.lightSystemBackground;
-    }
-    return MouseRegion(
-      onEnter: (_) => setState(() => isHover = true),
-      onExit: (_) => setState(() => isHover = false),
-
-      child: Column(
+    return  Column(
         spacing: 3,
-        // mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(FontAwesomeIcons.solidFolder, size: 70, color: Colors.amber),
 
           SizedBox(
-            height: 35,
+            height: 40,
             child: Text(
               widget.folder,
               textAlign: TextAlign.center,
@@ -53,7 +33,6 @@ class _CardFolderState extends State<CardFolder> {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 }
