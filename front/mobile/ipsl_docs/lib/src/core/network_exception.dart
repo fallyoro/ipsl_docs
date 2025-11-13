@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:ipsl_docs/src/core/utils.dart';
 
 class NetworkException implements Exception {
   final String message;

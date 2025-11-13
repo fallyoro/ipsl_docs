@@ -18,8 +18,8 @@ class UserService {
   UserService() {
     BaseOptions options = BaseOptions(
       baseUrl: 'http://$host:$port/auth',
-      connectTimeout: Duration(seconds: 3),
-      // receiveTimeout: Duration(minutes: 1),
+      connectTimeout: Duration(seconds: 100),
+      receiveTimeout: Duration(minutes: 1),
     );
     dio = Dio(options);
   }

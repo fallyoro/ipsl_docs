@@ -12,7 +12,7 @@ class User(SQLModel, table=True):
     picture_url: str = Field(max_length=100)
     classe: str = Field(max_length=100)
     password_hash: Optional[str] = Field(default=None, max_length=100)
-    notification_token: str = Field(default=None, nullable=True, max_length=100)
+    notification_token: str = Field(default=None, nullable=True, max_length=512)
     google_id: Optional[str] = Field(default=None, unique=True, max_length=100)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(
