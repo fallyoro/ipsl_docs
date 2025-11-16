@@ -63,11 +63,14 @@ class _UploadConcoursDocumentPageState
       },
     );
 
+    DateTime updatedAt = DateTime.parse(
+      responseUpload?['updated_at'] as String,
+    );
     final doc = Document(
       id: responseUpload!['id'],
       idUploader: userViewModel.userNotifier.value!.id,
       path: path,
-      updatedAt: responseUpload['updated_at'],
+      updatedAt: updatedAt,
     );
     await documentViewModel.addDocument(doc);
 
@@ -95,73 +98,75 @@ class _UploadConcoursDocumentPageState
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        spacing: 30,
-        children: [
-          Form(
-            key: _formKeySubmit,
-            child: Column(
-              spacing: 30,
-              children: [
-                TextFormField(
-                  controller: yearController,
-                  inputFormatters: [yearMaskFormatter],
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Année universitaire',
-                    hintText: "Exemple 2024-2025",
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        yearController.clear();
-                      },
-                      icon: const Icon(FontAwesomeIcons.circleXmark),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          spacing: 30,
+          children: [
+            Form(
+              key: _formKeySubmit,
+              child: Column(
+                spacing: 30,
+                children: [
+                  TextFormField(
+                    controller: yearController,
+                    inputFormatters: [yearMaskFormatter],
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Année universitaire',
+                      hintText: "Exemple 2024-2025",
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          yearController.clear();
+                        },
+                        icon: const Icon(FontAwesomeIcons.circleXmark),
+                      ),
                     ),
+                    validator: (value) {
+                      final parts = value?.split('-') ?? [];
+                      if (value == null || value.isEmpty) return 'Champ requis';
+                      if (!RegExp(r'^\d{4}-\d{4}$').hasMatch(value)) {
+                        return 'Format invalide';
+                      }
+                      if (int.parse(parts[1]) != int.parse(parts[0]) + 1) {
+                        return 'Années incohérentes';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    final parts = value?.split('-') ?? [];
-                    if (value == null || value.isEmpty) return 'Champ requis';
-                    if (!RegExp(r'^\d{4}-\d{4}$').hasMatch(value)) {
-                      return 'Format invalide';
-                    }
-                    if (int.parse(parts[1]) != int.parse(parts[0]) + 1) {
-                      return 'Années incohérentes';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: filenameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nom du fichier',
+                  TextFormField(
+                    controller: filenameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nom du fichier',
+                    ),
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Champ requis'
+                                : null,
                   ),
-                  validator:
-                      (value) =>
-                          value == null || value.isEmpty
-                              ? 'Champ requis'
-                              : null,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          pickedFile != null
-              ? previewWidget(localPath: pickedFile!.path!, context: context)
-              : PickFileButtun(onpress: pickFile),
+            pickedFile != null
+                ? previewWidget(localPath: pickedFile!.path!, context: context)
+                : PickFileButtun(onpress: pickFile),
 
-          buildSendButton(context, () => _submit(context)),
+            buildSendButton(context, () => _submit(context)),
 
-          ValueListenableBuilder<double>(
-            valueListenable: documentViewModel.progress,
-            builder: (context, progress, child) {
-              if (isSending) {
-                return customLinearProgressSending(progress);
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-          ),
-        ],
+            ValueListenableBuilder<double>(
+              valueListenable: documentViewModel.progress,
+              builder: (context, progress, child) {
+                if (isSending) {
+                  return customLinearProgressSending(progress);
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
