@@ -20,14 +20,6 @@ import 'package:path/path.dart';
 import '../../widget_tree.dart';
 import '../home/widget/send_button.dart';
 
-void confirmSending(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('Fichier envoyé, merci de votre contribution'),
-    ),
-  );
-}
-
 class UploadSpecifiqueDocumentPage extends StatefulWidget {
   const UploadSpecifiqueDocumentPage({super.key});
 
