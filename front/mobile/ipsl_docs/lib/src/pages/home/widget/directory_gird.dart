@@ -42,7 +42,7 @@ class _DirectoryGridState extends State<DirectoryGrid> {
         final dirNode = widget.subDirectories[index];
         return GestureDetector(
           onTap: () {
-              documentViewModel.openDirectory(dirNode);
+            documentViewModel.openDirectory(dirNode);
             Navigator.push(
               context,
               MaterialPageRoute(

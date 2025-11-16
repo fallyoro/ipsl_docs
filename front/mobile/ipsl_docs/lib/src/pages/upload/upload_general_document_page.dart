@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
@@ -31,7 +30,7 @@ class _UploadGeneralDocumentPageState
   final _formKeySubmit = GlobalKey<FormState>();
   double progress = 0;
   bool isSending = false;
-  final viewModel = GetIt.I<DocumentViewModel>();
+  final documentViewModel = GetIt.I<DocumentViewModel>();
   final userViewModel = GetIt.I<UserViewModel>();
   final documentServive = GetIt.I<DocumentService>();
 
@@ -53,7 +52,7 @@ class _UploadGeneralDocumentPageState
       path: path,
       userId: userViewModel.userNotifier.value!.id,
       onProgress: (received, total) {
-        setState(() => progress = total > 0 ? received / total : 0);
+        documentViewModel.updateProgress(received, total);
       },
     );
     final doc = Document(
@@ -62,15 +61,20 @@ class _UploadGeneralDocumentPageState
       path: path,
       updatedAt: DateTime.parse(responseUpload['updated_at'] as String),
     );
-    await viewModel.addDocument(doc);
+    await documentViewModel.addDocument(doc);
 
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
 
     if (!context.mounted) return;
     confirmSending(context);
-    await viewModel.loadDocuments();
-    Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) => WidgetTree(),), (route) => false,);
+    await documentViewModel.loadDocuments();
+    if (!context.mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => WidgetTree()),
+      (route) => false,
+    );
   }
 
   @override
@@ -103,7 +107,16 @@ class _UploadGeneralDocumentPageState
             child: const Text('Envoyer', style: TextStyle(color: Colors.white)),
           ),
 
-          if (isSending) customLinearProgressSending(progress),
+          ValueListenableBuilder<double>(
+            valueListenable: documentViewModel.progress,
+            builder: (context, progress, child) {
+              if (isSending) {
+                return customLinearProgressSending(progress);
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
         ],
       ),
     );

@@ -1,24 +1,32 @@
 import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/matiere.dart';
 import 'package:ipsl_docs/src/core/utils.dart';
 import 'package:ipsl_docs/src/models/document.dart';
 import 'package:ipsl_docs/src/pages/home/widget/preview_widget.dart';
+import 'package:ipsl_docs/src/pages/home/widget/year_formater.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
 import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
+import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:ipsl_docs/src/services/document.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
-import 'package:ipsl_docs/src/pages/home/widget/year_formater.dart';
-import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 
 import '../../widget_tree.dart';
 import '../home/widget/send_button.dart';
+
+void confirmSending(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Fichier envoyé, merci de votre contribution'),
+    ),
+  );
+}
 
 class UploadSpecifiqueDocumentPage extends StatefulWidget {
   const UploadSpecifiqueDocumentPage({super.key});
@@ -34,12 +42,11 @@ class _UploadSpecifiqueDocumentPageState
   final yearController = TextEditingController();
   final subjectController = TextEditingController();
   final yearMaskFormatter = YearInputFormatter();
-  DocumentViewModel viewModel = GetIt.I<DocumentViewModel>();
+  DocumentViewModel documentViewModel = GetIt.I<DocumentViewModel>();
   UserViewModel userViewModel = GetIt.I<UserViewModel>();
   DocumentService service = GetIt.I<DocumentService>();
   String selectedClasse = 'Cpi1';
   String selectedCategory = 'cour';
-  double progress = 0;
   bool isSending = false;
 
   final classes = [
@@ -64,78 +71,6 @@ class _UploadSpecifiqueDocumentPageState
     'utile',
     'rattrapage',
   ];
-
-  @override
-  void dispose() {
-    yearController.dispose();
-    subjectController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit(BuildContext context) async {
-    if (!_formKeySubmit.currentState!.validate()) {
-      return;
-    }
-    FocusScope.of(context).unfocus();
-    if (pickedFile == null) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veuillez choisir un fichier')),
-      );
-      return;
-    }
-    if (subjectController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veillez selectioner une matiere')),
-      );
-      return;
-    }
-
-    setState(() => isSending = true);
-    if (!await isConnectedToInternet()) {
-      setState(() => isSending = false);
-      if (!context.mounted) return;
-      showNoConnectionMessage(context);
-      return;
-    }
-
-    final path = join(
-      selectedClasse,
-      subjectController.text,
-      yearController.text,
-      selectedCategory,
-      filenameController.text,
-    );
-    final responseUpload = await service.uploadDocument(
-      file: File(pickedFile!.path!),
-      path: path,
-      userId: userViewModel.userNotifier.value!.id,
-      onProgress: (received, total) {
-        setState(() => progress = total > 0 ? received / total : 0);
-      },
-    );
-
-    DateTime updatedAt = DateTime.parse(
-      responseUpload?['updated_at'] as String,
-    );
-    final doc = Document(
-      id: responseUpload!['id'],
-      idUploader: userViewModel.userNotifier.value!.id,
-      path: path,
-      updatedAt: updatedAt,
-    );
-    await viewModel.addDocument(doc);
-
-    final int numberContribution = responseUpload['number_contribution'];
-    await userViewModel.updateNumberContribution(numberContribution);
-    Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) => WidgetTree(),), (route) => false,);
-
-    if (!context.mounted) return;
-    confirmSending(context);
-    await viewModel.loadDocuments();
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -357,18 +292,97 @@ class _UploadSpecifiqueDocumentPageState
               const SizedBox(height: 16),
               buildSendButton(context, () => _submit(context)),
 
-              if (isSending) customLinearProgressSending(progress),
+              ValueListenableBuilder<double>(
+                valueListenable: documentViewModel.progress,
+                builder: (context, progress, child) {
+                  if (isSending) {
+                    return customLinearProgressSending(progress);
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              ),
             ],
           ),
         ),
       ),
     );
   }
-}
-void confirmSending(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('Fichier envoyé, merci de votre contribution'),
-    ),
-  );
+
+  @override
+  void dispose() {
+    yearController.dispose();
+    subjectController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit(BuildContext context) async {
+    if (!_formKeySubmit.currentState!.validate()) {
+      return;
+    }
+    FocusScope.of(context).unfocus();
+    if (pickedFile == null) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veuillez choisir un fichier')),
+      );
+      return;
+    }
+    if (subjectController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veillez selectioner une matiere')),
+      );
+      return;
+    }
+
+    isSending = true;
+    if (!await isConnectedToInternet()) {
+      isSending = false;
+      if (!context.mounted) return;
+      showNoConnectionMessage(context);
+      return;
+    }
+
+    final path = join(
+      selectedClasse,
+      subjectController.text,
+      yearController.text,
+      selectedCategory,
+      filenameController.text,
+    );
+    final responseUpload = await service.uploadDocument(
+      file: File(pickedFile!.path!),
+      path: path,
+      userId: userViewModel.userNotifier.value!.id,
+      onProgress: (received, total) {
+        documentViewModel.updateProgress(received, total);
+      },
+    );
+
+    DateTime updatedAt = DateTime.parse(
+      responseUpload?['updated_at'] as String,
+    );
+    final doc = Document(
+      id: responseUpload!['id'],
+      idUploader: userViewModel.userNotifier.value!.id,
+      path: path,
+      updatedAt: updatedAt,
+    );
+    await documentViewModel.addDocument(doc);
+
+    final int numberContribution = responseUpload['number_contribution'];
+    await userViewModel.updateNumberContribution(numberContribution);
+    if (!context.mounted) return;
+
+    if (!context.mounted) return;
+    confirmSending(context);
+    await documentViewModel.loadDocuments();
+    if (!context.mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => WidgetTree()),
+      (route) => false,
+    );
+    documentViewModel.reset();
+  }
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ipsl_docs/src/core/notification_service.dart';
+
 import '../core/utils.dart';
 import '../database/database.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
-
-enum ViewState { idle, loading, success, error }
 
 class UserViewModel {
   final DatabaseHelper _db;
@@ -19,19 +18,6 @@ class UserViewModel {
   Future<void> addUser(User user) async {
     await _db.insertUser(user);
     userNotifier.value = user;
-  }
-
-  Future<void> updateUser(String userName, String classe) async {
-    await _db.updateUser(classe, userName);
-    userNotifier.value = userNotifier.value!.copyWith(
-      userName: userName,
-      classe: classe,
-    );
-  }
-
-  Future<void> updateNumberContribution(int numberContribution) async {
-    await _db.updateNumberContribution(numberContribution);
-    await init();
   }
 
   Future<void> init() async {
@@ -47,26 +33,6 @@ class UserViewModel {
         numberContribution: 000,
         userName: "N/A",
       );
-    }
-  }
-
-  Future<bool> userExist() async {
-    final User? user = await _db.getUser();
-    return user != null;
-  }
-
-  Future<void> updateFcmToken() async {
-    String? fcmToken = NotificationService.token;
-    String userName = userNotifier.value?.userName ?? "";
-    if (userName.isNotEmpty && fcmToken != null) {
-      try {
-        await _userService.updateFcmToken(userName, fcmToken);
-        logInfo("FCM token registered for user: $userName");
-      } catch (e) {
-        logError("Failed to register FCM token: $e");
-      }
-    } else {
-      logError("No user found to register FCM token or token is null");
     }
   }
 
@@ -175,4 +141,39 @@ class UserViewModel {
       },
     );
   }
+
+  Future<void> updateFcmToken() async {
+    String? fcmToken = NotificationService.token;
+    String userName = userNotifier.value?.userName ?? "";
+    if (userName.isNotEmpty && fcmToken != null) {
+      try {
+        await _userService.updateFcmToken(userName, fcmToken);
+        logInfo("FCM token registered for user: $userName");
+      } catch (e) {
+        logError("Failed to register FCM token: $e");
+      }
+    } else {
+      logError("No user found to register FCM token or token is null");
+    }
+  }
+
+  Future<void> updateNumberContribution(int numberContribution) async {
+    await _db.updateNumberContribution(numberContribution);
+    await init();
+  }
+
+  Future<void> updateUser(String userName, String classe) async {
+    await _db.updateUser(classe, userName);
+    userNotifier.value = userNotifier.value!.copyWith(
+      userName: userName,
+      classe: classe,
+    );
+  }
+
+  Future<bool> userExist() async {
+    final User? user = await _db.getUser();
+    return user != null;
+  }
 }
+
+enum ViewState { idle, loading, success, error }

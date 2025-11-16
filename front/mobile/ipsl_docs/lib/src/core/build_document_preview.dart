@@ -78,4 +78,3 @@ Future<Widget> buildDocumentPreview(
   // If we get here there's definaly an error
   return Icon(Icons.error);
 }
-

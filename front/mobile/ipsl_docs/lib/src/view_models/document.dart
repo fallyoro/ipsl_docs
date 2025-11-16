@@ -11,6 +11,7 @@ class DocumentViewModel {
   final DatabaseHelper _db;
 
   final ValueNotifier<DirectoryNode?> currentDirectory = ValueNotifier(null);
+  final ValueNotifier<double> progress = ValueNotifier(0);
   final ValueNotifier<DirectoryNode?> root = ValueNotifier(null);
   final List<DirectoryNode> _stack = [];
   final DocumentService service;
@@ -121,7 +122,6 @@ class DocumentViewModel {
 
   //sync documents from remote server using the variable updatedAt(each document has its own value) in the document model
   Future<void> syncDocumentFromServer() async {
-    final List<Document> localDocument = await _db.getDocuments();
     final List<Map<String, dynamic>> docFetch =
         await service.fetchRawDocuments();
     logInfo(docFetch.toString());
@@ -146,4 +146,14 @@ class DocumentViewModel {
       }
     }*/
   }
+
+  void updateProgress(int received, int total) {
+    if (total > 0) {
+      progress.value = received / total;
+    } else {
+      progress.value = 0;
+    }
+  }
+
+  void reset() => progress.value = 0;
 }

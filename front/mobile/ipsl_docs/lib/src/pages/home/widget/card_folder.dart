@@ -14,25 +14,23 @@ class _CardFolderState extends State<CardFolder> {
   bool isHover = false;
   @override
   Widget build(BuildContext context) {
+    return Column(
+      spacing: 3,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(FontAwesomeIcons.solidFolder, size: 70, color: Colors.amber),
 
-
-    return  Column(
-        spacing: 3,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(FontAwesomeIcons.solidFolder, size: 70, color: Colors.amber),
-
-          SizedBox(
-            height: 40,
-            child: Text(
-              widget.folder,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
+        SizedBox(
+          height: 40,
+          child: Text(
+            widget.folder,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
           ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 }

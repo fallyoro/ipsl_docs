@@ -34,4 +34,3 @@ FutureBuilder<Widget> previewWidget({
     },
   );
 }
-

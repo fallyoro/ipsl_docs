@@ -28,9 +28,8 @@ class UploadConcoursDocumentPage extends StatefulWidget {
 class _UploadConcoursDocumentPageState
     extends BaseUploadPage<UploadConcoursDocumentPage> {
   final _formKeySubmit = GlobalKey<FormState>();
-  double progress = 0;
   bool isSending = false;
-  final viewModel = GetIt.I<DocumentViewModel>();
+  final documentViewModel = GetIt.I<DocumentViewModel>();
   final yearMaskFormatter = YearInputFormatter();
   final userViewModel = GetIt.I<UserViewModel>();
   final yearController = TextEditingController();
@@ -60,7 +59,7 @@ class _UploadConcoursDocumentPageState
       path: path,
       userId: userViewModel.userNotifier.value!.id,
       onProgress: (received, total) {
-        setState(() => progress = total > 0 ? received / total : 0);
+        documentViewModel.updateProgress(received, total);
       },
     );
 
@@ -70,16 +69,20 @@ class _UploadConcoursDocumentPageState
       path: path,
       updatedAt: responseUpload['updated_at'],
     );
-    await viewModel.addDocument(doc);
+    await documentViewModel.addDocument(doc);
 
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
-
-    Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) => WidgetTree(),), (route) => false,);
+    if (!context.mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => WidgetTree()),
+      (route) => false,
+    );
 
     if (!context.mounted) return;
     confirmSending(context);
-    await viewModel.loadDocuments();
+    await documentViewModel.loadDocuments();
     if (!context.mounted) return;
     Navigator.pop(context);
   }
@@ -148,7 +151,16 @@ class _UploadConcoursDocumentPageState
 
           buildSendButton(context, () => _submit(context)),
 
-          if (isSending) customLinearProgressSending(progress),
+          ValueListenableBuilder<double>(
+            valueListenable: documentViewModel.progress,
+            builder: (context, progress, child) {
+              if (isSending) {
+                return customLinearProgressSending(progress);
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
         ],
       ),
     );

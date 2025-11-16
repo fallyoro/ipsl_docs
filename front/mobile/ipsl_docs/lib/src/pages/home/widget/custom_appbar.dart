@@ -32,10 +32,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 (route) => false,
               );
             },
-          )
-          ,
+          ),
           //NOTE expand make it take the reste of the space
-          Flexible(child: BreadcrumbsCustom(items: documentViewModel.currentPath)),
+          Flexible(
+            child: BreadcrumbsCustom(items: documentViewModel.currentPath),
+          ),
         ],
       ),
     );
