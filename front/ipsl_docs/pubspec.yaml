@@ -2,7 +2,7 @@ name: ipsl_docs
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -65,9 +65,7 @@ dependencies:
   flutter_signin_button: ^2.1.1
   cached_network_image: ^3.4.1
   toastification: ^3.0.3
-  
- 
-  
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
@@ -86,7 +84,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -101,6 +98,7 @@ flutter:
     - assets/images/icon.png
     - assets/images/logo_maxima.png
     - assets/images/logo_maxima.svg
+    - .env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -133,4 +131,3 @@ flutter_launcher_icons:
   android: true
   ios: false
   image_path: "assets/images/icon.png"
-

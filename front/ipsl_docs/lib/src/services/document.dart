@@ -1,60 +1,26 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:path/path.dart' as p;
 
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-import '../core/constant.dart';
 import '../core/utils.dart';
 import '../models/document.dart';
 
+final dio = Dio(options);
 final options = BaseOptions(
-  baseUrl: 'http://$host:$port/document',
+  baseUrl: 'http://$url:$port/document',
   connectTimeout: Duration(seconds: 3),
   receiveTimeout: Duration(minutes: 3),
 );
-final dio = Dio(options);
+final String port = dotenv.env["PORT"] as String;
+final String url = dotenv.env['API_BASE_URL'] as String;
 
 class DocumentService {
   final CancelToken _cancelToken = CancelToken();
 
   void cancelDownload([String? reason]) => _cancelToken.cancel(reason);
-
-  Future<List<Document>> fetchDocuments() async {
-    try {
-      final response = await dio.get('/documents', cancelToken: _cancelToken);
-
-      if (response.statusCode == 200) {
-        final data = response.data as List;
-        return data
-            .map((json) => Document.fromJson(json as Map<String, dynamic>))
-            .toList();
-      } else {
-        throw Exception("Faild to load documents");
-      }
-    } on DioException catch (e) {
-      throw Exception(" Failed to fetch document. Error: $e");
-    } catch (e) {
-      throw Exception("Error unexpected: $e");
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchRawDocuments() async {
-    try {
-      final response = await dio.get('/documents', cancelToken: _cancelToken);
-
-      if (response.statusCode == 200) {
-        final data = response.data as List;
-        return data.map((json) => json as Map<String, dynamic>).toList();
-      } else {
-        throw Exception("Faild to load documents");
-      }
-    } on DioException catch (e) {
-      throw Exception(" Failed to fetch document. Error: $e");
-    } catch (e) {
-      throw Exception("Error unexpected: $e");
-    }
-  }
 
   Future<void> downloadFile(
     Document doc,
@@ -94,6 +60,42 @@ class DocumentService {
     }
   }
 
+  Future<List<Document>> fetchDocuments() async {
+    try {
+      final response = await dio.get('/documents', cancelToken: _cancelToken);
+
+      if (response.statusCode == 200) {
+        final data = response.data as List;
+        return data
+            .map((json) => Document.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception("Faild to load documents");
+      }
+    } on DioException catch (e) {
+      throw Exception(" Failed to fetch document. Error: $e");
+    } catch (e) {
+      throw Exception("Error unexpected: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchRawDocuments() async {
+    try {
+      final response = await dio.get('/documents', cancelToken: _cancelToken);
+
+      if (response.statusCode == 200) {
+        final data = response.data as List;
+        return data.map((json) => json as Map<String, dynamic>).toList();
+      } else {
+        throw Exception("Faild to load documents");
+      }
+    } on DioException catch (e) {
+      throw Exception(" Failed to fetch document. Error: $e");
+    } catch (e) {
+      throw Exception("Error unexpected: $e");
+    }
+  }
+
   Future<Map<String, dynamic>?> uploadDocument({
     required File file,
     required String path,
@@ -114,7 +116,7 @@ class DocumentService {
 
     try {
       final response = await dio.post(
-        'http://$host:$port/document/upload',
+        'http://$url:$port/document/upload',
         data: formData,
         onSendProgress: onProgress,
       );

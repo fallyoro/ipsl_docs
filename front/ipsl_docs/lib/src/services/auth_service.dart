@@ -1,23 +1,27 @@
 import 'dart:convert';
+
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ipsl_docs/src/core/failure.dart';
 import 'package:ipsl_docs/src/core/notification_service.dart';
-import '../core/constant.dart';
-import '../core/utils.dart';
-import 'package:dartz/dartz.dart';
-import '../core/network_exception.dart';
 
+import '../core/network_exception.dart';
+import '../core/utils.dart';
+
+final String port = dotenv.env["PORT"] as String;
 /* TODO refactoriser pour eviter la duplication de code entre AuthService et UserService
 IL yas une duplication entre AuthService et UserService.
  La raison est que plus tard je compte passer a la programmation fonctionnelle avec
 le package dartz. Donc je prefere garder les deux services separes pour l'instant.
 */
+final String url = dotenv.env['API_BASE_URL'] as String;
 
 class UserService {
   late final Dio dio;
   UserService() {
     BaseOptions options = BaseOptions(
-      baseUrl: 'http://$host:$port/auth',
+      baseUrl: 'http://$url:$port/auth',
       connectTimeout: Duration(seconds: 100),
       receiveTimeout: Duration(minutes: 1),
     );
@@ -40,19 +44,6 @@ class UserService {
       };
     } catch (e) {
       return {"error": "Erreur inconnue : $e"};
-    }
-  }
-
-  Future<void> updateFcmToken(String userName, String fcmToken) async {
-    try {
-      await dio.put(
-        "/update-fcm-token/$userName",
-        data: jsonEncode({'fcm_token': fcmToken}),
-      );
-    } on DioException catch (e) {
-      logError(e.response?.data['detail'] ?? "Erreur inconnue");
-    } catch (e) {
-      logError("Erreur inconnue : $e");
     }
   }
 
@@ -153,6 +144,19 @@ class UserService {
     } catch (e) {
       logError("Erreur inconnue : $e");
       return Left(NetworkFailure('Erreur inconnue'));
+    }
+  }
+
+  Future<void> updateFcmToken(String userName, String fcmToken) async {
+    try {
+      await dio.put(
+        "/update-fcm-token/$userName",
+        data: jsonEncode({'fcm_token': fcmToken}),
+      );
+    } on DioException catch (e) {
+      logError(e.response?.data['detail'] ?? "Erreur inconnue");
+    } catch (e) {
+      logError("Erreur inconnue : $e");
     }
   }
 }

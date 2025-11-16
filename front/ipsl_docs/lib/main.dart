@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/global.dart';
@@ -16,6 +17,7 @@ import 'src/core/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   try {
     await setupDependencies();
@@ -51,12 +53,12 @@ class MyApp extends StatelessWidget {
         Future.microtask(() {
           SystemChrome.setSystemUIOverlayStyle(
             SystemUiOverlayStyle(
-              systemNavigationBarColor:
-                  isDark
-                      ? AppColors.darkSecondarySystemBackground
-                      : Colors.white,
-              systemNavigationBarIconBrightness:
-                  isDark ? Brightness.light : Brightness.dark,
+              systemNavigationBarColor: isDark
+                  ? AppColors.darkSecondarySystemBackground
+                  : Colors.white,
+              systemNavigationBarIconBrightness: isDark
+                  ? Brightness.light
+                  : Brightness.dark,
             ),
           );
         });
