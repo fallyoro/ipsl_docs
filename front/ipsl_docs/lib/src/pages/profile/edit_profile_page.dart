@@ -2,26 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/utils.dart';
-import 'package:ipsl_docs/src/services/auth_service.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String userName;
   final String userClass;
+  final Function onSucces;
   const EditProfilePage({
     super.key,
     required this.userName,
     required this.userClass,
+    required this.onSucces,
   });
-
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
   late final UserViewModel userViewModel;
-
-  late final UserService userService;
   final _formKeyEdit = GlobalKey<FormState>();
   late TextEditingController userNameController;
   late String selectedClasse = 'Cpi1';
@@ -39,16 +37,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     'GeC2',
     'GeC3',
   ];
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    userViewModel = GetIt.instance<UserViewModel>();
-    userNameController = TextEditingController(text: widget.userName);
-    selectedClasse = widget.userClass;
-    userService = GetIt.instance<UserService>();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,14 +110,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ],
               ),
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 45),
-              ),
-              onPressed: () async {
-                await editProfile(context);
+            ValueListenableBuilder(
+              valueListenable: userViewModel.authState,
+              builder: (context, state, _) {
+                final isLoading = state == ViewState.loading;
+
+                return ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 45),
+                  ),
+                  onPressed:
+                      isLoading
+                          ? null
+                          : () async {
+                            await editProfile(context);
+                          },
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder:
+                        (child, anim) =>
+                            FadeTransition(opacity: anim, child: child),
+                    child:
+                        isLoading
+                            ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                            : const Text(
+                              "Modifier",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                  ),
+                );
               },
-              child: Text("Modifier", style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -145,16 +162,49 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return;
     }
 
-    userService.editProfile(
-      selectedClasse,
-      userViewModel.userNotifier.value!.id,
-      userNameController.text,
+    final String userId = userViewModel.userNotifier.value!.id;
+    await userViewModel.editProfile(
+      classe: selectedClasse,
+      userId: userId,
+      newUserName: userNameController.text,
     );
-    await userViewModel.updateUser(userNameController.text, selectedClasse);
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Profile modifier avec succes')));
-    Navigator.pop(context, true);
+    // userService.editProfile(
+    //   selectedClasse,
+    //   userViewModel.userNotifier.value!.id,
+    //   userNameController.text,
+    // );
+    // await userViewModel.updateUser(userNameController.text, selectedClasse);
+    // if (!context.mounted) return;
+    // ScaffoldMessenger.of(
+    //   context,
+    // ).showSnackBar(SnackBar(content: Text('Profile modifier avec succes')));
+    // Navigator.pop(context, true);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    userViewModel = GetIt.instance<UserViewModel>();
+    userNameController = TextEditingController(text: widget.userName);
+    selectedClasse = widget.userClass;
+
+    userViewModel.errorNotifier.addListener(() {
+      final message = userViewModel.errorNotifier.value;
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message, style: TextStyle(color: Colors.white)),
+            backgroundColor: AppColors.darkSystemBackground,
+          ),
+        );
+        userViewModel.errorNotifier.value = null;
+      }
+    });
+
+    userViewModel.authState.addListener(() {
+      if (userViewModel.authState.value == ViewState.success) {
+        widget.onSucces;
+      }
+    });
   }
 }

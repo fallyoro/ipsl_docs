@@ -142,6 +142,25 @@ class UserViewModel {
     );
   }
 
+  Future<void> editProfile({
+    required String classe,
+    required userId,
+    required String newUserName,
+  }) async {
+    authState.value = ViewState.loading;
+    final result = await _userService.editProfile(classe, userId, newUserName);
+    result.fold(
+      (failure) {
+        authState.value = ViewState.error;
+        errorNotifier.value = failure.message;
+      },
+      (userData) async {
+        authState.value = ViewState.success;
+        await updateUser(newUserName, classe);
+      },
+    );
+  }
+
   Future<void> updateFcmToken() async {
     String? fcmToken = NotificationService.token;
     String userName = userNotifier.value?.userName ?? "";

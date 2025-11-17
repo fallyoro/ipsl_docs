@@ -28,7 +28,7 @@ class UserService {
     dio = Dio(options);
   }
 
-  Future<Map<String, dynamic>> editProfile(
+  Future<Either<NetworkFailure, Map<String, dynamic>>> editProfile(
     String classe,
     String userId,
     String newUserName,
@@ -38,12 +38,15 @@ class UserService {
         "/edit-profile",
         data: {'id': userId, 'new_user_name': newUserName, "classe": classe},
       );
-      return {
+      return Right({
         'user_name': response.data['user_name'],
         'classe': response.data['classe'],
-      };
+      });
+    } on DioException catch (e) {
+      final error = NetworkException.fromDioError(e);
+      return Left(NetworkFailure(error.message));
     } catch (e) {
-      return {"error": "Erreur inconnue : $e"};
+      return Left(NetworkFailure("Erreur réseau ou inconnue : $e"));
     }
   }
 

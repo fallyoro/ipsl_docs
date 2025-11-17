@@ -1,11 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/Responsive.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
-import 'package:ipsl_docs/src/view_models/user.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ipsl_docs/src/pages/profile/edit_profile_page.dart';
+import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:page_transition/page_transition.dart';
 
 class Profile extends StatefulWidget {
@@ -172,6 +172,9 @@ class _HomeState extends State<Profile> {
                                           .userName,
                                   userClass:
                                       userViewModel.userNotifier.value!.classe,
+                                  onSucces: () {
+                                    Navigator.pop(context, true);
+                                  },
                                 ),
                               ),
                             ).then((value) {
