@@ -17,26 +17,26 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     IntroductionComponent(
-      title: "Bienvenue sur Ipsl Docs",
+      title: "Bienvenue sur IPSL Docs",
       description:
-          "L'app pour centraliser et partager des documents avec toute les promos",
+          "L'app pour centraliser et partager des documents avec toutes les promos.",
       imagePath: "assets/images/onboarding1.svg",
     ),
     IntroductionComponent(
-      title: "Partage des documents",
+      title: "Partage de documents",
       description:
-          "Cour, TD, devoir... Uploade les en un clic pour aider les autres",
+          "Cours, TD, devoirs... Upload-les en un clic pour aider les autres.",
       imagePath: "assets/images/onboarding2.svg",
     ),
     IntroductionComponent(
-      title: "Telecharge en un clic",
-      description: "Accede aux documents partager par tes camarades",
+      title: "Télécharge en un clic",
+      description: "Accède aux documents partagés par tes camarades.",
       imagePath: "assets/images/onboarding3.svg",
     ),
     IntroductionComponent(
-      title: "Partage de maniere resposable",
+      title: "Partage de manière responsable",
       description:
-          "Merci 🙏 de ne pas surcharger la platforme. La capacite du serveur est limitee, et trop de documents inutiles peut gener les autres etudiants",
+          "Merci 🙏 de ne pas surcharger la plateforme. La capacité du serveur est limitée, et trop de documents inutiles peut gêner les autres étudiants.",
       imagePath: "assets/images/onboarding4.svg",
     ),
   ];
