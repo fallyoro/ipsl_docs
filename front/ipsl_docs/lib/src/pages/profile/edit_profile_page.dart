@@ -7,7 +7,7 @@ import 'package:ipsl_docs/src/view_models/user.dart';
 class EditProfilePage extends StatefulWidget {
   final String userName;
   final String userClass;
-  final Function onSucces;
+  final VoidCallback onSucces;
   const EditProfilePage({
     super.key,
     required this.userName,
@@ -56,11 +56,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   TextFormField(
                     controller: userNameController,
-                    validator:
-                        (value) =>
-                            value == null || value.isEmpty
-                                ? "Veuillez entrer votre nom d'utilisateur"
-                                : null,
+                    validator: (value) => value == null || value.isEmpty
+                        ? "Veuillez entrer votre nom d'utilisateur"
+                        : null,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -68,10 +66,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
 
                       filled: true,
-                      fillColor:
-                          isDark
-                              ? AppColors.darkSystemBackground
-                              : AppColors.lightSecondarySystemBackground,
+                      fillColor: isDark
+                          ? AppColors.darkSystemBackground
+                          : AppColors.lightSecondarySystemBackground,
                       labelText: "Nom d'utillisateur",
                     ),
                   ),
@@ -94,15 +91,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               selectedClasse = value!;
                             });
                           },
-                          dropdownMenuEntries:
-                              classes
-                                  .map(
-                                    (c) => DropdownMenuEntry<String>(
-                                      value: c,
-                                      label: c,
-                                    ),
-                                  )
-                                  .toList(),
+                          dropdownMenuEntries: classes
+                              .map(
+                                (c) => DropdownMenuEntry<String>(
+                                  value: c,
+                                  label: c,
+                                ),
+                              )
+                              .toList(),
                         ),
                       ],
                     ),
@@ -119,31 +115,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 45),
                   ),
-                  onPressed:
-                      isLoading
-                          ? null
-                          : () async {
-                            await editProfile(context);
-                          },
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          await editProfile(context);
+                        },
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    transitionBuilder:
-                        (child, anim) =>
-                            FadeTransition(opacity: anim, child: child),
-                    child:
-                        isLoading
-                            ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                            : const Text(
-                              "Modifier",
-                              style: TextStyle(color: Colors.white),
+                    transitionBuilder: (child, anim) =>
+                        FadeTransition(opacity: anim, child: child),
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
                             ),
+                          )
+                        : const Text(
+                            "Modifier",
+                            style: TextStyle(color: Colors.white),
+                          ),
                   ),
                 );
               },
@@ -157,7 +150,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> editProfile(BuildContext context) async {
     final bool isConnected = await isConnectedToInternet();
     if (!isConnected) {
-      if (!context.mounted) return; // check if the widget is active
+      if (!context.mounted) return;
       showNoConnectionMessage(context);
       return;
     }
@@ -168,17 +161,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       userId: userId,
       newUserName: userNameController.text,
     );
-    // userService.editProfile(
-    //   selectedClasse,
-    //   userViewModel.userNotifier.value!.id,
-    //   userNameController.text,
-    // );
-    // await userViewModel.updateUser(userNameController.text, selectedClasse);
-    // if (!context.mounted) return;
-    // ScaffoldMessenger.of(
-    //   context,
-    // ).showSnackBar(SnackBar(content: Text('Profile modifier avec succes')));
-    // Navigator.pop(context, true);
+    logInfo("The profile is edit");
+    widget.onSucces();
   }
 
   @override
@@ -198,12 +182,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         );
         userViewModel.errorNotifier.value = null;
-      }
-    });
-
-    userViewModel.authState.addListener(() {
-      if (userViewModel.authState.value == ViewState.success) {
-        widget.onSucces;
       }
     });
   }

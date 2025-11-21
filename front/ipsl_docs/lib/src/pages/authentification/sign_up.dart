@@ -7,12 +7,14 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/theme_controller.dart';
-import 'package:ipsl_docs/src/pages/authentification/widget/build_textfield.dart';
-import 'package:ipsl_docs/src/pages/widgets/actions_button.dart';
 import 'package:ipsl_docs/src/pages/authentification/login_page.dart';
+import 'package:ipsl_docs/src/pages/authentification/widget/build_textfield.dart';
+import 'package:ipsl_docs/src/pages/profile/edit_profile_page.dart';
+import 'package:ipsl_docs/src/pages/widgets/actions_button.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:page_transition/page_transition.dart';
+
 import '../../view_models/user.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -24,6 +26,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   late UserViewModel userViewModel;
+  late VoidCallback listener;
   late DocumentViewModel documentViewModel;
   bool isLoading = false;
   final _formKeySign = GlobalKey<FormState>();
@@ -32,7 +35,6 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController userNameController = TextEditingController();
   String? selectedClasse = 'Cpi1';
   bool _obscurePassword = true;
-
   final List<String> classe = [
     'Cpi1',
     'Cpi2',
@@ -46,48 +48,6 @@ class _SignUpPageState extends State<SignUpPage> {
     'GeC2',
     'GeC3',
   ];
-  @override
-  void initState() {
-    super.initState();
-
-    userViewModel = GetIt.I<UserViewModel>();
-    documentViewModel = GetIt.I<DocumentViewModel>();
-    // Listen for error messages. I prefer this way to show SnackBars via the initState
-    // rather than using a ValueListenableBuilder in the build method to avoid rebuilding
-    userViewModel.errorNotifier.addListener(() {
-      final message = userViewModel.errorNotifier.value;
-      if (message != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message, style: TextStyle(color: Colors.white)),
-            backgroundColor: AppColors.darkSystemBackground,
-          ),
-        );
-        userViewModel.errorNotifier.value = null;
-      }
-    });
-
-    userViewModel.authState.addListener(() {
-      if (userViewModel.authState.value == ViewState.success) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return WidgetTree();
-            },
-          ),
-          (route) => false,
-        );
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    passwordController.dispose();
-    userNameController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -264,6 +224,70 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    userNameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    userViewModel = GetIt.I<UserViewModel>();
+    documentViewModel = GetIt.I<DocumentViewModel>();
+    // Listen for error messages. I prefer this way to show SnackBars via the initState
+    // rather than using a ValueListenableBuilder in the build method to avoid rebuilding
+    listener = () {
+      if (userViewModel.authState.value == ViewState.success) {
+        if (!mounted) return;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+
+          if (userViewModel.loginMethod == LoginMethod.email) {
+            _navigateToWidgetTree();
+          } else if (userViewModel.loginMethod == LoginMethod.google) {
+            _navigateToEditProfile();
+          }
+
+          // On retire le listener après usage
+          userViewModel.authState.removeListener(listener);
+        });
+      }
+    };
+
+    userViewModel.authState.addListener(listener);
+  }
+
+  void _navigateToEditProfile() {
+    final user = userViewModel.userNotifier.value!;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => EditProfilePage(
+              userName: user.userName,
+              userClass: user.classe,
+              onSucces: () {
+                _navigateToWidgetTree(); // Navigue vers ton widgetTree après succès
+              },
+            ),
+      ),
+    );
+  }
+
+  // Fonctions privées pour la navigation
+  void _navigateToWidgetTree() {
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => WidgetTree()),
+      (route) => false,
     );
   }
 

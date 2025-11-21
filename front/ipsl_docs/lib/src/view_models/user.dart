@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ipsl_docs/src/core/notification_service.dart';
 
@@ -7,12 +8,15 @@ import '../database/database.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 
+enum LoginMethod { google, email }
+
 class UserViewModel {
   final DatabaseHelper _db;
   final UserService _userService;
   ValueNotifier<User?> userNotifier = ValueNotifier(null);
   ValueNotifier<String?> errorNotifier = ValueNotifier(null);
   ValueNotifier<ViewState> authState = ValueNotifier(ViewState.idle);
+  LoginMethod? loginMethod;
 
   UserViewModel(this._db, this._userService);
   Future<void> addUser(User user) async {
@@ -20,12 +24,30 @@ class UserViewModel {
     userNotifier.value = user;
   }
 
+  Future<void> editProfile({
+    required String classe,
+    required userId,
+    required String newUserName,
+  }) async {
+    authState.value = ViewState.loading;
+    final result = await _userService.editProfile(classe, userId, newUserName);
+    result.fold(
+      (failure) {
+        authState.value = ViewState.error;
+        errorNotifier.value = failure.message;
+      },
+      (userData) async {
+        authState.value = ViewState.success;
+        await updateUser(newUserName, classe);
+      },
+    );
+  }
+
   Future<void> init() async {
     final User? user = await _db.getUser();
     if (user != null) {
       userNotifier.value = user;
     } else {
-      // Gérer le cas où l'utilisateur est null
       userNotifier.value = User(
         id: "23",
         email: "N/A",
@@ -38,6 +60,7 @@ class UserViewModel {
 
   Future<void> login({required String email, required String password}) async {
     authState.value = ViewState.loading;
+    loginMethod = LoginMethod.email;
     final result = await _userService.login(email: email, password: password);
     result.fold(
       (failure) {
@@ -67,13 +90,10 @@ class UserViewModel {
 
   Future<void> loginWithGoogle() async {
     authState.value = ViewState.loading;
-
+    loginMethod = LoginMethod.google;
     final googleSignIn = GoogleSignIn.instance;
     googleSignIn.authorizationClient;
-    googleSignIn.initialize(
-      serverClientId:
-          '510427170931-b854nar8etjugl0704t4b86cndu8smhp.apps.googleusercontent.com',
-    );
+    googleSignIn.initialize(serverClientId: dotenv.env["CLIENT_ID"]);
     try {
       final GoogleSignInAccount googleUser = await googleSignIn.authenticate(
         scopeHint: ['email'],
@@ -92,6 +112,9 @@ class UserViewModel {
           User newUser = User.fromJson(userData);
           await addUser(newUser);
           authState.value = ViewState.success;
+          // Future.microtask(() {
+          //   authState.value = ViewState.success;
+          // });
         },
       );
     } on GoogleSignInException catch (e) {
@@ -138,25 +161,6 @@ class UserViewModel {
         );
 
         await addUser(newUser);
-      },
-    );
-  }
-
-  Future<void> editProfile({
-    required String classe,
-    required userId,
-    required String newUserName,
-  }) async {
-    authState.value = ViewState.loading;
-    final result = await _userService.editProfile(classe, userId, newUserName);
-    result.fold(
-      (failure) {
-        authState.value = ViewState.error;
-        errorNotifier.value = failure.message;
-      },
-      (userData) async {
-        authState.value = ViewState.success;
-        await updateUser(newUserName, classe);
       },
     );
   }
