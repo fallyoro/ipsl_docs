@@ -69,7 +69,7 @@ async def login_user(
     password = login_data.password
     fcm_token = login_data.fcm_token
     await user_service.update_token(token=fcm_token, email=email, session=session)
-    user = await user_service.get_user_by_email(email=email, session=session)
+    user = await user_service.find_user_by_email(email=email, session=session)
     if user:
         passwd_valid = verify_password(password, user.password_hash)  # type: ignore
         if passwd_valid:
@@ -124,8 +124,12 @@ async def login_with_google(
     name = (idinfo.get("name") or "").split(" ")[0]
     picture_url = idinfo.get("picture")
 
-    user = await user_service.find_user_by_google_id(google_id=sub, session=session)
+    fcm_token = login_data.fcm_token
+
+    # user = await user_service.find_user_by_google_id(google_id=sub, session=session)
+    user = await user_service.find_user_by_email(email=email, session=session)
     if user:
+        await user_service.update_token(fcm_token, email, session)
         number_contribution = await user_service.get_number_contribution(
             user_id=user.id, session=session
         )
@@ -167,12 +171,13 @@ async def login_with_google(
         )
 
 
-@user_router.put("/update-fcm-token/{user_name}")
+@user_router.put("/update-fcm-token/{email}")
 async def update_fcm_token(
-    token: NotificationToken, user_name: str, session=Depends(create_session)
+    email: str, token: NotificationToken, session=Depends(create_session)
 ):
     try:
-        await user_service.update_token(token.token, user_name, session)
+        print(f"The token is {token.fcm_token}")
+        await user_service.update_token(token.fcm_token, email, session)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

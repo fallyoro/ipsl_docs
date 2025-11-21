@@ -150,10 +150,10 @@ class UserService {
     }
   }
 
-  Future<void> updateFcmToken(String userName, String fcmToken) async {
+  Future<void> updateFcmToken(String email, String fcmToken) async {
     try {
       await dio.put(
-        "/update-fcm-token/$userName",
+        "/update-fcm-token/$email",
         data: jsonEncode({'fcm_token': fcmToken}),
       );
     } on DioException catch (e) {

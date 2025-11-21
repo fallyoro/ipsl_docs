@@ -111,6 +111,10 @@ class UserViewModel {
           logInfo("User data ${userData.toString()}");
           User newUser = User.fromJson(userData);
           await addUser(newUser);
+          // await _userService.updateFcmToken(
+          //   newUser.email,
+          //   NotificationService.token!,
+          // );
           authState.value = ViewState.success;
           // Future.microtask(() {
           //   authState.value = ViewState.success;
@@ -167,11 +171,11 @@ class UserViewModel {
 
   Future<void> updateFcmToken() async {
     String? fcmToken = NotificationService.token;
-    String userName = userNotifier.value?.userName ?? "";
-    if (userName.isNotEmpty && fcmToken != null) {
+    String email = userNotifier.value?.email ?? "";
+    if (email.isNotEmpty && fcmToken != null) {
       try {
-        await _userService.updateFcmToken(userName, fcmToken);
-        logInfo("FCM token registered for user: $userName");
+        await _userService.updateFcmToken(email, fcmToken);
+        logInfo("FCM token registered for user: $email");
       } catch (e) {
         logError("Failed to register FCM token: $e");
       }

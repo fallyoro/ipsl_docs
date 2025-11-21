@@ -59,14 +59,14 @@ class NotificationService {
   }
 
   //Linsten to token refresh and send it to the backend (async)
-  Future<void> listenToTokenRefresh(String userName) async {
+  Future<void> listenToTokenRefresh(String email) async {
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
       _token = newToken;
       logInfo("Firebase Messaging Token refreshed: $newToken");
       if (await isConnectedToInternet()) {
         try {
-          await userService.updateFcmToken(userName, newToken);
-          logInfo("FCM token registered for user: $userName");
+          await userService.updateFcmToken(email, newToken);
+          logInfo("FCM token registered for user: $email");
         } catch (e) {
           logError("Failed to register FCM token: $e");
         }
