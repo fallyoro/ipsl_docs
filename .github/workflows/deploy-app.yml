@@ -38,6 +38,9 @@ jobs:
       - name: Create google-services.json
         run: echo '${{ secrets.GOOGLE_SERVICE_JSON}}' > app/ipsl_docs/android/app/google-services.json
 
+      - name: Create keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/ipsl_docs/android/app/mykey.jks
+
       - name: Disable watchers (fix CI bug)
         run: |
           echo "FLUTTER_SUPPRESS_WATCHER=true" >> $GITHUB_ENV
