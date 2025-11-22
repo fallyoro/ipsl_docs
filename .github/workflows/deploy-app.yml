@@ -1,0 +1,58 @@
+name: Build Flutter
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "app/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.7"
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        working-directory: app/ipsl_docs
+        run: flutter pub get
+
+      - name: Create .env
+        run: echo "${{secrets.FLUTTER_ENV}}" > app/ipsl_docs/.env
+
+      - name: Create google-services.json
+        run: echo '${{ secrets.GOOGLE_SERVICE_JSON}}' > app/ipsl_docs/android/app/google-services.json
+
+      - name: Create keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/ipsl_docs/android/app/mykey.jks
+
+      - name: Disable watchers (fix CI bug)
+        run: |
+          echo "FLUTTER_SUPPRESS_WATCHER=true" >> $GITHUB_ENV
+          echo "GRADLE_OPTS=-Dorg.gradle.vfs.watch=false" >> $GITHUB_ENV
+          echo "ORG_GRADLE_DAEMON=false" >> $GITHUB_ENV
+
+      - name: Build Apk
+        working-directory: app/ipsl_docs
+        run: flutter build apk --split-per-abi
+
+      - name: Build apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-apk
+          path: app/ipsl_docs/build/app/outputs/flutter-apk/*.apk

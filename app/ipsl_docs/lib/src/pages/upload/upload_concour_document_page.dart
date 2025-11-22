@@ -87,7 +87,6 @@ class _UploadConcoursDocumentPageState
     confirmSending(context);
     await documentViewModel.loadDocuments();
     if (!context.mounted) return;
-    Navigator.pop(context);
   }
 
   @override
@@ -140,11 +139,8 @@ class _UploadConcoursDocumentPageState
                     decoration: const InputDecoration(
                       labelText: 'Nom du fichier',
                     ),
-                    validator:
-                        (value) =>
-                            value == null || value.isEmpty
-                                ? 'Champ requis'
-                                : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Champ requis' : null,
                   ),
                 ],
               ),

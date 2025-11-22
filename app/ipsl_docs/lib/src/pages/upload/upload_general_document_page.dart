@@ -65,16 +65,16 @@ class _UploadGeneralDocumentPageState
 
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
-
-    if (!context.mounted) return;
-    confirmSending(context);
-    await documentViewModel.loadDocuments();
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => WidgetTree()),
       (route) => false,
     );
+
+    if (!context.mounted) return;
+    confirmSending(context);
+    await documentViewModel.loadDocuments();
   }
 
   @override
@@ -89,9 +89,8 @@ class _UploadGeneralDocumentPageState
             child: TextFormField(
               controller: filenameController,
               decoration: const InputDecoration(labelText: 'Nom du fichier'),
-              validator:
-                  (value) =>
-                      value == null || value.isEmpty ? 'Champ requis' : null,
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Champ requis' : null,
             ),
           ),
 

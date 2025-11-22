@@ -16,7 +16,9 @@ class UserService:
         user = result.first()
         return user
 
-    async def get_user_by_email(self, email: str, session: AsyncSession) -> User | None:
+    async def find_user_by_email(
+        self, email: str, session: AsyncSession
+    ) -> User | None:
         statement = select(User).where(User.email == email)
         result = await session.exec(statement)
         user = result.first()
@@ -38,7 +40,7 @@ class UserService:
         return len(documents)
 
     async def user_exist(self, email: str, session: AsyncSession) -> bool:
-        user = await self.get_user_by_email(email, session)
+        user = await self.find_user_by_email(email, session)
         return True if user else False
 
     async def create_user(self, user_data: UserCreate, session: AsyncSession):
