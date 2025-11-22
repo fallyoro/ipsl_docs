@@ -38,6 +38,12 @@ jobs:
       - name: Create google-services.json
         run: echo '${{ secrets.GOOGLE_SERVICE_JSON}}' > app/ipsl_docs/android/app/google-services.json
 
+      - name: Disable watchers (fix CI bug)
+        run: |
+          echo "FLUTTER_SUPPRESS_WATCHER=true" >> $GITHUB_ENV
+          echo "GRADLE_OPTS=-Dorg.gradle.vfs.watch=false" >> $GITHUB_ENV
+          echo "ORG_GRADLE_DAEMON=false" >> $GITHUB_ENV
+
       - name: Build Apk
         working-directory: app/ipsl_docs
         run: flutter build apk --split-per-abi
