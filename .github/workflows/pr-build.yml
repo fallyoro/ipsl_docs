@@ -1,0 +1,41 @@
+name: Build APK on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "app/**"
+
+jobs:
+  build-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.7"
+          channel: stable
+
+      - name: Install dependencies
+        working-directory: app/ipsl_docs
+        run: flutter pub get
+
+      - name: Build APKs
+        working-directory: app/ipsl_docs
+        run: flutter build apk --split-per-abi
+
+      - name: Upload APKs as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipsl_docs-pr-apk
+          path: app/ipsl_docs/build/app/outputs/flutter-apk/*.apk
