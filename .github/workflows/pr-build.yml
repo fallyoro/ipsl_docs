@@ -14,23 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.35.7"
-          channel: stable
-
-      - name: Install dependencies
-        working-directory: app/ipsl_docs
-        run: flutter pub get
-
-      # Secrets
       - name: Create .env
         run: echo "${{ secrets.FLUTTER_ENV }}" > app/ipsl_docs/.env
 
@@ -46,6 +29,22 @@ jobs:
         run: |
           APP_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.7"
+          channel: stable
+
+      - name: Install dependencies
+        working-directory: app/ipsl_docs
+        run: flutter pub get
 
       - name: Disable watchers (CI fix)
         run: |
