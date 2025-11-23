@@ -34,7 +34,7 @@ jobs:
         run: echo "${{ secrets.FLUTTER_ENV }}" > app/ipsl_docs/.env
 
       - name: Create google-services.json
-        run: echo "${{ secrets.GOOGLE_SERVICE_JSON }}" | base64 -d > app/ipsl_docs/android/app/google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICE_JSON }}" > app/ipsl_docs/android/app/google-services.json
 
       - name: Create Keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/ipsl_docs/android/app/mykey.jks
