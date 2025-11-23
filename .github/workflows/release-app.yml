@@ -61,14 +61,14 @@ jobs:
       - name: Rename APKs with version
         working-directory: app/ipsl_docs/build/app/outputs/flutter-apk
         run: |
-          mv app-armeabi-v7a-release.apk ipsl_docs-${{ env.APP_VERSION }}-arme32.apk
+          mv app-armeabi-v7a-release.apk ipsl_docs-${{ env.APP_VERSION }}-arm32.apk
           mv app-arm64-v8a-release.apk ipsl_docs-${{ env.APP_VERSION }}-arm64.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            app/ipsl_docs/build/app/outputs/flutter-apk/ipsl_docs-${{ env.APP_VERSION }}-armeabi.apk
+            app/ipsl_docs/build/app/outputs/flutter-apk/ipsl_docs-${{ env.APP_VERSION }}-arm32.apk
             app/ipsl_docs/build/app/outputs/flutter-apk/ipsl_docs-${{ env.APP_VERSION }}-arm64.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
