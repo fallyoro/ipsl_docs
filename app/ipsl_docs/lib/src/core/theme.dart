@@ -39,6 +39,7 @@ class AppTheme {
           // textStyle: TextStyle(color: Colors.white),
         ),
       ),
+      primaryColor: AppColors.primaryColor,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryColor,
         brightness: Brightness.dark,

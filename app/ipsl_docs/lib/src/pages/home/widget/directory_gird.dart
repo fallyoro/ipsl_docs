@@ -53,7 +53,6 @@ class _DirectoryGridState extends State<DirectoryGrid> {
                 },
               ),
             );
-            //documentViewModel.openDirectory(dirNode);
           },
           child: CardFolder(folder: dirNode.name),
         );

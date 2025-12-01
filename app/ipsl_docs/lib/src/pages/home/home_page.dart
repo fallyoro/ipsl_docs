@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/pages/home/widget/custom_curve.dart';
@@ -49,18 +50,58 @@ class _HomePageState extends State<HomePage> {
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.bold,
+            fontSize: 26,
           ),
         ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: AppColors.primaryColor,
-        actions: [
-          IconButton(
-            onPressed: () => ThemeController.toggleTheme(),
-            icon:
-                isDark
-                    ? const Icon(Icons.light_mode, color: Colors.white)
-                    : const Icon(Icons.dark_mode, color: Colors.white),
-          ),
-        ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: AppColors.primaryColor),
+              currentAccountPicture:
+                  userViewModel.userNotifier.value?.pictureUrl != null
+                  ? CachedNetworkImage(
+                      height: 100,
+                      imageUrl: userViewModel.userNotifier.value!.pictureUrl!
+                          .replaceAll('s96-c', 's400-c'),
+                      imageBuilder: (context, imageProvider) {
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: imageProvider,
+                        );
+                      },
+                    )
+                  : SizedBox.shrink(),
+              accountName: Text(
+                userViewModel.userNotifier.value!.userName,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              accountEmail: Text(
+                userViewModel.userNotifier.value!.email,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              title: Text("Changer le theme"),
+              leading: isDark
+                  ? Icon(Icons.light_mode, color: Colors.white)
+                  : const Icon(Icons.dark_mode),
+              onTap: () {
+                ThemeController.toggleTheme();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.favorite),
+              title: Text("Faire un don paypal"),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
       body: RefreshIndicator(
         color: AppColors.primaryColor,
