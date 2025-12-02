@@ -1,14 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ipsl_docs/src/core/constant.dart';
+import 'package:ipsl_docs/src/core/theme_controller.dart';
+import 'package:ipsl_docs/src/core/utils.dart';
 import 'package:ipsl_docs/src/pages/home/widget/custom_curve.dart';
 import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
-import 'package:flutter/material.dart';
-import 'package:ipsl_docs/src/core/constant.dart';
-import 'package:ipsl_docs/src/core/utils.dart';
-import 'package:ipsl_docs/src/core/theme_controller.dart';
-import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
+import 'package:ipsl_docs/src/view_models/user.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/document.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,22 +24,6 @@ class _HomePageState extends State<HomePage> {
   DocumentViewModel documentViewModel = GetIt.instance<DocumentViewModel>();
   bool isLoading = false;
   DocumentService service = DocumentService();
-
-  //TODO put this in the viewmodel
-  Future<void> _fetchDocuments() async {
-    logInfo("Fetching documents...");
-    final bool isConnected = await isConnectedToInternet();
-    try {
-      if (isConnected) {
-        await documentViewModel.syncDocumentFromServer();
-      }
-    } catch (e) {
-      String errorMessage = 'Erreur lors du chargement : $e';
-      logInfo(errorMessage);
-    }
-
-    await documentViewModel.loadDocuments();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,10 +79,19 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.favorite),
-              title: Text("Faire un don paypal"),
-              onTap: () {
+              leading: Image.asset(
+                "assets/images/paypal.png",
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
+              ),
+              title: Text(
+                "Faire un don PayPal",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () async {
                 Navigator.pop(context);
+                await openPaypal();
               },
             ),
           ],
@@ -166,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                     return Center(child: Text("Vous n'avez aucun document"));
                   }
 
-                  return DirectoryGrid(subDirectories: root!.subDirectories);
+                  return DirectoryGrid(subDirectories: root.subDirectories);
                 },
               ),
             ],
@@ -174,5 +168,26 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  //TODO put this in the viewmodel
+  Future<void> _fetchDocuments() async {
+    logInfo("Fetching documents...");
+    final bool isConnected = await isConnectedToInternet();
+    try {
+      if (isConnected) {
+        await documentViewModel.syncDocumentFromServer();
+      }
+    } catch (e) {
+      String errorMessage = 'Erreur lors du chargement : $e';
+      logInfo(errorMessage);
+    }
+
+    await documentViewModel.loadDocuments();
+  }
+
+  Future<void> openPaypal() async {
+    final Uri uri = Uri.parse("https://www.paypal.com/paypalme/fallyorro");
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 }
