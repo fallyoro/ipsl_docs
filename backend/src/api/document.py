@@ -20,6 +20,7 @@ from src.schemas.document import DocumentOut, DocumentCreate
 from uuid import UUID
 from src.services.user import UserService
 from src.services.notification import NotificationService
+import time
 from firebase_admin import messaging
 
 
@@ -47,9 +48,9 @@ async def upload_doc(
     doc: UploadFile = File(...),
     session: AsyncSession = Depends(create_session),
 ):
-
+    t0 = time.perf_counter()
     doc_data = DocumentCreate(user_id=user_id, path=path)  # type: ignore
-
+    t1 = time.perf_counter()
     documents_path = Path(__file__).resolve().parent.parents[1] / "documents"
     documents_path.mkdir(parents=True, exist_ok=True)
     relative_path = Path(path)
@@ -57,6 +58,7 @@ async def upload_doc(
 
     # Crée uniquement le dossier parent, pas le fichier
     complete_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"[TIME] Préparation chemin: {time.perf_counter() - t1:.4f} sec")
 
     # Vérifie que ce n’est pas un dossier
     if complete_path.exists() and complete_path.is_dir():
@@ -64,16 +66,27 @@ async def upload_doc(
             status_code=500, detail=f"{complete_path} est déjà un dossier"
         )
 
+    t2 = time.perf_counter()
     document = await service.upload_doc(doc_data=doc_data, session=session)
-    # Copie le contenu du fichier entrant
+    print(f"[TIME] Enregistrement BDD: {time.perf_counter() - t2:.4f} sec")
+
+    t3 = time.perf_counter()
     with open(complete_path, "wb") as buffer:
         shutil.copyfileobj(doc.file, buffer)
+    print(f"[TIME] Écriture fichier: {time.perf_counter() - t3:.4f} sec")
 
+    t4 = time.perf_counter()
     user_service = UserService()
     user_name = await user_service.get_user_name(id=UUID(user_id), session=session)
     number_contribution = await user_service.get_number_contribution(
         session=session, user_id=UUID(user_id)
     )
+    print(
+        f"[TIME] Requêtes user_service (name + contrib): {time.perf_counter() - t4:.4f} sec"
+    )
+
+    t5 = time.perf_counter()
+
     topic = path.split("/")[0]
     print(f"=====================The path of the doc {path}")
     # Si le document est de type general ou concours une notification est envoye a tout le monde. Par contre
@@ -88,6 +101,8 @@ async def upload_doc(
         tokens = list(set(tokens))
 
     print(f"The list of tokens: {tokens}")
+    print(f"[TIME] Récupération tokens: {time.perf_counter() - t5:.4f} sec")
+    t6 = time.perf_counter()
     notification_service = NotificationService()
     background.add_task(
         notification_service.send_notification,
@@ -95,13 +110,8 @@ async def upload_doc(
         path=path,
         user_name=user_name,
     )
-    # message = messaging.MulticastMessage(
-    #     notification=messaging.Notification(
-    #         title="Nouveau document", body=f"User vient de partager un document"
-    #     ),
-    #     tokens=tokens,
-    # )
-    # response = messaging.send_each_for_multicast(message)
+    print(f"[TIME] Ajout tâche background: {time.perf_counter() - t6:.4f} sec")
+    print(f"[TIME] Temps total route /upload: {time.perf_counter() - t0:.4f} sec")
     return {
         "id": document.id,
         "path": str(complete_path),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/src/pages/home/widget/send_button.dart';
 import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
@@ -56,42 +57,16 @@ class _UploadGeneralDocumentPageState
                 )
               : PickFileButtun(onpress: pickFile),
 
-          ValueListenableBuilder<bool>(
-            valueListenable: documentViewModel.isSending,
-            builder: (context, isSending, _) {
-              if (isSending) {
-                return Container(
-                  height: 48,
-                  alignment: Alignment.center,
-                  child: const CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                );
-              }
-
-              return ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                ),
-                onPressed: () {
-                  final path = join("Général", filenameController.text);
-                  onSubmit(context, path);
-                },
-                child: const Text(
-                  'Envoyer',
-                  style: TextStyle(color: Colors.white),
-                ),
-              );
-            },
-          ),
-
           ValueListenableBuilder<double>(
             valueListenable: documentViewModel.progress,
             builder: (context, progress, child) {
               if (documentViewModel.isSending.value) {
                 return customLinearProgressSending(progress);
               } else {
-                return const SizedBox.shrink();
+                return buildSendButton(context, () async {
+                  final path = join("Général", filenameController.text);
+                  await onSubmit(context, path);
+                });
               }
             },
           ),

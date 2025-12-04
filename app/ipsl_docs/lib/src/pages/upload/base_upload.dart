@@ -24,6 +24,8 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
 
     // final path = join("Général", filenameController.text);
     await documentViewModel.submitDocument(context: context, path: path);
+    await documentViewModel.loadDocuments();
+    filenameController.clear();
     setState(() {});
     // if (!context.mounted) return;
     // Navigator.pushAndRemoveUntil(
@@ -91,11 +93,10 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
       applyBlurEffect: true,
       callbacks: ToastificationCallbacks(
         onTap: (toastItem) => print('Toast ${toastItem.id} tapped'),
-        onCloseButtonTap:
-            (toastItem) => print('Toast ${toastItem.id} close button tapped'),
-        onAutoCompleteCompleted:
-            (toastItem) =>
-                print('Toast ${toastItem.id} auto complete completed'),
+        onCloseButtonTap: (toastItem) =>
+            print('Toast ${toastItem.id} close button tapped'),
+        onAutoCompleteCompleted: (toastItem) =>
+            print('Toast ${toastItem.id} auto complete completed'),
         onDismissed: (toastItem) => print('Toast ${toastItem.id} dismissed'),
       ),
     );

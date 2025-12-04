@@ -27,7 +27,6 @@ class UploadConcoursDocumentPage extends StatefulWidget {
 class _UploadConcoursDocumentPageState
     extends BaseUploadPage<UploadConcoursDocumentPage> {
   // final _formKeySubmit = GlobalKey<FormState>();
-  bool isSending = false;
   final documentViewModel = GetIt.I<DocumentViewModel>();
   final yearMaskFormatter = YearInputFormatter();
   final userViewModel = GetIt.I<UserViewModel>();
@@ -111,22 +110,29 @@ class _UploadConcoursDocumentPageState
                 )
                 : PickFileButtun(onpress: pickFile),
 
-            buildSendButton(context, () {
+            buildSendButton(context, () async {
               final path = join(
                 "Concours",
                 yearController.text,
                 filenameController.text,
               );
-              onSubmit(context, path);
+              await onSubmit(context, path);
             }),
 
             ValueListenableBuilder<double>(
               valueListenable: documentViewModel.progress,
               builder: (context, progress, child) {
-                if (isSending) {
+                if (documentViewModel.isSending.value) {
                   return customLinearProgressSending(progress);
                 } else {
-                  return const SizedBox.shrink();
+                  return buildSendButton(context, () {
+                    final path = join(
+                      "Concours",
+                      yearController.text,
+                      filenameController.text,
+                    );
+                    onSubmit(context, path);
+                  });
                 }
               },
             ),

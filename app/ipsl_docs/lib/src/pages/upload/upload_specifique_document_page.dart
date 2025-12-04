@@ -33,7 +33,6 @@ class _UploadSpecifiqueDocumentPageState
   DocumentService service = GetIt.I<DocumentService>();
   String selectedClasse = 'Cpi1';
   String selectedCategory = 'cour';
-  bool isSending = false;
 
   final classes = [
     'Cpi1',
@@ -275,28 +274,26 @@ class _UploadSpecifiqueDocumentPageState
                   )
                   : PickFileButtun(onpress: pickFile),
 
-              const SizedBox(height: 16),
-              buildSendButton(context, () async {
-                final path = join(
-                  selectedClasse,
-                  subjectController.text,
-                  yearController.text,
-                  selectedCategory,
-                  filenameController.text,
-                );
-                await documentViewModel.submitDocument(
-                  context: context,
-                  path: path,
-                );
-              }),
+              const SizedBox(height: 25),
 
               ValueListenableBuilder<double>(
                 valueListenable: documentViewModel.progress,
                 builder: (context, progress, child) {
-                  if (isSending) {
+                  if (documentViewModel.isSending.value) {
                     return customLinearProgressSending(progress);
                   } else {
-                    return const SizedBox.shrink();
+                    return buildSendButton(context, () async {
+                      final path = join(
+                        selectedClasse,
+                        subjectController.text,
+                        yearController.text,
+                        selectedCategory,
+                        filenameController.text,
+                      );
+                      await onSubmit(context, path);
+                      yearController.clear();
+                      subjectController.clear();
+                    });
                   }
                 },
               ),

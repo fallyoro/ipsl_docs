@@ -129,8 +129,8 @@ class DocumentViewModel {
 
   //sync documents from remote server using the variable updatedAt(each document has its own value) in the document model
   Future<void> syncDocumentFromServer() async {
-    final List<Map<String, dynamic>> docFetch = await service
-        .fetchRawDocuments();
+    final List<Map<String, dynamic>> docFetch =
+        await service.fetchRawDocuments();
     logInfo(docFetch.toString());
     for (Map<String, dynamic> doc in docFetch) {
       if (doc['is_deleted'] == true) {
@@ -220,7 +220,7 @@ class DocumentViewModel {
 
     final int numberContribution = responseUpload['number_contribution'];
     await userViewModel.updateNumberContribution(numberContribution);
-    await loadDocuments();
+    // await loadDocuments();
     isSending.value = false;
     reset();
   }
