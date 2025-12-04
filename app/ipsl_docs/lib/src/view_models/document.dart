@@ -1,4 +1,7 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/src/view_models/user.dart';
 import 'dart:io';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
@@ -12,6 +15,9 @@ class DocumentViewModel {
   final DatabaseHelper _db;
 
   final ValueNotifier<DirectoryNode?> currentDirectory = ValueNotifier(null);
+  final ValueNotifier<bool> isSending = ValueNotifier(false);
+  final ValueNotifier<String?> errorNotifier = ValueNotifier(null);
+  PlatformFile? pickedFile;
   final ValueNotifier<double> progress = ValueNotifier(0);
   final ValueNotifier<DirectoryNode?> root = ValueNotifier(null);
   final List<DirectoryNode> _stack = [];
@@ -123,8 +129,8 @@ class DocumentViewModel {
 
   //sync documents from remote server using the variable updatedAt(each document has its own value) in the document model
   Future<void> syncDocumentFromServer() async {
-    final List<Map<String, dynamic>> docFetch =
-        await service.fetchRawDocuments();
+    final List<Map<String, dynamic>> docFetch = await service
+        .fetchRawDocuments();
     logInfo(docFetch.toString());
     for (Map<String, dynamic> doc in docFetch) {
       if (doc['is_deleted'] == true) {
@@ -156,7 +162,10 @@ class DocumentViewModel {
     }
   }
 
-  void reset() => progress.value = 0;
+  void reset() {
+    progress.value = 0;
+    pickedFile = null;
+  }
 
   Future<void> validateDocument(Document doc) async {
     final String path = await doc.localPath;
@@ -164,5 +173,55 @@ class DocumentViewModel {
     if (mimtype == "application/pdf" || mimtype!.startsWith("image")) {
       return;
     }
+  }
+
+  Future<void> pickFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.isNotEmpty) {
+      final file = result.files.single;
+
+      pickedFile = file;
+    }
+  }
+
+  // Future<void> submit(BuildContext context) async {
+  Future<void> submitDocument({
+    required BuildContext context,
+    required String path,
+  }) async {
+    isSending.value = true;
+    if (!await isConnectedToInternet()) {
+      isSending.value = false;
+      if (!context.mounted) return;
+      showNoConnectionMessage(context);
+      return;
+    }
+
+    UserViewModel userViewModel = GetIt.instance<UserViewModel>();
+    final responseUpload = await service.uploadDocument(
+      file: File(pickedFile!.path!),
+      path: path,
+      userId: userViewModel.userNotifier.value!.id,
+      onProgress: (received, total) {
+        updateProgress(received, total);
+      },
+    );
+    if (responseUpload == null) {
+      errorNotifier.value = "Erreur : Impossible d'envoyer le fichier";
+      return;
+    }
+    final doc = Document(
+      id: responseUpload['id'],
+      idUploader: userViewModel.userNotifier.value!.id,
+      path: path,
+      updatedAt: DateTime.parse(responseUpload['updated_at'] as String),
+    );
+    await addDocument(doc);
+
+    final int numberContribution = responseUpload['number_contribution'];
+    await userViewModel.updateNumberContribution(numberContribution);
+    await loadDocuments();
+    isSending.value = false;
+    reset();
   }
 }

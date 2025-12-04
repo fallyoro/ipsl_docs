@@ -129,13 +129,16 @@ class DocumentService {
           'number_contribution': data['number_contribution'],
           'updated_at': data['updated_at']?.toString(),
         };
-        // return data['id']?.toString();
       } else {
         logInfo('Erreur ${response.statusCode}: ${response.data}');
         return null;
       }
     } catch (e) {
       logInfo('Exception: $e');
+      /*
+      I return null if there is an error. That's weird but I intend to find another solution
+      If you see this comment rewrite this function with dartz like for the login.  I'm so tired.
+*/
       return null;
     }
   }

@@ -1,12 +1,8 @@
-import 'dart:io';
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/matiere.dart';
-import 'package:ipsl_docs/src/core/utils.dart';
-import 'package:ipsl_docs/src/models/document.dart';
 import 'package:ipsl_docs/src/pages/home/widget/preview_widget.dart';
 import 'package:ipsl_docs/src/pages/home/widget/year_formater.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
@@ -17,7 +13,6 @@ import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:path/path.dart';
 
-import '../../widget_tree.dart';
 import '../home/widget/send_button.dart';
 
 class UploadSpecifiqueDocumentPage extends StatefulWidget {
@@ -30,7 +25,6 @@ class UploadSpecifiqueDocumentPage extends StatefulWidget {
 
 class _UploadSpecifiqueDocumentPageState
     extends BaseUploadPage<UploadSpecifiqueDocumentPage> {
-  final _formKeySubmit = GlobalKey<FormState>();
   final yearController = TextEditingController();
   final subjectController = TextEditingController();
   final yearMaskFormatter = YearInputFormatter();
@@ -69,7 +63,7 @@ class _UploadSpecifiqueDocumentPageState
     List<String> subjects = matiere[selectedClasse]!.toSet().toList();
     return SingleChildScrollView(
       child: Form(
-        key: _formKeySubmit,
+        key: formKeySubmit,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -274,15 +268,27 @@ class _UploadSpecifiqueDocumentPageState
 
               const SizedBox(height: 16),
 
-              pickedFile != null
+              documentViewModel.pickedFile != null
                   ? previewWidget(
-                    localPath: pickedFile!.path!,
+                    localPath: documentViewModel.pickedFile!.path!,
                     context: context,
                   )
                   : PickFileButtun(onpress: pickFile),
 
               const SizedBox(height: 16),
-              buildSendButton(context, () => _submit(context)),
+              buildSendButton(context, () async {
+                final path = join(
+                  selectedClasse,
+                  subjectController.text,
+                  yearController.text,
+                  selectedCategory,
+                  filenameController.text,
+                );
+                await documentViewModel.submitDocument(
+                  context: context,
+                  path: path,
+                );
+              }),
 
               ValueListenableBuilder<double>(
                 valueListenable: documentViewModel.progress,
@@ -308,73 +314,9 @@ class _UploadSpecifiqueDocumentPageState
     super.dispose();
   }
 
-  Future<void> _submit(BuildContext context) async {
-    if (!_formKeySubmit.currentState!.validate()) {
-      return;
-    }
-    FocusScope.of(context).unfocus();
-    if (pickedFile == null) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veuillez choisir un fichier')),
-      );
-      return;
-    }
-    if (subjectController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veillez selectioner une matiere')),
-      );
-      return;
-    }
-
-    isSending = true;
-    if (!await isConnectedToInternet()) {
-      isSending = false;
-      if (!context.mounted) return;
-      showNoConnectionMessage(context);
-      return;
-    }
-
-    final path = join(
-      selectedClasse,
-      subjectController.text,
-      yearController.text,
-      selectedCategory,
-      filenameController.text,
-    );
-    final responseUpload = await service.uploadDocument(
-      file: File(pickedFile!.path!),
-      path: path,
-      userId: userViewModel.userNotifier.value!.id,
-      onProgress: (received, total) {
-        documentViewModel.updateProgress(received, total);
-      },
-    );
-
-    DateTime updatedAt = DateTime.parse(
-      responseUpload?['updated_at'] as String,
-    );
-    final doc = Document(
-      id: responseUpload!['id'],
-      idUploader: userViewModel.userNotifier.value!.id,
-      path: path,
-      updatedAt: updatedAt,
-    );
-    await documentViewModel.addDocument(doc);
-
-    final int numberContribution = responseUpload['number_contribution'];
-    await userViewModel.updateNumberContribution(numberContribution);
-    if (!context.mounted) return;
-
-    if (!context.mounted) return;
-    confirmSending(context);
-    await documentViewModel.loadDocuments();
-    if (!context.mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => WidgetTree()),
-      (route) => false,
-    );
-    documentViewModel.reset();
+  Future<void> pickFile() async {
+    await documentViewModel.pickFile();
+    filenameController.text = documentViewModel.pickedFile!.name;
+    setState(() {});
   }
 }

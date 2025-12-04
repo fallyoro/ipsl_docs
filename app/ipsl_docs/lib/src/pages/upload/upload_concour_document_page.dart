@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
-import 'package:ipsl_docs/src/pages/upload/upload_specifique_document_page.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 import '../../core/constant.dart';
@@ -27,7 +26,7 @@ class UploadConcoursDocumentPage extends StatefulWidget {
 
 class _UploadConcoursDocumentPageState
     extends BaseUploadPage<UploadConcoursDocumentPage> {
-  final _formKeySubmit = GlobalKey<FormState>();
+  // final _formKeySubmit = GlobalKey<FormState>();
   bool isSending = false;
   final documentViewModel = GetIt.I<DocumentViewModel>();
   final yearMaskFormatter = YearInputFormatter();
@@ -40,53 +39,10 @@ class _UploadConcoursDocumentPageState
     "Anglais",
     "Français",
   ];
-
-  Future<void> _submit(BuildContext context) async {
-    if (!_formKeySubmit.currentState!.validate() || pickedFile == null) return;
-    FocusScope.of(context).unfocus();
-
-    setState(() => isSending = true);
-    if (!await isConnectedToInternet()) {
-      setState(() => isSending = false);
-      if (!context.mounted) return;
-      showNoConnectionMessage(context);
-      return;
-    }
-
-    final path = join("Concours", yearController.text, filenameController.text);
-    final responseUpload = await documentServive.uploadDocument(
-      file: File(pickedFile!.path!),
-      path: path,
-      userId: userViewModel.userNotifier.value!.id,
-      onProgress: (received, total) {
-        documentViewModel.updateProgress(received, total);
-      },
-    );
-
-    DateTime updatedAt = DateTime.parse(
-      responseUpload?['updated_at'] as String,
-    );
-    final doc = Document(
-      id: responseUpload!['id'],
-      idUploader: userViewModel.userNotifier.value!.id,
-      path: path,
-      updatedAt: updatedAt,
-    );
-    await documentViewModel.addDocument(doc);
-
-    final int numberContribution = responseUpload['number_contribution'];
-    await userViewModel.updateNumberContribution(numberContribution);
-    if (!context.mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => WidgetTree()),
-      (route) => false,
-    );
-
-    if (!context.mounted) return;
-    confirmSending(context);
-    await documentViewModel.loadDocuments();
-    if (!context.mounted) return;
+  Future<void> pickFile() async {
+    await documentViewModel.pickFile();
+    filenameController.text = documentViewModel.pickedFile!.name;
+    setState(() {});
   }
 
   @override
@@ -104,7 +60,7 @@ class _UploadConcoursDocumentPageState
           spacing: 30,
           children: [
             Form(
-              key: _formKeySubmit,
+              key: formKeySubmit,
               child: Column(
                 spacing: 30,
                 children: [
@@ -139,17 +95,30 @@ class _UploadConcoursDocumentPageState
                     decoration: const InputDecoration(
                       labelText: 'Nom du fichier',
                     ),
-                    validator: (value) =>
-                        value == null || value.isEmpty ? 'Champ requis' : null,
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Champ requis'
+                                : null,
                   ),
                 ],
               ),
             ),
-            pickedFile != null
-                ? previewWidget(localPath: pickedFile!.path!, context: context)
+            documentViewModel.pickedFile != null
+                ? previewWidget(
+                  localPath: documentViewModel.pickedFile!.path!,
+                  context: context,
+                )
                 : PickFileButtun(onpress: pickFile),
 
-            buildSendButton(context, () => _submit(context)),
+            buildSendButton(context, () {
+              final path = join(
+                "Concours",
+                yearController.text,
+                filenameController.text,
+              );
+              onSubmit(context, path);
+            }),
 
             ValueListenableBuilder<double>(
               valueListenable: documentViewModel.progress,
