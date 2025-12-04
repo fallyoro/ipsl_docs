@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/theme_controller.dart';
 import 'package:ipsl_docs/src/core/utils.dart';
+import 'package:ipsl_docs/src/models/document.dart';
 import 'package:ipsl_docs/src/pages/home/widget/custom_curve.dart';
 import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
@@ -48,18 +49,18 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(color: AppColors.primaryColor),
               currentAccountPicture:
                   userViewModel.userNotifier.value?.pictureUrl != null
-                  ? CachedNetworkImage(
-                      height: 100,
-                      imageUrl: userViewModel.userNotifier.value!.pictureUrl!
-                          .replaceAll('s96-c', 's400-c'),
-                      imageBuilder: (context, imageProvider) {
-                        return CircleAvatar(
-                          radius: 50,
-                          backgroundImage: imageProvider,
-                        );
-                      },
-                    )
-                  : SizedBox.shrink(),
+                      ? CachedNetworkImage(
+                        height: 100,
+                        imageUrl: userViewModel.userNotifier.value!.pictureUrl!
+                            .replaceAll('s96-c', 's400-c'),
+                        imageBuilder: (context, imageProvider) {
+                          return CircleAvatar(
+                            radius: 50,
+                            backgroundImage: imageProvider,
+                          );
+                        },
+                      )
+                      : SizedBox.shrink(),
               accountName: Text(
                 userViewModel.userNotifier.value!.userName,
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -71,9 +72,10 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               title: Text("Changer le theme"),
-              leading: isDark
-                  ? Icon(Icons.light_mode, color: Colors.white)
-                  : const Icon(Icons.dark_mode),
+              leading:
+                  isDark
+                      ? Icon(Icons.light_mode, color: Colors.white)
+                      : const Icon(Icons.dark_mode),
               onTap: () {
                 ThemeController.toggleTheme();
               },
@@ -190,4 +192,6 @@ class _HomePageState extends State<HomePage> {
     final Uri uri = Uri.parse("https://www.paypal.com/paypalme/fallyorro");
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
+
+  Future<void> validateDocument(Document doc) async {}
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import '../core/utils.dart';
 import '../database/database.dart';
@@ -156,4 +157,12 @@ class DocumentViewModel {
   }
 
   void reset() => progress.value = 0;
+
+  Future<void> validateDocument(Document doc) async {
+    final String path = await doc.localPath;
+    final mimtype = lookupMimeType(path);
+    if (mimtype == "application/pdf" || mimtype!.startsWith("image")) {
+      return;
+    }
+  }
 }
