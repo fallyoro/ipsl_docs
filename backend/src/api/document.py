@@ -1,5 +1,14 @@
 from curses import tparm
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Depends, status
+from fastapi import (
+    APIRouter,
+    File,
+    Form,
+    HTTPException,
+    UploadFile,
+    Depends,
+    status,
+    BackgroundTasks,
+)
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.database.database import create_session
 from typing import List
@@ -12,6 +21,7 @@ from uuid import UUID
 from src.services.user import UserService
 from src.services.notification import NotificationService
 from firebase_admin import messaging
+
 
 service = DocumentService()
 doc_router = APIRouter()
@@ -31,6 +41,7 @@ async def get_all_documents(session: AsyncSession = Depends(create_session)):
 
 @doc_router.post("/upload")
 async def upload_doc(
+    background: BackgroundTasks,
     path: str = Form(...),
     user_id: str = Form(...),
     doc: UploadFile = File(...),
@@ -78,8 +89,11 @@ async def upload_doc(
 
     print(f"The list of tokens: {tokens}")
     notification_service = NotificationService()
-    response = notification_service.send_notification(
-        tokens=tokens, path=path, user_name=user_name
+    background.add_task(
+        notification_service.send_notification,
+        tokens=tokens,
+        path=path,
+        user_name=user_name,
     )
     # message = messaging.MulticastMessage(
     #     notification=messaging.Notification(
