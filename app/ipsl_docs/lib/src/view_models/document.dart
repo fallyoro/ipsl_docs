@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/src/core/failure.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'dart:io';
 import 'package:mime/mime.dart';
@@ -198,7 +199,7 @@ class DocumentViewModel {
     }
 
     UserViewModel userViewModel = GetIt.instance<UserViewModel>();
-    final responseUpload = await service.uploadDocument(
+    final result = await service.uploadDocument(
       file: File(pickedFile!.path!),
       path: path,
       userId: userViewModel.userNotifier.value!.id,
@@ -206,22 +207,25 @@ class DocumentViewModel {
         updateProgress(received, total);
       },
     );
-    if (responseUpload == null) {
-      errorNotifier.value = "Erreur : Impossible d'envoyer le fichier";
-      return;
-    }
-    final doc = Document(
-      id: responseUpload['id'],
-      idUploader: userViewModel.userNotifier.value!.id,
-      path: path,
-      updatedAt: DateTime.parse(responseUpload['updated_at'] as String),
-    );
-    await addDocument(doc);
+    result.fold(
+      (failure) {
+        errorNotifier.value = failure.message;
+      },
+      (docData) async {
+        final doc = Document(
+          id: docData['id'],
+          idUploader: userViewModel.userNotifier.value!.id,
+          path: path,
+          updatedAt: DateTime.parse(docData['updated_at'] as String),
+        );
+        await addDocument(doc);
 
-    final int numberContribution = responseUpload['number_contribution'];
-    await userViewModel.updateNumberContribution(numberContribution);
-    // await loadDocuments();
-    isSending.value = false;
-    reset();
+        final int numberContribution = docData['number_contribution'];
+        await userViewModel.updateNumberContribution(numberContribution);
+        // await loadDocuments();
+        isSending.value = false;
+        reset();
+      },
+    );
   }
 }

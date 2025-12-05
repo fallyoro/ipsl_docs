@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:dartz/dartz.dart';
+import 'package:ipsl_docs/src/core/failure.dart';
+import '../core/network_exception.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -96,7 +99,7 @@ class DocumentService {
     }
   }
 
-  Future<Map<String, dynamic>?> uploadDocument({
+  Future<Either<NetworkFailure, Map<String, dynamic>>> uploadDocument({
     required File file,
     required String path,
 
@@ -121,25 +124,18 @@ class DocumentService {
         onSendProgress: onProgress,
       );
 
-      if (response.statusCode == 200 && response.data is Map) {
-        final data = response.data as Map<String, dynamic>;
-        logInfo('Success: ${response.data}');
-        return {
-          'id': data['id']?.toString(),
-          'number_contribution': data['number_contribution'],
-          'updated_at': data['updated_at']?.toString(),
-        };
-      } else {
-        logInfo('Erreur ${response.statusCode}: ${response.data}');
-        return null;
-      }
+      final data = response.data as Map<String, dynamic>;
+      logInfo('Success: ${response.data}');
+      return Right({
+        'id': data['id']?.toString(),
+        'number_contribution': data['number_contribution'],
+        'updated_at': data['updated_at']?.toString(),
+      });
+    } on DioException catch (e) {
+      final error = NetworkException.fromDioError(e);
+      return Left(NetworkFailure(error.message));
     } catch (e) {
-      logInfo('Exception: $e');
-      /*
-      I return null if there is an error. That's weird but I intend to find another solution
-      If you see this comment rewrite this function with dartz like for the login.  I'm so tired.
-*/
-      return null;
+      return Left(NetworkFailure("Erreur réseau ou inconnue : $e"));
     }
   }
 }

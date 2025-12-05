@@ -117,6 +117,7 @@ class _UploadConcoursDocumentPageState
                 filenameController.text,
               );
               await onSubmit(context, path);
+              // documentViewModel.loadDocuments();
             }),
 
             ValueListenableBuilder<double>(
