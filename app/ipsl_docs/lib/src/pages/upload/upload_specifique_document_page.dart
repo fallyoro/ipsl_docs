@@ -10,7 +10,6 @@ import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
 import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:ipsl_docs/src/services/document.dart';
-import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:path/path.dart';
 
@@ -102,15 +101,14 @@ class _UploadSpecifiqueDocumentPageState
                                 subjectController.text = '';
                               });
                             },
-                            dropdownMenuEntries:
-                                classes
-                                    .map(
-                                      (c) => DropdownMenuEntry<String>(
-                                        value: c,
-                                        label: c,
-                                      ),
-                                    )
-                                    .toList(),
+                            dropdownMenuEntries: classes
+                                .map(
+                                  (c) => DropdownMenuEntry<String>(
+                                    value: c,
+                                    label: c,
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ],
                       ),
@@ -134,15 +132,14 @@ class _UploadSpecifiqueDocumentPageState
                                 selectedCategory = value!;
                               });
                             },
-                            dropdownMenuEntries:
-                                categories
-                                    .map(
-                                      (c) => DropdownMenuEntry<String>(
-                                        value: c,
-                                        label: c,
-                                      ),
-                                    )
-                                    .toList(),
+                            dropdownMenuEntries: categories
+                                .map(
+                                  (c) => DropdownMenuEntry<String>(
+                                    value: c,
+                                    label: c,
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ],
                       ),
@@ -157,20 +154,20 @@ class _UploadSpecifiqueDocumentPageState
                     'Matière',
                     // style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  items:
-                      subjects.map<DropdownMenuItem<String>>((String subject) {
-                        return DropdownMenuItem<String>(
-                          value: subject,
-                          child: Text(
-                            subject,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        );
-                      }).toList(),
-                  value:
-                      subjectController.text.isNotEmpty
-                          ? subjectController.text
-                          : null,
+                  items: subjects.map<DropdownMenuItem<String>>((
+                    String subject,
+                  ) {
+                    return DropdownMenuItem<String>(
+                      value: subject,
+                      child: Text(
+                        subject,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    );
+                  }).toList(),
+                  value: subjectController.text.isNotEmpty
+                      ? subjectController.text
+                      : null,
                   onChanged: (String? value) {
                     if (value == null) return;
                     setState(() {
@@ -232,9 +229,8 @@ class _UploadSpecifiqueDocumentPageState
                   labelText: 'Nom du fichier',
                   labelStyle: TextStyle(fontSize: 16),
                 ),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty ? 'Champ requis' : null,
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Champ requis' : null,
               ),
 
               TextFormField(
@@ -267,38 +263,9 @@ class _UploadSpecifiqueDocumentPageState
 
               const SizedBox(height: 16),
 
-              ValueListenableBuilder<PlatformFile?>(
-                valueListenable: documentViewModel.pickedFileNotifier,
-                builder: (context, file, _) {
-                  return file != null
-                      ? previewWidget(localPath: file.path, context: context)
-                      : PickFileButtun(onpress: pickFile);
-                },
-              ),
+              filePreviewSection(),
 
-              const SizedBox(height: 25),
-
-              ValueListenableBuilder<double>(
-                valueListenable: documentViewModel.progress,
-                builder: (context, progress, child) {
-                  if (documentViewModel.isSending.value) {
-                    return customLinearProgressSending(progress);
-                  } else {
-                    return buildSendButton(context, () async {
-                      final path = join(
-                        selectedClasse,
-                        subjectController.text,
-                        yearController.text,
-                        selectedCategory,
-                        filenameController.text,
-                      );
-                      await onSubmit(context, path);
-                      yearController.clear();
-                      subjectController.clear();
-                    });
-                  }
-                },
-              ),
+              sendButtonSection(),
             ],
           ),
         ),
@@ -312,11 +279,5 @@ class _UploadSpecifiqueDocumentPageState
     yearController.dispose();
     subjectController.dispose();
     super.dispose();
-  }
-
-  Future<void> pickFile() async {
-    await documentViewModel.pickFile();
-    filenameController.text = documentViewModel.pickedFileNotifier.value!.name;
-    setState(() {});
   }
 }

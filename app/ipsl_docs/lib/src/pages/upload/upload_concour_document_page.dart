@@ -7,7 +7,6 @@ import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 import '../../core/constant.dart';
 import '../../services/document.dart';
-import '../../view_models/document.dart';
 import '../../view_models/user.dart';
 import '../home/widget/preview_widget.dart';
 import '../home/widget/send_button.dart';
@@ -34,11 +33,6 @@ class _UploadConcoursDocumentPageState
     "Anglais",
     "Français",
   ];
-  Future<void> pickFile() async {
-    await documentViewModel.pickFile();
-    filenameController.text = documentViewModel.pickedFileNotifier.value!.name;
-    setState(() {});
-  }
 
   @override
   void dispose() {
@@ -91,41 +85,15 @@ class _UploadConcoursDocumentPageState
                     decoration: const InputDecoration(
                       labelText: 'Nom du fichier',
                     ),
-                    validator:
-                        (value) =>
-                            value == null || value.isEmpty
-                                ? 'Champ requis'
-                                : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Champ requis' : null,
                   ),
                 ],
               ),
             ),
-            ValueListenableBuilder<PlatformFile?>(
-              valueListenable: documentViewModel.pickedFileNotifier,
-              builder: (context, file, _) {
-                return file != null
-                    ? previewWidget(localPath: file.path, context: context)
-                    : PickFileButtun(onpress: pickFile);
-              },
-            ),
+            filePreviewSection(),
 
-            ValueListenableBuilder<double>(
-              valueListenable: documentViewModel.progress,
-              builder: (context, progress, child) {
-                if (documentViewModel.isSending.value) {
-                  return customLinearProgressSending(progress);
-                } else {
-                  return buildSendButton(context, () {
-                    final path = join(
-                      "Concours",
-                      yearController.text,
-                      filenameController.text,
-                    );
-                    onSubmit(context, path);
-                  });
-                }
-              },
-            ),
+            sendButtonSection(),
           ],
         ),
       ),
