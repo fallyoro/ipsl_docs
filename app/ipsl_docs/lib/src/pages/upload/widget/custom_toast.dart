@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
-// 'Document envoyé avec succès',
-// text: 'Merci pour votre contribution !',
 void customToast({
-  required BuildContext context,
   required String title,
   required String description,
   required Color primaryColor,
@@ -12,7 +9,6 @@ void customToast({
   required ToastificationType type,
 }) {
   toastification.show(
-    context: context, // optional if you use ToastificationWrapper
     type: type,
     style: ToastificationStyle.fillColored,
     autoCloseDuration: const Duration(seconds: 5),
@@ -34,9 +30,9 @@ void customToast({
     },
     icon: icon,
     showIcon: true,
-    primaryColor: primaryColor,
-    backgroundColor: Colors.white,
-    foregroundColor: Colors.black,
+    // primaryColor: primaryColor,
+    // backgroundColor: Colors.white,
+    // foregroundColor: Colors.black,
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     borderRadius: BorderRadius.circular(12),

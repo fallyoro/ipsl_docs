@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -6,12 +6,9 @@ import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 import '../../core/constant.dart';
-import '../../core/utils.dart';
-import '../../models/document.dart';
 import '../../services/document.dart';
 import '../../view_models/document.dart';
 import '../../view_models/user.dart';
-import '../../widget_tree.dart';
 import '../home/widget/preview_widget.dart';
 import '../home/widget/send_button.dart';
 import '../home/widget/year_formater.dart';
@@ -40,7 +37,7 @@ class _UploadConcoursDocumentPageState
   ];
   Future<void> pickFile() async {
     await documentViewModel.pickFile();
-    filenameController.text = documentViewModel.pickedFile!.name;
+    filenameController.text = documentViewModel.pickedFileNotifier.value!.name;
     setState(() {});
   }
 
@@ -94,31 +91,20 @@ class _UploadConcoursDocumentPageState
                     decoration: const InputDecoration(
                       labelText: 'Nom du fichier',
                     ),
-                    validator:
-                        (value) =>
-                            value == null || value.isEmpty
-                                ? 'Champ requis'
-                                : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Champ requis' : null,
                   ),
                 ],
               ),
             ),
-            documentViewModel.pickedFile != null
-                ? previewWidget(
-                  localPath: documentViewModel.pickedFile!.path!,
-                  context: context,
-                )
-                : PickFileButtun(onpress: pickFile),
-
-            buildSendButton(context, () async {
-              final path = join(
-                "Concours",
-                yearController.text,
-                filenameController.text,
-              );
-              await onSubmit(context, path);
-              // documentViewModel.loadDocuments();
-            }),
+            ValueListenableBuilder<PlatformFile?>(
+              valueListenable: documentViewModel.pickedFileNotifier,
+              builder: (context, file, _) {
+                return file != null
+                    ? previewWidget(localPath: file.path, context: context)
+                    : PickFileButtun(onpress: pickFile);
+              },
+            ),
 
             ValueListenableBuilder<double>(
               valueListenable: documentViewModel.progress,

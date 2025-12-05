@@ -1,4 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -267,12 +268,14 @@ class _UploadSpecifiqueDocumentPageState
 
               const SizedBox(height: 16),
 
-              documentViewModel.pickedFile != null
-                  ? previewWidget(
-                    localPath: documentViewModel.pickedFile!.path!,
-                    context: context,
-                  )
-                  : PickFileButtun(onpress: pickFile),
+              ValueListenableBuilder<PlatformFile?>(
+                valueListenable: documentViewModel.pickedFileNotifier,
+                builder: (context, file, _) {
+                  return file != null
+                      ? previewWidget(localPath: file.path, context: context)
+                      : PickFileButtun(onpress: pickFile);
+                },
+              ),
 
               const SizedBox(height: 25),
 
@@ -313,7 +316,7 @@ class _UploadSpecifiqueDocumentPageState
 
   Future<void> pickFile() async {
     await documentViewModel.pickFile();
-    filenameController.text = documentViewModel.pickedFile!.name;
+    filenameController.text = documentViewModel.pickedFileNotifier.value!.name;
     setState(() {});
   }
 }

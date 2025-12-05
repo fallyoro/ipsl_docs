@@ -1,7 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ipsl_docs/src/core/failure.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'dart:io';
 import 'package:mime/mime.dart';
@@ -18,7 +17,8 @@ class DocumentViewModel {
   final ValueNotifier<DirectoryNode?> currentDirectory = ValueNotifier(null);
   final ValueNotifier<bool> isSending = ValueNotifier(false);
   final ValueNotifier<String?> errorNotifier = ValueNotifier(null);
-  PlatformFile? pickedFile;
+  final ValueNotifier<bool?> success = ValueNotifier(null);
+  final ValueNotifier<PlatformFile?> pickedFileNotifier = ValueNotifier(null);
   final ValueNotifier<double> progress = ValueNotifier(0);
   final ValueNotifier<DirectoryNode?> root = ValueNotifier(null);
   final List<DirectoryNode> _stack = [];
@@ -130,8 +130,8 @@ class DocumentViewModel {
 
   //sync documents from remote server using the variable updatedAt(each document has its own value) in the document model
   Future<void> syncDocumentFromServer() async {
-    final List<Map<String, dynamic>> docFetch =
-        await service.fetchRawDocuments();
+    final List<Map<String, dynamic>> docFetch = await service
+        .fetchRawDocuments();
     logInfo(docFetch.toString());
     for (Map<String, dynamic> doc in docFetch) {
       if (doc['is_deleted'] == true) {
@@ -165,7 +165,8 @@ class DocumentViewModel {
 
   void reset() {
     progress.value = 0;
-    pickedFile = null;
+    isSending.value = false;
+    pickedFileNotifier.value = null;
   }
 
   Future<void> validateDocument(Document doc) async {
@@ -181,7 +182,7 @@ class DocumentViewModel {
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.single;
 
-      pickedFile = file;
+      pickedFileNotifier.value = file;
     }
   }
 
@@ -191,16 +192,16 @@ class DocumentViewModel {
     required String path,
   }) async {
     isSending.value = true;
-    if (!await isConnectedToInternet()) {
-      isSending.value = false;
-      if (!context.mounted) return;
-      showNoConnectionMessage(context);
-      return;
-    }
+    // if (!await isConnectedToInternet()) {
+    //   isSending.value = false;
+    //   if (!context.mounted) return;
+    //   showNoConnectionMessage(context);
+    //   return;
+    // }
 
     UserViewModel userViewModel = GetIt.instance<UserViewModel>();
     final result = await service.uploadDocument(
-      file: File(pickedFile!.path!),
+      file: File(pickedFileNotifier.value!.path!),
       path: path,
       userId: userViewModel.userNotifier.value!.id,
       onProgress: (received, total) {
@@ -210,8 +211,11 @@ class DocumentViewModel {
     result.fold(
       (failure) {
         errorNotifier.value = failure.message;
+        reset();
       },
       (docData) async {
+        success.value = true;
+        reset();
         final doc = Document(
           id: docData['id'],
           idUploader: userViewModel.userNotifier.value!.id,
@@ -222,9 +226,8 @@ class DocumentViewModel {
 
         final int numberContribution = docData['number_contribution'];
         await userViewModel.updateNumberContribution(numberContribution);
+        // confirmSending();
         // await loadDocuments();
-        isSending.value = false;
-        reset();
       },
     );
   }
