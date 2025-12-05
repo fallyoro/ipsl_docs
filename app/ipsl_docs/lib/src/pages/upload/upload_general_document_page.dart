@@ -25,7 +25,6 @@ class UploadGeneralDocumentPage extends StatefulWidget {
 class _UploadGeneralDocumentPageState
     extends BaseUploadPage<UploadGeneralDocumentPage> {
   // final _formKeySubmit = GlobalKey<FormState>();
-  late DocumentViewModel documentViewModel;
   final userViewModel = GetIt.I<UserViewModel>();
   final documentServive = GetIt.I<DocumentService>();
 
@@ -33,31 +32,6 @@ class _UploadGeneralDocumentPageState
   void dispose() {
     documentViewModel.pickedFileNotifier.value = null;
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    documentViewModel = GetIt.I<DocumentViewModel>();
-    documentViewModel.errorNotifier.addListener(() {
-      final message = documentViewModel.errorNotifier.value;
-      if (message != null) {
-        customToast(
-          title: "Erreur",
-          description: message,
-          primaryColor: Colors.red,
-          icon: Icon(Icons.error),
-          type: ToastificationType.error,
-        );
-        documentViewModel.errorNotifier.value = null;
-      }
-    });
-    documentViewModel.success.addListener(() {
-      if (documentViewModel.success.value == true) {
-        confirmSending();
-        documentViewModel.success.value = null;
-      }
-    });
   }
 
   Future<void> pickFile() async {

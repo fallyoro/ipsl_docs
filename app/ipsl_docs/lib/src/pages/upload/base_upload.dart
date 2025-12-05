@@ -7,11 +7,37 @@ import 'package:toastification/toastification.dart';
 abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
   final filenameController = TextEditingController();
   final formKeySubmit = GlobalKey<FormState>();
+  DocumentViewModel documentViewModel = GetIt.I<DocumentViewModel>();
 
   @override
   void dispose() {
     filenameController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    documentViewModel = GetIt.I<DocumentViewModel>();
+    documentViewModel.errorNotifier.addListener(() {
+      final message = documentViewModel.errorNotifier.value;
+      if (message != null) {
+        customToast(
+          title: "Erreur",
+          description: message,
+          primaryColor: Colors.red,
+          icon: Icon(Icons.error),
+          type: ToastificationType.error,
+        );
+        documentViewModel.errorNotifier.value = null;
+      }
+    });
+    documentViewModel.success.addListener(() {
+      if (documentViewModel.success.value == true) {
+        confirmSending();
+        documentViewModel.success.value = null;
+      }
+    });
   }
 
   Future<void> onSubmit(BuildContext context, String path) async {

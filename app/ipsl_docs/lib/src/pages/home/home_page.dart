@@ -12,6 +12,7 @@ import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../services/document.dart';
 
 class HomePage extends StatefulWidget {
@@ -186,7 +187,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //TODO put this in the viewmodel
+  Future<void> openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  /*
+  TODO put this in the viewmodel
+  Please if you see this put it in the viewmodel and rewrite it with dartz. I'm tired
+*/
   Future<void> _fetchDocuments() async {
     logInfo("Fetching documents...");
     final bool isConnected = await isConnectedToInternet();
@@ -201,11 +210,4 @@ class _HomePageState extends State<HomePage> {
 
     await documentViewModel.loadDocuments();
   }
-
-  Future<void> openUrl(String url) async {
-    final Uri uri = Uri.parse(url);
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-  Future<void> validateDocument(Document doc) async {}
 }

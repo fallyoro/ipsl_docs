@@ -24,7 +24,6 @@ class UploadConcoursDocumentPage extends StatefulWidget {
 class _UploadConcoursDocumentPageState
     extends BaseUploadPage<UploadConcoursDocumentPage> {
   // final _formKeySubmit = GlobalKey<FormState>();
-  final documentViewModel = GetIt.I<DocumentViewModel>();
   final yearMaskFormatter = YearInputFormatter();
   final userViewModel = GetIt.I<UserViewModel>();
   final yearController = TextEditingController();
@@ -92,8 +91,11 @@ class _UploadConcoursDocumentPageState
                     decoration: const InputDecoration(
                       labelText: 'Nom du fichier',
                     ),
-                    validator: (value) =>
-                        value == null || value.isEmpty ? 'Champ requis' : null,
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Champ requis'
+                                : null,
                   ),
                 ],
               ),
