@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/widget/custom_toast.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
-import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:toastification/toastification.dart';
 
 abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
@@ -11,8 +10,8 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
 
   @override
   void dispose() {
-    super.dispose();
     filenameController.dispose();
+    super.dispose();
   }
 
   Future<void> onSubmit(BuildContext context, String path) async {

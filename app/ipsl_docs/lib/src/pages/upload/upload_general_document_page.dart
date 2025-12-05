@@ -30,6 +30,12 @@ class _UploadGeneralDocumentPageState
   final documentServive = GetIt.I<DocumentService>();
 
   @override
+  void dispose() {
+    documentViewModel.pickedFileNotifier.value = null;
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     documentViewModel = GetIt.I<DocumentViewModel>();
@@ -72,9 +78,8 @@ class _UploadGeneralDocumentPageState
             child: TextFormField(
               controller: filenameController,
               decoration: const InputDecoration(labelText: 'Nom du fichier'),
-              validator:
-                  (value) =>
-                      value == null || value.isEmpty ? 'Champ requis' : null,
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Champ requis' : null,
             ),
           ),
 

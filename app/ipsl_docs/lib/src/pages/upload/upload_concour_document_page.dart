@@ -43,8 +43,9 @@ class _UploadConcoursDocumentPageState
 
   @override
   void dispose() {
-    super.dispose();
     yearController.dispose();
+    documentViewModel.pickedFileNotifier.value = null;
+    super.dispose();
   }
 
   @override
