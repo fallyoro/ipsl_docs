@@ -130,8 +130,8 @@ class DocumentViewModel {
 
   //sync documents from remote server using the variable updatedAt(each document has its own value) in the document model
   Future<void> syncDocumentFromServer() async {
-    final List<Map<String, dynamic>> docFetch = await service
-        .fetchRawDocuments();
+    final List<Map<String, dynamic>> docFetch =
+        await service.fetchRawDocuments();
     logInfo(docFetch.toString());
     for (Map<String, dynamic> doc in docFetch) {
       if (doc['is_deleted'] == true) {
@@ -169,18 +169,38 @@ class DocumentViewModel {
     pickedFileNotifier.value = null;
   }
 
-  Future<void> validateDocument(Document doc) async {
-    final String path = await doc.localPath;
+  Future<String?> validateDocument(String path) async {
+    /* This function check if the document submited is valid
+if it's valid it return null else it return a String
+also this function affect a value to errorNotifier
+wtf ma mene bine commentaire
+*/
+    final file = File(path);
     final mimtype = lookupMimeType(path);
-    if (mimtype == "application/pdf" || mimtype!.startsWith("image")) {
-      return;
+    if (mimtype != "application/pdf" && !mimtype!.startsWith("image")) {
+      final String error =
+          "Format non pris en charge.\nSeuls les fichiers PDF et les images sont autorisés.";
+      return error;
     }
+    final bytes = await file.length();
+    final mb = bytes / (1024 * 1024);
+    if (mb > 50) {
+      final String error =
+          "Fichier trop volumineux.\nLa taille maximale autorisée est de 50 Mo.";
+      return error;
+    }
+    return null;
   }
 
   Future<void> pickFile() async {
     final result = await FilePicker.platform.pickFiles();
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.single;
+      final String? error = await validateDocument(file.path!);
+      if (error != null) {
+        errorNotifier.value = error;
+        return;
+      }
 
       pickedFileNotifier.value = file;
     }
@@ -191,12 +211,6 @@ class DocumentViewModel {
     required String path,
   }) async {
     isSending.value = true;
-    // if (!await isConnectedToInternet()) {
-    //   isSending.value = false;
-    //   if (!context.mounted) return;
-    //   showNoConnectionMessage(context);
-    //   return;
-    // }
 
     UserViewModel userViewModel = GetIt.instance<UserViewModel>();
     final result = await service.uploadDocument(
