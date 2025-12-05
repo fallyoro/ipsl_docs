@@ -16,6 +16,7 @@ final options = BaseOptions(
   baseUrl: 'http://$url:$port/document',
   connectTimeout: Duration(seconds: 3),
   receiveTimeout: Duration(minutes: 3),
+  sendTimeout: Duration(minutes: 5),
 );
 final String port = dotenv.env["PORT"] as String;
 final String url = dotenv.env['API_BASE_URL'] as String;
@@ -106,8 +107,6 @@ class DocumentService {
     required String userId,
     void Function(int, int)? onProgress,
   }) async {
-    final dio = Dio();
-
     final formData = FormData.fromMap({
       'path': path,
       'user_id': userId,
