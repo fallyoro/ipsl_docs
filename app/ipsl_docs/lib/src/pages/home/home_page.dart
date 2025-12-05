@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/core/theme_controller.dart';
 import 'package:ipsl_docs/src/core/utils.dart';
-import 'package:ipsl_docs/src/models/document.dart';
 import 'package:ipsl_docs/src/pages/home/widget/custom_curve.dart';
 import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
