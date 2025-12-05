@@ -186,7 +186,6 @@ class DocumentViewModel {
     }
   }
 
-  // Future<void> submit(BuildContext context) async {
   Future<void> submitDocument({
     required BuildContext context,
     required String path,

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
@@ -71,7 +72,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              title: Text("Changer le theme"),
+              title: Text(
+                "Changer le theme",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               leading:
                   isDark
                       ? Icon(Icons.light_mode, color: Colors.white)
@@ -93,7 +97,17 @@ class _HomePageState extends State<HomePage> {
               ),
               onTap: () async {
                 Navigator.pop(context);
-                await openPaypal();
+                await openUrl("https://www.paypal.com/paypalme/fallyorro");
+              },
+            ),
+            ListTile(
+              leading: FaIcon(FontAwesomeIcons.github, size: 32),
+              title: Text(
+                "Code source",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () async {
+                await openUrl("https://github.com/fallyoro/ipsl_docs");
               },
             ),
           ],
@@ -188,8 +202,8 @@ class _HomePageState extends State<HomePage> {
     await documentViewModel.loadDocuments();
   }
 
-  Future<void> openPaypal() async {
-    final Uri uri = Uri.parse("https://www.paypal.com/paypalme/fallyorro");
+  Future<void> openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
