@@ -163,6 +163,7 @@ class _HomeState extends State<Profile> {
                             Navigator.push(
                               context,
                               PageTransition(
+                                duration: Duration(milliseconds: 500),
                                 type: PageTransitionType.bottomToTop,
                                 child: EditProfilePage(
                                   userName:

@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               title: Text(
-                "Changer le theme",
+                "Theme",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               leading:

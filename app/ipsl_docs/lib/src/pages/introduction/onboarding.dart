@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/constant.dart';
-import 'package:ipsl_docs/src/pages/authentification/sign_up.dart';
+import 'package:ipsl_docs/src/pages/profile/edit_profile_page.dart';
+import 'package:ipsl_docs/src/view_models/document.dart';
+import 'package:ipsl_docs/src/view_models/user.dart';
+import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+import '../authentification/widget/introduction_component.dart';
+import '../authentification/widget/login_bottomsheet.dart';
+import '../authentification/widget/overlay_message.dart';
 
 class IntroductionScreen extends StatefulWidget {
   const IntroductionScreen({super.key});
@@ -15,6 +21,9 @@ class IntroductionScreen extends StatefulWidget {
 class _IntroductionScreenState extends State<IntroductionScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
+  late UserViewModel userViewModel;
+  late VoidCallback listener;
+  late DocumentViewModel documentViewModel;
   final List<Widget> _pages = [
     IntroductionComponent(
       title: "Bienvenue sur IPSL Docs",
@@ -50,14 +59,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   }
 
   void _onFinish() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return SignUpPage();
-        },
-      ),
-    );
+    showLoginBottomSheet(context);
   }
 
   void _onNext() {
@@ -69,6 +71,54 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     } else {
       _onFinish();
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    userViewModel = GetIt.I<UserViewModel>();
+    documentViewModel = GetIt.I<DocumentViewModel>();
+    // Listen for error messages. I prefer this way to show SnackBars via the initState
+    // rather than using a ValueListenableBuilder in the build method to avoid rebuilding
+    userViewModel.errorNotifier.addListener(() {
+      final message = userViewModel.errorNotifier.value;
+      if (message != null) {
+        showTopOverlayMessage(context, message);
+        userViewModel.errorNotifier.value = null;
+      }
+    });
+    userViewModel.authState.addListener(() {
+      if (userViewModel.authState.value == ViewState.success) {
+        _navigateToEditProfile();
+      }
+    });
+  }
+
+  void _navigateToEditProfile() {
+    final user = userViewModel.userNotifier.value!;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => EditProfilePage(
+              userName: user.userName,
+              userClass: user.classe,
+              onSucces: () {
+                _navigateToWidgetTree(); // Navigue vers ton widgetTree après succès
+              },
+            ),
+      ),
+    );
+  }
+
+  // Fonctions privées pour la navigation
+  void _navigateToWidgetTree() {
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => WidgetTree()),
+      (route) => false,
+    );
   }
 
   @override
@@ -144,51 +194,6 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class IntroductionComponent extends StatelessWidget {
-  final String title;
-  final String description;
-  final String imagePath;
-
-  const IntroductionComponent({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.imagePath,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 30,
-        children: [
-          SvgPicture.asset(imagePath, height: 300),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          Text(
-            description,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
