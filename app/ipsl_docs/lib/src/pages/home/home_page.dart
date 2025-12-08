@@ -1,13 +1,17 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ipsl_docs/src/core/constant.dart';
+import 'package:ipsl_docs/src/core/theme_controller.dart';
+import 'package:ipsl_docs/src/core/utils.dart';
 import 'package:ipsl_docs/src/pages/home/widget/custom_curve.dart';
 import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
-import 'package:flutter/material.dart';
-import 'package:ipsl_docs/src/core/constant.dart';
-import 'package:ipsl_docs/src/core/utils.dart';
-import 'package:ipsl_docs/src/core/theme_controller.dart';
-import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
+import 'package:ipsl_docs/src/view_models/user.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../services/document.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,22 +27,6 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = false;
   DocumentService service = DocumentService();
 
-  //TODO put this in the viewmodel
-  Future<void> _fetchDocuments() async {
-    logInfo("Fetching documents...");
-    final bool isConnected = await isConnectedToInternet();
-    try {
-      if (isConnected) {
-        await documentViewModel.syncDocumentFromServer();
-      }
-    } catch (e) {
-      String errorMessage = 'Erreur lors du chargement : $e';
-      logInfo(errorMessage);
-    }
-
-    await documentViewModel.loadDocuments();
-  }
-
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -49,18 +37,81 @@ class _HomePageState extends State<HomePage> {
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.bold,
+            fontSize: 26,
           ),
         ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: AppColors.primaryColor,
-        actions: [
-          IconButton(
-            onPressed: () => ThemeController.toggleTheme(),
-            icon:
-                isDark
-                    ? const Icon(Icons.light_mode, color: Colors.white)
-                    : const Icon(Icons.dark_mode, color: Colors.white),
-          ),
-        ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: AppColors.primaryColor),
+              currentAccountPicture:
+                  userViewModel.userNotifier.value?.pictureUrl != null
+                      ? CachedNetworkImage(
+                        height: 100,
+                        imageUrl: userViewModel.userNotifier.value!.pictureUrl!
+                            .replaceAll('s96-c', 's400-c'),
+                        imageBuilder: (context, imageProvider) {
+                          return CircleAvatar(
+                            radius: 50,
+                            backgroundImage: imageProvider,
+                          );
+                        },
+                      )
+                      : SizedBox.shrink(),
+              accountName: Text(
+                userViewModel.userNotifier.value!.userName,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              accountEmail: Text(
+                userViewModel.userNotifier.value!.email,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "Theme",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              leading:
+                  isDark
+                      ? Icon(Icons.light_mode, color: Colors.white)
+                      : const Icon(Icons.dark_mode),
+              onTap: () {
+                ThemeController.toggleTheme();
+              },
+            ),
+            ListTile(
+              leading: Image.asset(
+                "assets/images/paypal.png",
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
+              ),
+              title: Text(
+                "Faire un don PayPal",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () async {
+                Navigator.pop(context);
+                await openUrl("https://www.paypal.com/paypalme/fallyorro");
+              },
+            ),
+            ListTile(
+              leading: FaIcon(FontAwesomeIcons.github, size: 32),
+              title: Text(
+                "Code source",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () async {
+                await openUrl("https://github.com/fallyoro/ipsl_docs");
+              },
+            ),
+          ],
+        ),
       ),
       body: RefreshIndicator(
         color: AppColors.primaryColor,
@@ -125,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                     return Center(child: Text("Vous n'avez aucun document"));
                   }
 
-                  return DirectoryGrid(subDirectories: root!.subDirectories);
+                  return DirectoryGrid(subDirectories: root.subDirectories);
                 },
               ),
             ],
@@ -133,5 +184,29 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Future<void> openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  /*
+  TODO put this in the viewmodel
+  Please if you see this put it in the viewmodel and rewrite it with dartz. I'm tired
+*/
+  Future<void> _fetchDocuments() async {
+    logInfo("Fetching documents...");
+    final bool isConnected = await isConnectedToInternet();
+    try {
+      if (isConnected) {
+        await documentViewModel.syncDocumentFromServer();
+      }
+    } catch (e) {
+      String errorMessage = 'Erreur lors du chargement : $e';
+      logInfo(errorMessage);
+    }
+
+    await documentViewModel.loadDocuments();
   }
 }

@@ -1,18 +1,13 @@
-import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
-import 'package:ipsl_docs/src/pages/upload/upload_specifique_document_page.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 import '../../core/constant.dart';
-import '../../core/utils.dart';
-import '../../models/document.dart';
 import '../../services/document.dart';
-import '../../view_models/document.dart';
 import '../../view_models/user.dart';
-import '../../widget_tree.dart';
 import '../home/widget/preview_widget.dart';
 import '../home/widget/send_button.dart';
 import '../home/widget/year_formater.dart';
@@ -27,9 +22,7 @@ class UploadConcoursDocumentPage extends StatefulWidget {
 
 class _UploadConcoursDocumentPageState
     extends BaseUploadPage<UploadConcoursDocumentPage> {
-  final _formKeySubmit = GlobalKey<FormState>();
-  bool isSending = false;
-  final documentViewModel = GetIt.I<DocumentViewModel>();
+  // final _formKeySubmit = GlobalKey<FormState>();
   final yearMaskFormatter = YearInputFormatter();
   final userViewModel = GetIt.I<UserViewModel>();
   final yearController = TextEditingController();
@@ -41,58 +34,11 @@ class _UploadConcoursDocumentPageState
     "Français",
   ];
 
-  Future<void> _submit(BuildContext context) async {
-    if (!_formKeySubmit.currentState!.validate() || pickedFile == null) return;
-    FocusScope.of(context).unfocus();
-
-    setState(() => isSending = true);
-    if (!await isConnectedToInternet()) {
-      setState(() => isSending = false);
-      if (!context.mounted) return;
-      showNoConnectionMessage(context);
-      return;
-    }
-
-    final path = join("Concours", yearController.text, filenameController.text);
-    final responseUpload = await documentServive.uploadDocument(
-      file: File(pickedFile!.path!),
-      path: path,
-      userId: userViewModel.userNotifier.value!.id,
-      onProgress: (received, total) {
-        documentViewModel.updateProgress(received, total);
-      },
-    );
-
-    DateTime updatedAt = DateTime.parse(
-      responseUpload?['updated_at'] as String,
-    );
-    final doc = Document(
-      id: responseUpload!['id'],
-      idUploader: userViewModel.userNotifier.value!.id,
-      path: path,
-      updatedAt: updatedAt,
-    );
-    await documentViewModel.addDocument(doc);
-
-    final int numberContribution = responseUpload['number_contribution'];
-    await userViewModel.updateNumberContribution(numberContribution);
-    if (!context.mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => WidgetTree()),
-      (route) => false,
-    );
-
-    if (!context.mounted) return;
-    confirmSending(context);
-    await documentViewModel.loadDocuments();
-    if (!context.mounted) return;
-  }
-
   @override
   void dispose() {
-    super.dispose();
     yearController.dispose();
+    documentViewModel.pickedFileNotifier.value = null;
+    super.dispose();
   }
 
   @override
@@ -104,7 +50,7 @@ class _UploadConcoursDocumentPageState
           spacing: 30,
           children: [
             Form(
-              key: _formKeySubmit,
+              key: formKeySubmit,
               child: Column(
                 spacing: 30,
                 children: [
@@ -145,22 +91,9 @@ class _UploadConcoursDocumentPageState
                 ],
               ),
             ),
-            pickedFile != null
-                ? previewWidget(localPath: pickedFile!.path!, context: context)
-                : PickFileButtun(onpress: pickFile),
+            filePreviewSection(),
 
-            buildSendButton(context, () => _submit(context)),
-
-            ValueListenableBuilder<double>(
-              valueListenable: documentViewModel.progress,
-              builder: (context, progress, child) {
-                if (isSending) {
-                  return customLinearProgressSending(progress);
-                } else {
-                  return const SizedBox.shrink();
-                }
-              },
-            ),
+            sendButtonSection(),
           ],
         ),
       ),

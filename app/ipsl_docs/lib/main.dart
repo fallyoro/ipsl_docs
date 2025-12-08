@@ -13,6 +13,7 @@ import 'package:ipsl_docs/src/pages/introduction/onboarding.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:toastification/toastification.dart';
 import 'src/core/firebase_options.dart';
 
 Future<void> main() async {
@@ -38,7 +39,7 @@ Future<void> main() async {
   }
   ThemeController.loadTheme();
 
-  runApp(const MyApp());
+  runApp(ToastificationWrapper(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

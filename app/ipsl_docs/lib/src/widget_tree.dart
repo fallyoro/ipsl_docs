@@ -50,8 +50,9 @@ class _WidgetTreeState extends State<WidgetTree> {
           bottomNavigationBar: SalomonBottomBar(
             selectedItemColor: AppColors.primaryColor,
             unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
-            backgroundColor:
-                isDark ? AppColors.darkSecondarySystemBackground : Colors.white,
+            backgroundColor: isDark
+                ? AppColors.darkSecondarySystemBackground
+                : Colors.white,
             currentIndex: _selectedPage,
             onTap: _onItemSelected,
             items: [

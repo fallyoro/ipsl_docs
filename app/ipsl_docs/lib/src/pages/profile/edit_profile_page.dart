@@ -56,9 +56,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   TextFormField(
                     controller: userNameController,
-                    validator: (value) => value == null || value.isEmpty
-                        ? "Veuillez entrer votre nom d'utilisateur"
-                        : null,
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? "Veuillez entrer votre nom d'utilisateur"
+                                : null,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -66,9 +68,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
 
                       filled: true,
-                      fillColor: isDark
-                          ? AppColors.darkSystemBackground
-                          : AppColors.lightSecondarySystemBackground,
+                      fillColor:
+                          isDark
+                              ? AppColors.darkSystemBackground
+                              : AppColors.lightSecondarySystemBackground,
                       labelText: "Nom d'utillisateur",
                     ),
                   ),
@@ -91,14 +94,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               selectedClasse = value!;
                             });
                           },
-                          dropdownMenuEntries: classes
-                              .map(
-                                (c) => DropdownMenuEntry<String>(
-                                  value: c,
-                                  label: c,
-                                ),
-                              )
-                              .toList(),
+                          dropdownMenuEntries:
+                              classes
+                                  .map(
+                                    (c) => DropdownMenuEntry<String>(
+                                      value: c,
+                                      label: c,
+                                    ),
+                                  )
+                                  .toList(),
                         ),
                       ],
                     ),
@@ -115,28 +119,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 45),
                   ),
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          await editProfile(context);
-                        },
+                  onPressed:
+                      isLoading
+                          ? null
+                          : () async {
+                            await editProfile(context);
+                          },
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    transitionBuilder: (child, anim) =>
-                        FadeTransition(opacity: anim, child: child),
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 22,
-                            width: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+                    transitionBuilder:
+                        (child, anim) =>
+                            FadeTransition(opacity: anim, child: child),
+                    child:
+                        isLoading
+                            ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                            : const Text(
+                              "Modifier",
+                              style: TextStyle(color: Colors.white),
                             ),
-                          )
-                        : const Text(
-                            "Modifier",
-                            style: TextStyle(color: Colors.white),
-                          ),
                   ),
                 );
               },
