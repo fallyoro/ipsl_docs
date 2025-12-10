@@ -2,7 +2,7 @@ from datetime import timedelta
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.responses import JSONResponse
 from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
+from google.auth.transport import requests
 from src.schemas.notification_token import NotificationToken
 from src.schemas.user import (
     GoogleLoginRequest,
@@ -17,7 +17,6 @@ from src.database.database import create_session
 from src.utils import create_acess_token, decode_token, passwd_context, verify_password
 from uuid import UUID
 from src.core.config import settings
-import certifi
 
 user_router = APIRouter()
 user_service = UserService()
@@ -112,12 +111,10 @@ async def login_user(
 async def login_with_google(
     login_data: GoogleLoginRequest, session=Depends(create_session)
 ):
-    request = google_requests.Request()
-    request.session.verify = certifi.where()
     CLIENT_ID = settings.CLIENT_ID
     idinfo = id_token.verify_oauth2_token(
         login_data.id_token,
-        request,
+        requests.Request(),
         audience=CLIENT_ID,
         clock_skew_in_seconds=3,
     )
