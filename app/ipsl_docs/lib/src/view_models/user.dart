@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ipsl_docs/src/core/notification_service.dart';
+import 'package:ipsl_docs/src/view_models/document.dart';
 
 import '../core/utils.dart';
 import '../database/database.dart';
@@ -111,14 +113,10 @@ class UserViewModel {
           logInfo("User data ${userData.toString()}");
           User newUser = User.fromJson(userData);
           await addUser(newUser);
-          // await _userService.updateFcmToken(
-          //   newUser.email,
-          //   NotificationService.token!,
-          // );
+          DocumentViewModel documentViewModel = GetIt.I<DocumentViewModel>();
+          await documentViewModel.syncDocumentFromServer();
+          await documentViewModel.loadDocuments();
           authState.value = ViewState.success;
-          // Future.microtask(() {
-          //   authState.value = ViewState.success;
-          // });
         },
       );
     } on GoogleSignInException catch (e) {
