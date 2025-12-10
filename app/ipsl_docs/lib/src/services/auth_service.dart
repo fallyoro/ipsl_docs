@@ -49,45 +49,6 @@ class UserService {
     }
   }
 
-  Future<Either<NetworkFailure, Map<String, dynamic>>> login({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final response = await dio.post(
-        "/login",
-        data: jsonEncode({
-          'email': email,
-          'password': password,
-          'fcm_token': NotificationService.token,
-        }),
-      );
-
-      /*
-      await tokens.saveTokens(
-        response.data['access_token'],
-        response.data['refresh_token'],
-      );
-
-      */
-
-      logInfo("Login data : ${response.data.toString()}");
-
-      return Right({
-        'id': response.data['user']['id'],
-        'user_name': response.data['user']['user_name'],
-        'number_contribution': response.data['user']['number_contribution'],
-        'classe': response.data['user']['classe'],
-        'email': response.data['user']['email'],
-      });
-    } on DioException catch (e) {
-      final error = NetworkException.fromDioError(e);
-      return Left(NetworkFailure(error.message));
-    } catch (e) {
-      return Left(NetworkFailure("Erreur réseau ou inconnue : $e"));
-    }
-  }
-
   Future<Either<NetworkFailure, Map<String, dynamic>>> loginWithGoogle(
     String googleIdToken,
   ) async {
@@ -112,40 +73,6 @@ class UserService {
       return Left(NetworkFailure(error));
     } catch (e) {
       return Left(NetworkFailure("Erreur réseau ou inconnue : $e"));
-    }
-  }
-
-  Future<Either<NetworkFailure, Map<String, dynamic>>> signUp({
-    required String email,
-    required String userName,
-    required String password,
-    required String classe,
-  }) async {
-    try {
-      final resp = await dio.post(
-        "/sign-up",
-        data: {
-          'email': email,
-          'user_name': userName,
-          'password': password,
-          'classe': classe,
-          'fcm_token': NotificationService.token,
-        },
-      );
-      logInfo("Sinup data : ${resp.data.toString()}");
-
-      return Right({
-        'id': resp.data['id'],
-        'user_name': resp.data['user_name'],
-        'number_contribution': resp.data['number_contribution'],
-        'classe': resp.data['classe'],
-      });
-    } on DioException catch (e) {
-      final error = NetworkException.fromDioError(e);
-      return Left(NetworkFailure(error.message));
-    } catch (e) {
-      logError("Erreur inconnue : $e");
-      return Left(NetworkFailure('Erreur inconnue'));
     }
   }
 
