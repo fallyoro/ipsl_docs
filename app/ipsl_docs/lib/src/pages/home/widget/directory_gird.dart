@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ipsl_docs/src/core/constant.dart';
 import 'package:ipsl_docs/src/pages/home/document_list_page.dart';
 import 'package:ipsl_docs/src/pages/home/folders_page.dart';
 
@@ -30,17 +31,18 @@ class _DirectoryGridState extends State<DirectoryGrid> {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 5),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 0,
-        mainAxisSpacing: 24,
+        mainAxisSpacing: 20,
         childAspectRatio: 1,
       ),
       itemCount: widget.subDirectories.length,
       itemBuilder: (context, index) {
         final dirNode = widget.subDirectories[index];
-        return GestureDetector(
+        return CardFolder(
+          folder: dirNode.name,
           onTap: () {
             documentViewModel.openDirectory(dirNode);
             Navigator.push(
@@ -54,7 +56,6 @@ class _DirectoryGridState extends State<DirectoryGrid> {
               ),
             );
           },
-          child: CardFolder(folder: dirNode.name),
         );
       },
     );

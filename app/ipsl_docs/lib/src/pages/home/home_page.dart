@@ -14,18 +14,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/document.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  UserViewModel userViewModel = GetIt.instance<UserViewModel>();
-  DocumentViewModel documentViewModel = GetIt.instance<DocumentViewModel>();
-  bool isLoading = false;
-  DocumentService service = DocumentService();
+class HomePage extends StatelessWidget {
+  final UserViewModel userViewModel = GetIt.instance<UserViewModel>();
+  final DocumentViewModel documentViewModel =
+      GetIt.instance<DocumentViewModel>();
+  final DocumentService service = DocumentService();
+  HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +163,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
+
               ValueListenableBuilder(
                 valueListenable: documentViewModel.root,
                 builder: (context, root, child) {
@@ -176,7 +171,12 @@ class _HomePageState extends State<HomePage> {
                     return Center(child: Text("Vous n'avez aucun document"));
                   }
 
-                  return DirectoryGrid(subDirectories: root.subDirectories);
+                  // return DirectoryGrid(subDirectories: root.subDirectories);
+                  return Material(
+                    color: Colors.transparent,
+
+                    child: DirectoryGrid(subDirectories: root.subDirectories),
+                  );
                 },
               ),
             ],
