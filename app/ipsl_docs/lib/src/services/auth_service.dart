@@ -9,19 +9,18 @@ import 'package:ipsl_docs/src/core/notification_service.dart';
 import '../core/network_exception.dart';
 import '../core/utils.dart';
 
-final String port = dotenv.env["PORT"] as String;
 /* TODO refactoriser pour eviter la duplication de code entre AuthService et UserService
 IL yas une duplication entre AuthService et UserService.
  La raison est que plus tard je compte passer a la programmation fonctionnelle avec
 le package dartz. Donc je prefere garder les deux services separes pour l'instant.
 */
-final String url = dotenv.env['API_BASE_URL'] as String;
+final String baseUrl = dotenv.env['API_BASE_URL'] as String;
 
 class UserService {
   late final Dio dio;
   UserService() {
     BaseOptions options = BaseOptions(
-      baseUrl: 'http://$url:$port/auth',
+      baseUrl: '$baseUrl/auth',
       connectTimeout: Duration(seconds: 100),
       receiveTimeout: Duration(minutes: 1),
     );

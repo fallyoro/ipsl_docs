@@ -13,13 +13,12 @@ import '../models/document.dart';
 
 final dio = Dio(options);
 final options = BaseOptions(
-  baseUrl: 'http://$url:$port/document',
+  baseUrl: '$baseUrl/document',
   connectTimeout: Duration(seconds: 3),
   receiveTimeout: Duration(minutes: 3),
   sendTimeout: Duration(minutes: 5),
 );
-final String port = dotenv.env["PORT"] as String;
-final String url = dotenv.env['API_BASE_URL'] as String;
+final String baseUrl = dotenv.env['API_BASE_URL'] as String;
 
 class DocumentService {
   final CancelToken _cancelToken = CancelToken();
@@ -118,7 +117,7 @@ class DocumentService {
 
     try {
       final response = await dio.post(
-        'http://$url:$port/document/upload',
+        '$baseUrl/document/upload',
         data: formData,
         onSendProgress: onProgress,
       );
