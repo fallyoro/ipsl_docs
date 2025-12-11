@@ -16,8 +16,8 @@ class CardFolder extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        // highlightColor: AppColors.primaryColor,
-        splashColor: AppColors.primaryColor,
+        highlightColor: AppColors.primaryColor,
+        // splashColor: AppColors.primaryColor,
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(4),
