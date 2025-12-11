@@ -35,9 +35,9 @@ android {
         coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5") // ✅ Kotlin DSL utilise des parenthèses
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    // kotlinOptions {
+    //     jvmTarget = "17"
+    // }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
@@ -50,7 +50,7 @@ android {
         versionName = flutter.versionName
 
         ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a"
+            abiFilters("armeabi-v7a", "arm64-v8a")
         }
 
         
