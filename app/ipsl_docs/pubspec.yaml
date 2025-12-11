@@ -67,6 +67,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   url_launcher: ^6.3.2
   mime: ^2.0.0
+  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4

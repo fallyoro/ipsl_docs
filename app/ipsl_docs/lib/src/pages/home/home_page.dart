@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,6 +13,7 @@ import 'package:ipsl_docs/src/pages/home/widget/custom_curve.dart';
 import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/document.dart';
@@ -19,6 +23,45 @@ class HomePage extends StatelessWidget {
   final DocumentViewModel documentViewModel =
       GetIt.instance<DocumentViewModel>();
   final DocumentService service = DocumentService();
+
+  Future<void> _sendBugReport(BuildContext context) async {
+    final String email = 'fallbayeyoro1@gmail.com';
+    final String subject = 'Signalement de bug';
+    final String body = '''
+Décris le problème rencontré :
+
+---
+
+Infos techniques :
+- App version : 1.0.0+1
+- OS : Android
+''';
+
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: email,
+      query: Uri.encodeFull('subject=$subject&body=$body'),
+    );
+
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      final String gmailUrl =
+          'https://mail.google.com/mail/?view=cm&to=$email&su=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
+      final Uri webUri = Uri.parse(gmailUrl);
+
+      if (await canLaunchUrl(webUri)) {
+        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Impossible d'ouvrir le client mail ou Gmail web"),
+          ),
+        );
+      }
+    }
+  }
+
   HomePage({super.key});
 
   @override
@@ -44,18 +87,18 @@ class HomePage extends StatelessWidget {
               decoration: BoxDecoration(color: AppColors.primaryColor),
               currentAccountPicture:
                   userViewModel.userNotifier.value?.pictureUrl != null
-                      ? CachedNetworkImage(
-                        height: 100,
-                        imageUrl: userViewModel.userNotifier.value!.pictureUrl!
-                            .replaceAll('s96-c', 's400-c'),
-                        imageBuilder: (context, imageProvider) {
-                          return CircleAvatar(
-                            radius: 50,
-                            backgroundImage: imageProvider,
-                          );
-                        },
-                      )
-                      : SizedBox.shrink(),
+                  ? CachedNetworkImage(
+                      height: 100,
+                      imageUrl: userViewModel.userNotifier.value!.pictureUrl!
+                          .replaceAll('s96-c', 's400-c'),
+                      imageBuilder: (context, imageProvider) {
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: imageProvider,
+                        );
+                      },
+                    )
+                  : SizedBox.shrink(),
               accountName: Text(
                 userViewModel.userNotifier.value!.userName,
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -70,10 +113,9 @@ class HomePage extends StatelessWidget {
                 "Theme",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              leading:
-                  isDark
-                      ? Icon(Icons.light_mode, color: Colors.white)
-                      : const Icon(Icons.dark_mode),
+              leading: isDark
+                  ? Icon(Icons.light_mode, color: Colors.white)
+                  : const Icon(Icons.dark_mode),
               onTap: () {
                 ThemeController.toggleTheme();
               },
@@ -102,6 +144,17 @@ class HomePage extends StatelessWidget {
               ),
               onTap: () async {
                 await openUrl("https://github.com/fallyoro/ipsl_docs");
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.bug_report, size: 32),
+              title: Text(
+                "Signaler un bug",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                // _sendBugReport(context);
+                _sendBugReport(context);
               },
             ),
           ],
