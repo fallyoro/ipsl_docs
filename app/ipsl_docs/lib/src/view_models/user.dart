@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ipsl_docs/src/core/notification_service.dart';
+import 'package:ipsl_docs/src/view_models/document.dart';
 
 import '../core/utils.dart';
 import '../database/database.dart';
@@ -58,36 +60,6 @@ class UserViewModel {
     }
   }
 
-  Future<void> login({required String email, required String password}) async {
-    authState.value = ViewState.loading;
-    loginMethod = LoginMethod.email;
-    final result = await _userService.login(email: email, password: password);
-    result.fold(
-      (failure) {
-        logInfo("Login failed: ${failure.message}");
-        authState.value = ViewState.error;
-        logError("Login failed: ${failure.message}");
-        errorNotifier.value = failure.message;
-      },
-      (userData) async {
-        authState.value = ViewState.success;
-        logInfo("Login successfuly");
-        try {
-          User newUser = User(
-            id: userData['id'],
-            userName: userData['user_name'],
-            email: userData['email'],
-            classe: userData['classe'],
-            numberContribution: userData['number_contribution'],
-          );
-          await addUser(newUser);
-        } catch (e) {
-          logError("Can't create a user : ${e.toString()}");
-        }
-      },
-    );
-  }
-
   Future<void> loginWithGoogle() async {
     authState.value = ViewState.loading;
     loginMethod = LoginMethod.google;
@@ -111,14 +83,10 @@ class UserViewModel {
           logInfo("User data ${userData.toString()}");
           User newUser = User.fromJson(userData);
           await addUser(newUser);
-          // await _userService.updateFcmToken(
-          //   newUser.email,
-          //   NotificationService.token!,
-          // );
+          DocumentViewModel documentViewModel = GetIt.I<DocumentViewModel>();
+          await documentViewModel.syncDocumentFromServer();
+          await documentViewModel.loadDocuments();
           authState.value = ViewState.success;
-          // Future.microtask(() {
-          //   authState.value = ViewState.success;
-          // });
         },
       );
     } on GoogleSignInException catch (e) {
@@ -133,40 +101,6 @@ class UserViewModel {
       }
       return;
     }
-  }
-
-  Future<void> signUp(
-    String userName,
-    String password,
-    String email,
-    String classe,
-  ) async {
-    authState.value = ViewState.loading;
-    final result = await _userService.signUp(
-      email: email,
-      userName: userName,
-      password: password,
-      classe: classe,
-    );
-    result.fold(
-      (failure) {
-        authState.value = ViewState.error;
-        logError("SignUp failed: ${failure.message}");
-        errorNotifier.value = failure.message;
-      },
-      (userData) async {
-        authState.value = ViewState.success;
-        User newUser = User(
-          id: userData['id'],
-          userName: userName,
-          email: email,
-          classe: userData['classe'],
-          numberContribution: userData['number_contribution'],
-        );
-
-        await addUser(newUser);
-      },
-    );
   }
 
   Future<void> updateFcmToken() async {
