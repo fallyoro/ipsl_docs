@@ -61,21 +61,17 @@ jobs:
       - name: Rename APKs with version
         working-directory: app/ipsl_docs
         run: |
-          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/ipsl_docs-${{ env.APP_VERSION }}-arm32.apk
-          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/ipsl_docs-${{ env.APP_VERSION }}-arm64.apk
+          APK_DIR=build/app/outputs/flutter-apk
+          if [ -f $APK_DIR/app-armeabi-v7a-release.apk ]; then
+            mv $APK_DIR/app-armeabi-v7a-release.apk $APK_DIR/ipsl_docs-${{ env.APP_VERSION }}-arm32.apk
+          fi
+          if [ -f $APK_DIR/app-arm64-v8a-release.apk ]; then
+            mv $APK_DIR/app-arm64-v8a-release.apk $APK_DIR/ipsl_docs-${{ env.APP_VERSION }}-arm64.apk
+          fi
 
-      - name: List the apk
+      - name: List APKs
         working-directory: app/ipsl_docs
-        run: ls build/app/outputs/flutter-apk
-
-        # working-directory: app/ipsl_docs/build/app/outputs/flutter-apk
-        # run: |
-        #   if [ -f app-armeabi-v7a-release.apk ]; then
-        #     mv app-armeabi-v7a-release.apk ipsl_docs-${{ env.APP_VERSION }}-arm32.apk
-        #   fi
-        #   if [ -f app-arm64-v8a-release.apk ]; then
-        #     mv app-arm64-v8a-release.apk ipsl_docs-${{ env.APP_VERSION }}-arm64.apk
-        #   fi
+        run: ls -l build/app/outputs/flutter-apk/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
