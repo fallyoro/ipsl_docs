@@ -35,9 +35,9 @@ android {
         coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5") // ✅ Kotlin DSL utilise des parenthèses
     }
 
-    // kotlinOptions {
-    //     jvmTarget = "17"
-    // }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
@@ -49,9 +49,6 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        ndk {
-            abiFilters("armeabi-v7a", "arm64-v8a")
-        }
 
         
     }
@@ -64,6 +61,14 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a") // juste ARM 32 et 64 bits
+            isUniversalApk = false
         }
     }
 }
