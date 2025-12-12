@@ -23,6 +23,8 @@ class _UploadConcoursDocumentPageState
   final userViewModel = GetIt.I<UserViewModel>();
   final yearController = TextEditingController();
   final documentServive = GetIt.I<DocumentService>();
+  String? selectedMaterial;
+
   final List<String> materials = [
     "Mathématiques",
     "Physique",
@@ -76,11 +78,23 @@ class _UploadConcoursDocumentPageState
                       return null;
                     },
                   ),
-                  TextFormField(
-                    controller: filenameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nom du fichier',
-                    ),
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedMaterial,
+                    decoration: const InputDecoration(labelText: 'Matière'),
+                    items:
+                        materials.map((material) {
+                          return DropdownMenuItem<String>(
+                            value: material,
+                            child: Text(material),
+                          );
+                        }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedMaterial = value;
+                        filenameController.text =
+                            "${value!.replaceAll(' ', '')}.pdf".toLowerCase();
+                      });
+                    },
                     validator:
                         (value) =>
                             value == null || value.isEmpty
