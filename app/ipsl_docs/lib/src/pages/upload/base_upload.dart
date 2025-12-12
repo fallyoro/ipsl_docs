@@ -7,6 +7,7 @@ import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
 import 'package:ipsl_docs/src/pages/upload/widget/custom_toast.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
+import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:toastification/toastification.dart';
 
 abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
@@ -69,11 +70,6 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
           return customLinearProgressSending(progress);
         } else {
           return buildSendButton(context, () => onSubmit(context, path));
-          // return buildSendButton(context, () async {
-          //   // await onPressed();
-          //   // // final path = join(type, filenameController.text);
-          //   await onSubmit(context, path);
-          // });
         }
       },
     );
@@ -141,12 +137,12 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
     filenameController.clear();
     // confirmSending();
     setState(() {});
-    // if (!context.mounted) return;
-    // Navigator.pushAndRemoveUntil(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => WidgetTree()),
-    //   (route) => false,
-    // );
+    if (!context.mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => WidgetTree()),
+      (route) => false,
+    );
   }
 
   // 'Document envoyé avec succès',
