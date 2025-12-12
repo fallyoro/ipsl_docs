@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +10,6 @@ import 'package:ipsl_docs/src/pages/home/widget/custom_curve.dart';
 import 'package:ipsl_docs/src/pages/home/widget/directory_gird.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/document.dart';
@@ -87,18 +83,18 @@ Infos techniques :
               decoration: BoxDecoration(color: AppColors.primaryColor),
               currentAccountPicture:
                   userViewModel.userNotifier.value?.pictureUrl != null
-                  ? CachedNetworkImage(
-                      height: 100,
-                      imageUrl: userViewModel.userNotifier.value!.pictureUrl!
-                          .replaceAll('s96-c', 's400-c'),
-                      imageBuilder: (context, imageProvider) {
-                        return CircleAvatar(
-                          radius: 50,
-                          backgroundImage: imageProvider,
-                        );
-                      },
-                    )
-                  : SizedBox.shrink(),
+                      ? CachedNetworkImage(
+                        height: 100,
+                        imageUrl: userViewModel.userNotifier.value!.pictureUrl!
+                            .replaceAll('s96-c', 's400-c'),
+                        imageBuilder: (context, imageProvider) {
+                          return CircleAvatar(
+                            radius: 50,
+                            backgroundImage: imageProvider,
+                          );
+                        },
+                      )
+                      : SizedBox.shrink(),
               accountName: Text(
                 userViewModel.userNotifier.value!.userName,
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -113,9 +109,10 @@ Infos techniques :
                 "Theme",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              leading: isDark
-                  ? Icon(Icons.light_mode, color: Colors.white)
-                  : const Icon(Icons.dark_mode),
+              leading:
+                  isDark
+                      ? Icon(Icons.light_mode, color: Colors.white)
+                      : const Icon(Icons.dark_mode),
               onTap: () {
                 ThemeController.toggleTheme();
               },
