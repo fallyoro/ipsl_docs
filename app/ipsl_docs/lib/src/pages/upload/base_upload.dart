@@ -7,7 +7,6 @@ import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
 import 'package:ipsl_docs/src/pages/upload/widget/custom_toast.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
-import 'package:path/path.dart';
 import 'package:toastification/toastification.dart';
 
 abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
@@ -48,7 +47,9 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
 
   Future<void> pickFile() async {
     await documentViewModel.pickFile();
-    filenameController.text = documentViewModel.pickedFileNotifier.value!.name;
+    final rawName = documentViewModel.pickedFileNotifier.value!.name;
+    final cleanedName = rawName.replaceAll(' ', '');
+    filenameController.text = cleanedName;
     setState(() {});
   }
 

@@ -37,8 +37,6 @@ class _WidgetTreeState extends State<WidgetTree> {
     return ValueListenableBuilder(
       valueListenable: ThemeController.isDarkModeNotifier,
       builder: (context, isDark, child) {
-        double screenWidth = MediaQuery.of(context).size.width;
-
         return Scaffold(
           //  appBar: buildAppbarWidgetTree(isDark),
           body: PageView(
@@ -50,9 +48,8 @@ class _WidgetTreeState extends State<WidgetTree> {
           bottomNavigationBar: SalomonBottomBar(
             selectedItemColor: AppColors.primaryColor,
             unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
-            backgroundColor: isDark
-                ? AppColors.darkSecondarySystemBackground
-                : Colors.white,
+            backgroundColor:
+                isDark ? AppColors.darkSecondarySystemBackground : Colors.white,
             currentIndex: _selectedPage,
             onTap: _onItemSelected,
             items: [

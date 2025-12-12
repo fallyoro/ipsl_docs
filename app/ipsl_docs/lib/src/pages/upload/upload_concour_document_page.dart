@@ -1,15 +1,11 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
-import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:path/path.dart';
 import '../../core/constant.dart';
 import '../../services/document.dart';
 import '../../view_models/user.dart';
-import '../home/widget/preview_widget.dart';
-import '../home/widget/send_button.dart';
 import '../home/widget/year_formater.dart';
 
 class UploadConcoursDocumentPage extends StatefulWidget {

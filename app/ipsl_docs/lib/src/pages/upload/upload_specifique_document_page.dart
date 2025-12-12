@@ -1,19 +1,13 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/matiere.dart';
-import 'package:ipsl_docs/src/pages/home/widget/preview_widget.dart';
 import 'package:ipsl_docs/src/pages/home/widget/year_formater.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
-import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
-import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:ipsl_docs/src/services/document.dart';
 import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:path/path.dart';
-
-import '../home/widget/send_button.dart';
 
 class UploadSpecifiqueDocumentPage extends StatefulWidget {
   const UploadSpecifiqueDocumentPage({super.key});
