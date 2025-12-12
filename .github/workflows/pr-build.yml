@@ -20,9 +20,6 @@ jobs:
       - name: Create google-services.json
         run: echo "${{ secrets.GOOGLE_SERVICE_JSON }}" | base64 -d > app/ipsl_docs/android/app/google-services.json
 
-      - name: Check JSON validity
-        run: jq . app/ipsl_docs/android/app/google-services.json
-
       - name: Create Keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/ipsl_docs/android/app/mykey.jks
 
