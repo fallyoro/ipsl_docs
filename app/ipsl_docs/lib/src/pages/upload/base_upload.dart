@@ -57,17 +57,22 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
     filenameController.clear();
   }
 
-  ValueListenableBuilder<double> sendButtonSection() {
+  ValueListenableBuilder<double> sendButtonSection(
+    // Future<void> Function() onPressed,
+    String path,
+  ) {
     return ValueListenableBuilder<double>(
       valueListenable: documentViewModel.progress,
       builder: (context, progress, child) {
         if (documentViewModel.isSending.value) {
           return customLinearProgressSending(progress);
         } else {
-          return buildSendButton(context, () async {
-            final path = join("Général", filenameController.text);
-            await onSubmit(context, path);
-          });
+          return buildSendButton(context, () => onSubmit(context, path));
+          // return buildSendButton(context, () async {
+          //   // await onPressed();
+          //   // // final path = join(type, filenameController.text);
+          //   await onSubmit(context, path);
+          // });
         }
       },
     );
@@ -79,42 +84,39 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
       builder: (context, file, _) {
         return file != null
             ? Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  IgnorePointer(
-                    ignoring:
-                        false, // ← laisse passer les clics sur le bouton, pas sur le preview
-                    child: previewWidget(
-                      localPath: file.path,
-                      context: context,
-                    ),
-                  ),
+              clipBehavior: Clip.none,
+              children: [
+                IgnorePointer(
+                  ignoring:
+                      false, // ← laisse passer les clics sur le bouton, pas sur le preview
+                  child: previewWidget(localPath: file.path, context: context),
+                ),
 
-                  //previewWidget(localPath: file.path, context: context),
-                  Positioned(
-                    top: -10,
-                    right: -10,
-                    child: InkWell(
-                      onTap: () {
-                        cancenPickFile();
-                      },
-                      borderRadius: BorderRadius.circular(50),
-                      child: Container(
-                        padding: const EdgeInsets.all(0),
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 35,
-                        ),
+                //previewWidget(localPath: file.path, context: context),
+                Positioned(
+                  top: -10,
+                  right: -10,
+                  child: InkWell(
+                    onTap: () {
+                      cancenPickFile();
+                    },
+                    borderRadius: BorderRadius.circular(50),
+                    child: Container(
+                      padding: const EdgeInsets.all(0),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 35,
                       ),
                     ),
                   ),
-                ],
-              )
+                ),
+              ],
+            )
             : PickFileButtun(onpress: pickFile);
       },
     );

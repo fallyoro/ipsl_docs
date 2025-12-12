@@ -130,9 +130,13 @@ class DocumentService {
         'updated_at': data['updated_at']?.toString(),
       });
     } on DioException catch (e) {
+      logError("---------------------------------------------");
+      logError(e.toString());
       final error = NetworkException.fromDioError(e);
       return Left(NetworkFailure(error.message));
     } catch (e) {
+      logError("---------------------------------------------");
+      logError(e.toString());
       return Left(NetworkFailure("Erreur réseau ou inconnue : $e"));
     }
   }

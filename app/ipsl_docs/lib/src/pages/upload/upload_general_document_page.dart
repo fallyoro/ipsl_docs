@@ -37,14 +37,15 @@ class _UploadGeneralDocumentPageState
             child: TextFormField(
               controller: filenameController,
               decoration: const InputDecoration(labelText: 'Nom du fichier'),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'Champ requis' : null,
+              validator:
+                  (value) =>
+                      value == null || value.isEmpty ? 'Champ requis' : null,
             ),
           ),
 
           filePreviewSection(),
 
-          sendButtonSection(),
+          sendButtonSection(join("Général", filenameController.text)),
         ],
       ),
     );

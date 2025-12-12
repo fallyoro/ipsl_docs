@@ -101,14 +101,15 @@ class _UploadSpecifiqueDocumentPageState
                                 subjectController.text = '';
                               });
                             },
-                            dropdownMenuEntries: classes
-                                .map(
-                                  (c) => DropdownMenuEntry<String>(
-                                    value: c,
-                                    label: c,
-                                  ),
-                                )
-                                .toList(),
+                            dropdownMenuEntries:
+                                classes
+                                    .map(
+                                      (c) => DropdownMenuEntry<String>(
+                                        value: c,
+                                        label: c,
+                                      ),
+                                    )
+                                    .toList(),
                           ),
                         ],
                       ),
@@ -132,14 +133,15 @@ class _UploadSpecifiqueDocumentPageState
                                 selectedCategory = value!;
                               });
                             },
-                            dropdownMenuEntries: categories
-                                .map(
-                                  (c) => DropdownMenuEntry<String>(
-                                    value: c,
-                                    label: c,
-                                  ),
-                                )
-                                .toList(),
+                            dropdownMenuEntries:
+                                categories
+                                    .map(
+                                      (c) => DropdownMenuEntry<String>(
+                                        value: c,
+                                        label: c,
+                                      ),
+                                    )
+                                    .toList(),
                           ),
                         ],
                       ),
@@ -154,20 +156,20 @@ class _UploadSpecifiqueDocumentPageState
                     'Matière',
                     // style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  items: subjects.map<DropdownMenuItem<String>>((
-                    String subject,
-                  ) {
-                    return DropdownMenuItem<String>(
-                      value: subject,
-                      child: Text(
-                        subject,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    );
-                  }).toList(),
-                  value: subjectController.text.isNotEmpty
-                      ? subjectController.text
-                      : null,
+                  items:
+                      subjects.map<DropdownMenuItem<String>>((String subject) {
+                        return DropdownMenuItem<String>(
+                          value: subject,
+                          child: Text(
+                            subject,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        );
+                      }).toList(),
+                  value:
+                      subjectController.text.isNotEmpty
+                          ? subjectController.text
+                          : null,
                   onChanged: (String? value) {
                     if (value == null) return;
                     setState(() {
@@ -229,8 +231,9 @@ class _UploadSpecifiqueDocumentPageState
                   labelText: 'Nom du fichier',
                   labelStyle: TextStyle(fontSize: 16),
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Champ requis' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty ? 'Champ requis' : null,
               ),
 
               TextFormField(
@@ -265,7 +268,15 @@ class _UploadSpecifiqueDocumentPageState
 
               filePreviewSection(),
 
-              sendButtonSection(),
+              sendButtonSection(
+                join(
+                  selectedClasse,
+                  subjectController.text,
+                  yearController.text,
+                  selectedCategory,
+                  filenameController.text,
+                ),
+              ),
             ],
           ),
         ),
