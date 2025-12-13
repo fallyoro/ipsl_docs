@@ -130,8 +130,8 @@ class DocumentViewModel {
 
   //sync documents from remote server using the variable updatedAt(each document has its own value) in the document model
   Future<void> syncDocumentFromServer() async {
-    final List<Map<String, dynamic>> docFetch =
-        await service.fetchRawDocuments();
+    final List<Map<String, dynamic>> docFetch = await service
+        .fetchRawDocuments();
     logInfo(docFetch.toString());
     for (Map<String, dynamic> doc in docFetch) {
       if (doc['is_deleted'] == true) {
@@ -251,6 +251,10 @@ wtf ma mene bine commentaire
     }
     if (value.length > 100) {
       return "Le nom du fichier est trop long";
+    }
+
+    if (value.contains("/")) {
+      return "Le caractere / n'est pas autorise";
     }
     return null;
   }
