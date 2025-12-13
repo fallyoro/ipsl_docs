@@ -31,10 +31,9 @@ class _UploadGeneralDocumentPageState
             key: formKeySubmit,
             child: TextFormField(
               controller: filenameController,
+              maxLength: 100,
               decoration: const InputDecoration(labelText: 'Nom du fichier'),
-              validator:
-                  (value) =>
-                      value == null || value.isEmpty ? 'Champ requis' : null,
+              validator: documentViewModel.validateFileName,
             ),
           ),
 

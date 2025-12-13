@@ -244,4 +244,14 @@ wtf ma mene bine commentaire
       },
     );
   }
+
+  String? validateFileName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Champ requis';
+    }
+    if (value.length > 100) {
+      return "Le nom du fichier est trop long";
+    }
+    return null;
+  }
 }
