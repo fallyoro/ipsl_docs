@@ -11,13 +11,13 @@ import 'package:path_provider/path_provider.dart';
 import '../core/utils.dart';
 import '../models/document.dart';
 
-final dio = Dio(options);
 final options = BaseOptions(
   baseUrl: '$baseUrl/document',
-  connectTimeout: Duration(seconds: 3),
+  connectTimeout: Duration(seconds: 10),
   receiveTimeout: Duration(minutes: 3),
   sendTimeout: Duration(minutes: 5),
 );
+final dio = Dio(options);
 final String baseUrl = dotenv.env['API_BASE_URL'] as String;
 
 class DocumentService {

@@ -259,15 +259,16 @@ class _UploadSpecifiqueDocumentPageState
 
               filePreviewSection(),
 
-              sendButtonSection(
-                join(
+              sendButtonSection(() async {
+                final path = join(
                   selectedClasse,
                   subjectController.text,
                   yearController.text,
                   selectedCategory,
                   filenameController.text,
-                ),
-              ),
+                );
+                await onSubmit(context, path);
+              }),
             ],
           ),
         ),

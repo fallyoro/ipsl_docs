@@ -39,7 +39,10 @@ class _UploadGeneralDocumentPageState
 
           filePreviewSection(),
 
-          sendButtonSection(join("Général", filenameController.text)),
+          sendButtonSection(() async {
+            final String path = join("Général", filenameController.text);
+            await onSubmit(context, path);
+          }),
         ],
       ),
     );

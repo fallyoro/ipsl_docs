@@ -81,13 +81,12 @@ class _UploadConcoursDocumentPageState
                   DropdownButtonFormField<String>(
                     initialValue: selectedMaterial,
                     decoration: const InputDecoration(labelText: 'Matière'),
-                    items:
-                        materials.map((material) {
-                          return DropdownMenuItem<String>(
-                            value: material,
-                            child: Text(material),
-                          );
-                        }).toList(),
+                    items: materials.map((material) {
+                      return DropdownMenuItem<String>(
+                        value: material,
+                        child: Text(material),
+                      );
+                    }).toList(),
                     onChanged: (value) {
                       setState(() {
                         selectedMaterial = value;
@@ -95,20 +94,22 @@ class _UploadConcoursDocumentPageState
                             "${value!.replaceAll(' ', '')}.pdf".toLowerCase();
                       });
                     },
-                    validator:
-                        (value) =>
-                            value == null || value.isEmpty
-                                ? 'Champ requis'
-                                : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Champ requis' : null,
                   ),
                 ],
               ),
             ),
             filePreviewSection(),
 
-            sendButtonSection(
-              join("Concours", yearController.text, filenameController.text),
-            ),
+            sendButtonSection(() async {
+              final String path = join(
+                "Concours",
+                yearController.text,
+                filenameController.text,
+              );
+              await onSubmit(context, path);
+            }),
           ],
         ),
       ),
