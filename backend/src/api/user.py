@@ -17,9 +17,11 @@ from src.database.database import create_session
 from src.utils import create_acess_token, decode_token, passwd_context, verify_password
 from uuid import UUID
 from src.core.config import settings
+import logging
 
 user_router = APIRouter()
 user_service = UserService()
+logger = logging.getLogger(__name__)
 
 
 @user_router.put("/edit-profile")
@@ -105,7 +107,7 @@ async def update_fcm_token(
     email: str, token: NotificationToken, session=Depends(create_session)
 ):
     try:
-        print(f"The token is {token.fcm_token}")
+        logger.info(f"The token is {token.fcm_token}")
         await user_service.update_token(token.fcm_token, email, session)
     except Exception as e:
         raise HTTPException(
