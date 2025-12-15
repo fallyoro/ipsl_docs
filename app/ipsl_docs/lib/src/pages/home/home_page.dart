@@ -20,44 +20,6 @@ class HomePage extends StatelessWidget {
       GetIt.instance<DocumentViewModel>();
   final DocumentService service = DocumentService();
 
-  Future<void> _sendBugReport(BuildContext context) async {
-    final String email = 'fallbayeyoro1@gmail.com';
-    final String subject = 'Signalement de bug';
-    final String body = '''
-Décris le problème rencontré :
-
----
-
-Infos techniques :
-- App version : 1.0.0+1
-- OS : Android
-''';
-
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: email,
-      query: Uri.encodeFull('subject=$subject&body=$body'),
-    );
-
-    if (await canLaunchUrl(emailUri)) {
-      await launchUrl(emailUri);
-    } else {
-      final String gmailUrl =
-          'https://mail.google.com/mail/?view=cm&to=$email&su=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
-      final Uri webUri = Uri.parse(gmailUrl);
-
-      if (await canLaunchUrl(webUri)) {
-        await launchUrl(webUri, mode: LaunchMode.externalApplication);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Impossible d'ouvrir le client mail ou Gmail web"),
-          ),
-        );
-      }
-    }
-  }
-
   HomePage({super.key});
 
   @override
@@ -143,17 +105,17 @@ Infos techniques :
                 await openUrl("https://github.com/fallyoro/ipsl_docs");
               },
             ),
-            ListTile(
-              leading: Icon(Icons.bug_report, size: 32),
-              title: Text(
-                "Signaler un bug",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                // _sendBugReport(context);
-                _sendBugReport(context);
-              },
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.bug_report, size: 32),
+            //   title: Text(
+            //     "Signaler un bug",
+            //     style: TextStyle(fontWeight: FontWeight.bold),
+            //   ),
+            //   onTap: () {
+            //     // _sendBugReport(context);
+            //     _sendBugReport(context);
+            //   },
+            // ),
           ],
         ),
       ),
@@ -258,5 +220,43 @@ Infos techniques :
     }
 
     await documentViewModel.loadDocuments();
+  }
+
+  Future<void> _sendBugReport(BuildContext context) async {
+    final String email = 'fallbayeyoro1@gmail.com';
+    final String subject = 'Signalement de bug';
+    final String body = '''
+Décris le problème rencontré :
+
+---
+
+Infos techniques :
+- App version : 1.0.0+1
+- OS : Android
+''';
+
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: email,
+      query: Uri.encodeFull('subject=$subject&body=$body'),
+    );
+
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      final String gmailUrl =
+          'https://mail.google.com/mail/?view=cm&to=$email&su=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
+      final Uri webUri = Uri.parse(gmailUrl);
+
+      if (await canLaunchUrl(webUri)) {
+        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Impossible d'ouvrir le client mail ou Gmail web"),
+          ),
+        );
+      }
+    }
   }
 }
