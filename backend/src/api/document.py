@@ -60,9 +60,9 @@ async def upload_doc(
         "image/png",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     }
-    assert doc.filename is not None
-    if doc.content_type not in ALLOWED_MIME_TYPES:
-        raise HTTPException(status_code=400, detail="Invalid MIME type")
+    # assert doc.filename is not None
+    # if doc.content_type not in ALLOWED_MIME_TYPES:
+    #     raise HTTPException(status_code=400, detail="Invalid MIME type")
 
     # Crée uniquement le dossier parent, pas le fichier
     complete_path.parent.mkdir(parents=True, exist_ok=True)
