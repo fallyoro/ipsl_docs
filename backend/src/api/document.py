@@ -81,6 +81,7 @@ async def upload_doc(
                 await buffer.write(content)
 
     except Exception as e:
+        await session.rollback()
         print(e)
         raise HTTPException(status_code=500, detail="Impossible d'uploader le fichier")
     finally:
