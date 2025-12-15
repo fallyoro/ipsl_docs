@@ -51,6 +51,8 @@ async def upload_doc(
     documents_path = Path(__file__).resolve().parent.parents[1] / "documents"
     documents_path.mkdir(parents=True, exist_ok=True)
     relative_path = Path(path)
+    if ".." in relative_path.parts:
+        raise HTTPException(status_code=400, detail="Invalid path")
     complete_path = documents_path / relative_path
 
     ALLOWED_MIME_TYPES = {
