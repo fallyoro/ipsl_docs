@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -23,6 +24,7 @@ class DocumentViewModel {
   final ValueNotifier<PlatformFile?> pickedFileNotifier = ValueNotifier(null);
   final ValueNotifier<double> progress = ValueNotifier(0);
   final ValueNotifier<DirectoryNode?> root = ValueNotifier(null);
+  CancelToken _cancelTokenUpload = CancelToken();
   final List<DirectoryNode> _stack = [];
   final DocumentService service;
   DocumentViewModel(this._db, this.service);
@@ -105,11 +107,10 @@ class DocumentViewModel {
     UserViewModel userViewModel = GetIt.instance<UserViewModel>();
     final String? error = await validateFileExtension(fileName);
     if (error != null) {
-      logError("The erroroooooooooooooooo");
-      logError(error);
       errorNotifier.value = error;
       return error;
     }
+    _cancelTokenUpload = CancelToken();
     final result = await service.uploadDocument(
       file: File(pickedFileNotifier.value!.path!),
       path: path,
@@ -117,6 +118,7 @@ class DocumentViewModel {
       onProgress: (received, total) {
         updateProgress(received, total);
       },
+      cancelToken: _cancelTokenUpload,
     );
     result.fold(
       (failure) {
@@ -299,5 +301,11 @@ class DocumentViewModel {
       return a.name.compareTo(b.name);
     });
     return root;
+  }
+
+  void cancelUpload() {
+    _cancelTokenUpload.cancel("Annulé par l'utilisateur");
+    isSending.value = false;
+    progress.value = 0;
   }
 }

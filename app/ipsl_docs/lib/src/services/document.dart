@@ -87,8 +87,8 @@ class DocumentService {
   Future<Either<NetworkFailure, Map<String, dynamic>>> uploadDocument({
     required File file,
     required String path,
-
     required String userId,
+    CancelToken? cancelToken,
     void Function(int, int)? onProgress,
   }) async {
     final formData = FormData.fromMap({
@@ -110,15 +110,19 @@ class DocumentService {
       );
 
       final data = response.data as Map<String, dynamic>;
-      logInfo('Success: ${response.data}');
       return Right({
         'id': data['id']?.toString(),
         'number_contribution': data['number_contribution'],
         'updated_at': data['updated_at']?.toString(),
       });
     } on DioException catch (e) {
-      logError("---------------------------------------------");
-      logError(e.toString());
+      if (CancelToken.isCancel(e)) {
+        return Left(NetworkFailure("Upload annulé"));
+      }
+      if (e.type == DioExceptionType.cancel) {
+        logInfo("Upload annulé par l'utilisateur");
+        return Left(NetworkFailure("Upload annulé"));
+      }
       final error = NetworkException.fromDioError(e);
       return Left(NetworkFailure(error.message));
     } catch (e) {

@@ -110,7 +110,6 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
   }
 
   Future<void> onSubmit(BuildContext context, String path) async {
-    final documentViewModel = GetIt.I<DocumentViewModel>();
     if (!formKeySubmit.currentState!.validate() ||
         documentViewModel.pickedFileNotifier.value == null) {
       return;
@@ -153,11 +152,32 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
       valueListenable: documentViewModel.progress,
       builder: (context, progress, child) {
         if (documentViewModel.isSending.value) {
-          return customLinearProgressSending(progress);
+          // return customLinearProgressSending(progress);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              customLinearProgressSending(documentViewModel.progress.value),
+              const SizedBox(height: 8),
+              // cancelUploadButton(),
+            ],
+          );
         } else {
           return buildSendButton(context, () => onPressed());
         }
       },
+    );
+  }
+
+  Widget cancelUploadButton() {
+    return ElevatedButton(
+      onPressed: () {
+        documentViewModel.cancelUpload();
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.red,
+        fixedSize: const Size(150, 40),
+      ),
+      child: const Text("Annuler", style: TextStyle(color: Colors.white)),
     );
   }
 }
