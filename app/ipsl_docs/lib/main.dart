@@ -50,7 +50,6 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder<bool>(
       valueListenable: ThemeController.isDarkModeNotifier,
       builder: (context, isDark, _) {
-        // ✅ Appelé à chaque changement
         Future.microtask(() {
           SystemChrome.setSystemUIOverlayStyle(
             SystemUiOverlayStyle(

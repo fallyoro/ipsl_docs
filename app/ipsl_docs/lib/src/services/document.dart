@@ -13,7 +13,7 @@ import '../models/document.dart';
 
 final options = BaseOptions(
   baseUrl: '$baseUrl/document',
-  connectTimeout: Duration(seconds: 10),
+  connectTimeout: Duration(seconds: 3),
   receiveTimeout: Duration(minutes: 3),
   sendTimeout: Duration(minutes: 5),
 );
@@ -63,28 +63,13 @@ class DocumentService {
     }
   }
 
-  Future<List<Document>> fetchDocuments() async {
+  Future<List<Map<String, dynamic>>> fetchDocuments() async {
     try {
-      final response = await dio.get('/documents', cancelToken: _cancelToken);
-
-      if (response.statusCode == 200) {
-        final data = response.data as List;
-        return data
-            .map((json) => Document.fromJson(json as Map<String, dynamic>))
-            .toList();
-      } else {
-        throw Exception("Faild to load documents");
-      }
-    } on DioException catch (e) {
-      throw Exception(" Failed to fetch document. Error: $e");
-    } catch (e) {
-      throw Exception("Error unexpected: $e");
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchRawDocuments() async {
-    try {
-      final response = await dio.get('/documents', cancelToken: _cancelToken);
+      final response = await dio.get(
+        '/documents',
+        cancelToken: _cancelToken,
+        options: Options(receiveTimeout: const Duration(seconds: 3)),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data as List;
@@ -117,7 +102,9 @@ class DocumentService {
 
     try {
       final response = await dio.post(
-        '$baseUrl/document/upload',
+        // '$baseUrl/document/upload',
+        '/upload',
+
         data: formData,
         onSendProgress: onProgress,
       );

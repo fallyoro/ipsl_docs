@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/upload/base_upload.dart';
 import 'package:path/path.dart';
+
 import '../../core/constant.dart';
 import '../../services/document.dart';
 import '../../view_models/user.dart';
@@ -81,12 +82,13 @@ class _UploadConcoursDocumentPageState
                   DropdownButtonFormField<String>(
                     initialValue: selectedMaterial,
                     decoration: const InputDecoration(labelText: 'Matière'),
-                    items: materials.map((material) {
-                      return DropdownMenuItem<String>(
-                        value: material,
-                        child: Text(material),
-                      );
-                    }).toList(),
+                    items:
+                        materials.map((material) {
+                          return DropdownMenuItem<String>(
+                            value: material,
+                            child: Text(material),
+                          );
+                        }).toList(),
                     onChanged: (value) {
                       setState(() {
                         selectedMaterial = value;
@@ -94,8 +96,11 @@ class _UploadConcoursDocumentPageState
                             "${value!.replaceAll(' ', '')}.pdf".toLowerCase();
                       });
                     },
-                    validator: (value) =>
-                        value == null || value.isEmpty ? 'Champ requis' : null,
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Champ requis'
+                                : null,
                   ),
                 ],
               ),

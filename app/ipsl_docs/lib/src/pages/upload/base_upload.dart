@@ -7,72 +7,31 @@ import 'package:ipsl_docs/src/pages/upload/upload_concour_document_page.dart';
 import 'package:ipsl_docs/src/pages/upload/widget/custom_toast.dart';
 import 'package:ipsl_docs/src/pages/widgets/linear_progress.dart';
 import 'package:ipsl_docs/src/view_models/document.dart';
-import 'package:ipsl_docs/src/widget_tree.dart';
 import 'package:toastification/toastification.dart';
+
+void confirmSending() {
+  customToast(
+    title: 'Document envoyé avec succès',
+    description: 'Merci pour votre contribution',
+    icon: Icon(Icons.check),
+    type: ToastificationType.success,
+  );
+}
 
 abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
   final filenameController = TextEditingController();
   final formKeySubmit = GlobalKey<FormState>();
   DocumentViewModel documentViewModel = GetIt.I<DocumentViewModel>();
 
-  @override
-  void dispose() {
-    filenameController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    documentViewModel = GetIt.I<DocumentViewModel>();
-    documentViewModel.errorNotifier.addListener(() {
-      final message = documentViewModel.errorNotifier.value;
-      if (message != null) {
-        customToast(
-          title: "Erreur",
-          description: message,
-          primaryColor: Colors.red,
-          icon: Icon(Icons.error),
-          type: ToastificationType.error,
-        );
-        documentViewModel.errorNotifier.value = null;
-      }
-    });
-    documentViewModel.success.addListener(() {
-      if (documentViewModel.success.value == true) {
-        confirmSending();
-        documentViewModel.success.value = null;
-      }
-    });
-  }
-
-  Future<void> pickFile() async {
-    await documentViewModel.pickFile();
-    final rawName = documentViewModel.pickedFileNotifier.value!.name;
-    final cleanedName = rawName.replaceAll(' ', '');
-    filenameController.text = cleanedName;
-    setState(() {});
-  }
-
   void cancenPickFile() {
     documentViewModel.pickedFileNotifier.value = null;
     filenameController.clear();
   }
 
-  ValueListenableBuilder<double> sendButtonSection(
-    Future<void> Function() onPressed,
-    // String path,
-  ) {
-    return ValueListenableBuilder<double>(
-      valueListenable: documentViewModel.progress,
-      builder: (context, progress, child) {
-        if (documentViewModel.isSending.value) {
-          return customLinearProgressSending(progress);
-        } else {
-          return buildSendButton(context, () => onPressed());
-        }
-      },
-    );
+  @override
+  void dispose() {
+    filenameController.dispose();
+    super.dispose();
   }
 
   ValueListenableBuilder<PlatformFile?> filePreviewSection() {
@@ -92,7 +51,6 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
                     ),
                   ),
 
-                  //previewWidget(localPath: file.path, context: context),
                   Positioned(
                     top: -10,
                     right: -10,
@@ -122,6 +80,35 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // documentViewModel = GetIt.I<DocumentViewModel>();
+    documentViewModel.errorNotifier.addListener(() {
+      final message = documentViewModel.errorNotifier.value;
+      if (message != null) {
+        customToast(
+          title: "Erreur",
+          description: message,
+          icon: Icon(Icons.error),
+          type: ToastificationType.error,
+        );
+        documentViewModel.errorNotifier.value = null;
+      }
+    });
+    documentViewModel.success.addListener(() {
+      if (documentViewModel.success.value == true) {
+        confirmSending();
+        // if (!mounted) return;
+        // Navigator.of(context).pushAndRemoveUntil(
+        //   MaterialPageRoute(builder: (_) => WidgetTree()),
+        //   (route) => false,
+        // );
+        documentViewModel.success.value = null;
+      }
+    });
+  }
+
   Future<void> onSubmit(BuildContext context, String path) async {
     final documentViewModel = GetIt.I<DocumentViewModel>();
     if (!formKeySubmit.currentState!.validate() ||
@@ -130,34 +117,47 @@ abstract class BaseUploadPage<T extends StatefulWidget> extends State<T> {
     }
     FocusScope.of(context).unfocus();
 
-    // final path = join("Général", filenameController.text);
     try {
-      await documentViewModel.submitDocument(context: context, path: path);
+      final String? error = await documentViewModel.submitDocument(
+        context: context,
+        path: path,
+        fileName: filenameController.text,
+      );
+      if (error != null) {
+        // documentViewModel.pickedFileNotifier.value = null;
+        documentViewModel.isSending.value = false;
+        return;
+      }
     } catch (e) {
       return;
     }
-    await documentViewModel.loadDocuments();
+    // await documentViewModel.loadDocuments();
     filenameController.clear();
     // confirmSending();
     setState(() {});
-    if (!context.mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => WidgetTree()),
-      (route) => false,
-    );
   }
 
-  // 'Document envoyé avec succès',
-  // text: 'Merci pour votre contribution !',
-}
+  Future<void> pickFile() async {
+    await documentViewModel.pickFile();
+    final rawName = documentViewModel.pickedFileNotifier.value!.name;
+    final cleanedName = rawName.replaceAll(' ', '');
+    filenameController.text = cleanedName;
+    setState(() {});
+  }
 
-void confirmSending() {
-  customToast(
-    title: 'Document envoyé avec succès',
-    description: 'Merci pour votre contribution',
-    primaryColor: Colors.green,
-    icon: Icon(Icons.check),
-    type: ToastificationType.success,
-  );
+  ValueListenableBuilder<double> sendButtonSection(
+    Future<void> Function() onPressed,
+    // String path,
+  ) {
+    return ValueListenableBuilder<double>(
+      valueListenable: documentViewModel.progress,
+      builder: (context, progress, child) {
+        if (documentViewModel.isSending.value) {
+          return customLinearProgressSending(progress);
+        } else {
+          return buildSendButton(context, () => onPressed());
+        }
+      },
+    );
+  }
 }

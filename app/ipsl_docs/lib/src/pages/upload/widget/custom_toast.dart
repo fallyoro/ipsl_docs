@@ -4,7 +4,6 @@ import 'package:toastification/toastification.dart';
 void customToast({
   required String title,
   required String description,
-  required Color primaryColor,
   required Icon icon,
   required ToastificationType type,
 }) {
@@ -30,9 +29,6 @@ void customToast({
     },
     icon: icon,
     showIcon: true,
-    // primaryColor: primaryColor,
-    // backgroundColor: Colors.white,
-    // foregroundColor: Colors.black,
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     borderRadius: BorderRadius.circular(12),

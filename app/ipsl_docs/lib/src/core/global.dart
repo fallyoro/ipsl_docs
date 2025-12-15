@@ -17,7 +17,10 @@ Future<void> setupDependencies() async {
   );
 
   try {
-    await documentViewModel.syncDocumentFromServer();
+    final bool isConnected = await isConnectedToInternet();
+    if (isConnected) {
+      await documentViewModel.syncDocumentFromServer();
+    }
   } catch (e) {
     logError("Can't sync document from the server : ${e.toString()}");
   }

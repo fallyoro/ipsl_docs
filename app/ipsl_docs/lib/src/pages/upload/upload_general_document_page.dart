@@ -16,7 +16,6 @@ class UploadGeneralDocumentPage extends StatefulWidget {
 
 class _UploadGeneralDocumentPageState
     extends BaseUploadPage<UploadGeneralDocumentPage> {
-  // final _formKeySubmit = GlobalKey<FormState>();
   final userViewModel = GetIt.I<UserViewModel>();
   final documentServive = GetIt.I<DocumentService>();
 
@@ -31,7 +30,7 @@ class _UploadGeneralDocumentPageState
             key: formKeySubmit,
             child: TextFormField(
               controller: filenameController,
-              maxLength: 100,
+              maxLength: 50,
               decoration: const InputDecoration(labelText: 'Nom du fichier'),
               validator: documentViewModel.validateFileName,
             ),
