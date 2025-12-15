@@ -15,13 +15,11 @@ import logging
 from typing import List
 from src.services.document import DocumentService
 from fastapi.responses import FileResponse
-import shutil
 from pathlib import Path
 from src.schemas.document import DocumentOut, DocumentCreate
 from uuid import UUID
 from src.services.user import UserService
 from src.services.notification import NotificationService
-from firebase_admin import messaging
 
 
 service = DocumentService()
@@ -35,7 +33,7 @@ async def get_all_documents(session: AsyncSession = Depends(create_session)):
         documents = await service.get_all_documents(session=session)
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Faild to fetch document from database",
         )
     return documents

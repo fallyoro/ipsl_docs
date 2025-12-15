@@ -1,4 +1,3 @@
-from datetime import timedelta
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.responses import JSONResponse
 from google.oauth2 import id_token
@@ -6,15 +5,11 @@ from google.auth.transport import requests
 from src.schemas.notification_token import NotificationToken
 from src.schemas.user import (
     GoogleLoginRequest,
-    UserCreate,
-    UserOut,
-    UserLogin,
     UserEdit,
 )
 from src.services.user import UserService
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.database.database import create_session
-from src.utils import create_acess_token, decode_token, passwd_context, verify_password
 from uuid import UUID
 from src.core.config import settings
 import logging
