@@ -90,14 +90,17 @@ class UserService:
         await session.exec(statement)  # type: ignore
         await session.commit()
 
+    async def enable_upload_access(self, user_id: UUID, session: AsyncSession):
+        statement = update(User).where(User.id == user_id).values(can_upload=True)  # type: ignore
+        await session.exec(statement)  # type: ignore
+        await session.commit()
+
     async def get_tokens(
         self, session: AsyncSession, classe: str | None = None
     ) -> list[str]:
         if classe:
-            print("------------this notif is for a classe")
             statement = select(User.notification_token).where(User.classe == classe)
         else:
-            print("------------this notif is general")
             statement = select(User.notification_token)
         result = await session.exec(statement)
         tokens = [row for row in result.all() if row]
