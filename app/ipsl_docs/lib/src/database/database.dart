@@ -47,7 +47,8 @@ class DatabaseHelper {
         user_name TEXT,
         classe TEXT,
         number_contribution INT,
-        picture_url TEXT
+        picture_url TEXT,
+        can_upload INTEGER DEFAULT 0
       );
     ''');
   }
@@ -55,6 +56,11 @@ class DatabaseHelper {
   Future<void> updateUser(String classe, String userName) async {
     Database db = await instance.database;
     await db.update("users", {"user_name": userName, "classe": classe});
+  }
+
+  Future<void> updateCanUploadField() async {
+    Database db = await instance.database;
+    await db.update("users", {"can_upload": 1});
   }
 
   Future<void> updateDocumentName(String filename, String id) async {
