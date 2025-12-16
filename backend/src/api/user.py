@@ -64,6 +64,7 @@ async def login_with_google(
                 "message": "Login susseful",
                 "user": {
                     "id": str(user.id),
+                    "can_upload": user.can_upload,
                     "user_name": user.user_name,
                     "email": user.email,
                     "classe": user.classe,
@@ -87,6 +88,7 @@ async def login_with_google(
                 "message": "Signup successful",
                 "user": {
                     "id": str(new_user.id),
+                    "can_upload": new_user.can_upload,
                     "email": new_user.email,
                     "user_name": new_user.user_name,
                     "picture_url": new_user.picture_url,

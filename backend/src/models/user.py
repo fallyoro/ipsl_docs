@@ -8,6 +8,7 @@ class User(SQLModel, table=True):
     __tablename__: str = "users"
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     email: str = Field(index=True, unique=True, max_length=100)
+    can_upload: bool = Field(default=False)
     user_name: str = Field(max_length=100)
     picture_url: str = Field(max_length=100)
     classe: str = Field(max_length=100)
