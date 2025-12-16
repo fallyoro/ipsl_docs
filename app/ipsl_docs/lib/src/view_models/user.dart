@@ -56,6 +56,7 @@ class UserViewModel {
         classe: "N/A",
         numberContribution: 000,
         userName: "N/A",
+        canUpload: false,
       );
     }
   }
@@ -134,6 +135,23 @@ class UserViewModel {
   Future<bool> userExist() async {
     final User? user = await _db.getUser();
     return user != null;
+  }
+
+  Future<void> syncUploadPermission() async {
+    final result = await _userService.canUserUpload(userNotifier.value!.email);
+    result.fold(
+      (failure) {
+        logError("Failed to check if the user can upload merde");
+      },
+      (data) async {
+        if (data['can_upload'] == true) {
+          await _db.updateCanUploadField();
+          userNotifier.value!.copyWith(canUpload: true);
+        } else {
+          logInfo("The user can not upload according to the server");
+        }
+      },
+    );
   }
 }
 

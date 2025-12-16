@@ -49,6 +49,21 @@ class UserService {
     }
   }
 
+  Future<Either<NetworkFailure, Map<String, dynamic>>> canUserUpload(
+    String email,
+  ) async {
+    try {
+      final resp = await dio.get("/can-upload/${Uri.encodeComponent(email)}");
+
+      return Right({'can_upload': resp.data['can_upload']});
+    } on DioException catch (e) {
+      final String error = NetworkException.fromDioError(e).message;
+      return Left(NetworkFailure(error));
+    } catch (e) {
+      return Left(NetworkFailure("Erreur réseau ou inconnue : $e"));
+    }
+  }
+
   Future<Either<NetworkFailure, Map<String, dynamic>>> loginWithGoogle(
     String googleIdToken,
   ) async {

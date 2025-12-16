@@ -5,6 +5,7 @@ class User {
   final String classe;
   final int numberContribution;
   String? pictureUrl;
+  final bool canUpload;
 
   User({
     required this.id,
@@ -13,6 +14,7 @@ class User {
     required this.classe,
     required this.numberContribution,
     this.pictureUrl,
+    required this.canUpload,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class User {
       classe: json['classe'],
       numberContribution: json['number_contribution'],
       pictureUrl: json['picture_url'],
+      canUpload: json['can_upload'] == 1 ? true : false,
     );
   }
 
@@ -34,10 +37,11 @@ class User {
       'classe': classe,
       'number_contribution': numberContribution,
       'picture_url': pictureUrl,
+      'can_upload': canUpload == true ? 1 : 0,
     };
   }
 
-  User copyWith({String? userName, String? classe}) {
+  User copyWith({String? userName, String? classe, bool? canUpload}) {
     return User(
       id: id,
       userName: userName ?? this.userName,
@@ -45,6 +49,7 @@ class User {
       classe: classe ?? this.classe,
       numberContribution: numberContribution,
       pictureUrl: pictureUrl,
+      canUpload: canUpload ?? this.canUpload,
     );
   }
 }

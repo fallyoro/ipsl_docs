@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/pages/home/home_page.dart';
 import 'package:ipsl_docs/src/pages/profile/profile_page.dart';
 import 'package:ipsl_docs/src/pages/upload/upload_tab_bar.dart';
+import 'package:ipsl_docs/src/view_models/user.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'core/constant.dart';
 import 'core/theme_controller.dart';
-
-List<Widget> pages = [HomePage(), UploadTabBar(), const Profile()];
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
@@ -21,6 +21,67 @@ class _WidgetTreeState extends State<WidgetTree> {
   final PageController _pageController = PageController(initialPage: 0);
   int _selectedPage = 0;
 
+  @override
+  Widget build(BuildContext context) {
+    final UserViewModel userVm = GetIt.I<UserViewModel>();
+    final user = userVm.userNotifier.value;
+
+    if (user == null) {
+      return const Text("Errreur inconue");
+    }
+
+    final bool canUpload = user.canUpload;
+
+    final pages = _buildPages(canUpload);
+    final items = _buildBottomBarItems(canUpload);
+
+    return ValueListenableBuilder(
+      valueListenable: ThemeController.isDarkModeNotifier,
+      builder: (context, isDark, child) {
+        return Scaffold(
+          body: PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: _pageController,
+            onPageChanged: (index) => setState(() => _selectedPage = index),
+            children: pages,
+          ),
+          bottomNavigationBar: SalomonBottomBar(
+            selectedItemColor: AppColors.primaryColor,
+            unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
+            backgroundColor: isDark
+                ? AppColors.darkSecondarySystemBackground
+                : Colors.white,
+            currentIndex: _selectedPage,
+            onTap: _onItemSelected,
+            items: items,
+          ),
+        );
+      },
+    );
+  }
+
+  List<SalomonBottomBarItem> _buildBottomBarItems(bool canUpload) {
+    return [
+      SalomonBottomBarItem(
+        icon: const Icon(FontAwesomeIcons.house, size: 23),
+        title: const Text('Accueil'),
+      ),
+      if (canUpload)
+        SalomonBottomBarItem(
+          icon: const Icon(FontAwesomeIcons.share, size: 23),
+          title: const Text("Partager"),
+        ),
+      SalomonBottomBarItem(
+        icon: const Icon(FontAwesomeIcons.userLarge, size: 23),
+        title: const Text('Profil'),
+      ),
+    ];
+  }
+
+  List<Widget> _buildPages(bool canUpload) {
+    return [HomePage(), if (canUpload) UploadTabBar(), const Profile()];
+  }
+
   void _onItemSelected(int index) {
     setState(() => _selectedPage = index);
     if (_pageController.hasClients) {
@@ -31,44 +92,62 @@ class _WidgetTreeState extends State<WidgetTree> {
       );
     }
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: ThemeController.isDarkModeNotifier,
-      builder: (context, isDark, child) {
-        return Scaffold(
-          //  appBar: buildAppbarWidgetTree(isDark),
-          body: PageView(
-            physics: const NeverScrollableScrollPhysics(),
-            controller: _pageController,
-            onPageChanged: (index) => setState(() => _selectedPage = index),
-            children: pages,
-          ),
-          bottomNavigationBar: SalomonBottomBar(
-            selectedItemColor: AppColors.primaryColor,
-            unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
-            backgroundColor:
-                isDark ? AppColors.darkSecondarySystemBackground : Colors.white,
-            currentIndex: _selectedPage,
-            onTap: _onItemSelected,
-            items: [
-              SalomonBottomBarItem(
-                icon: const Icon(FontAwesomeIcons.house, size: 23),
-                title: const Text('Accueil'),
-              ),
-              SalomonBottomBarItem(
-                icon: Icon(FontAwesomeIcons.share, size: 23),
-                title: const Text("Partager"),
-              ),
-              SalomonBottomBarItem(
-                icon: const Icon(FontAwesomeIcons.userLarge, size: 23),
-                title: const Text('Profil'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }
+
+// class _WidgetTreeState extends State<WidgetTree> {
+//   final PageController _pageController = PageController(initialPage: 0);
+//   List<Widget> pages = [HomePage(), UploadTabBar(), const Profile()];
+//   int _selectedPage = 0;
+//
+//   void _onItemSelected(int index) {
+//     setState(() => _selectedPage = index);
+//     if (_pageController.hasClients) {
+//       _pageController.animateToPage(
+//         index,
+//         duration: const Duration(milliseconds: 300),
+//         curve: Curves.decelerate,
+//       );
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return ValueListenableBuilder(
+//       valueListenable: ThemeController.isDarkModeNotifier,
+//       builder: (context, isDark, child) {
+//         return Scaffold(
+//           //  appBar: buildAppbarWidgetTree(isDark),
+//           body: PageView(
+//             physics: const NeverScrollableScrollPhysics(),
+//             controller: _pageController,
+//             onPageChanged: (index) => setState(() => _selectedPage = index),
+//             children: pages,
+//           ),
+//           bottomNavigationBar: SalomonBottomBar(
+//             selectedItemColor: AppColors.primaryColor,
+//             unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
+//             backgroundColor: isDark
+//                 ? AppColors.darkSecondarySystemBackground
+//                 : Colors.white,
+//             currentIndex: _selectedPage,
+//             onTap: _onItemSelected,
+//             items: [
+//               SalomonBottomBarItem(
+//                 icon: const Icon(FontAwesomeIcons.house, size: 23),
+//                 title: const Text('Accueil'),
+//               ),
+//               SalomonBottomBarItem(
+//                 icon: Icon(FontAwesomeIcons.share, size: 23),
+//                 title: const Text("Partager"),
+//               ),
+//               SalomonBottomBarItem(
+//                 icon: const Icon(FontAwesomeIcons.userLarge, size: 23),
+//                 title: const Text('Profil'),
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }

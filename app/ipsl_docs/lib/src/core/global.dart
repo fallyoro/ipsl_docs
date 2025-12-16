@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:ipsl_docs/src/core/utils.dart';
+
 import '../database/database.dart';
 import '../services/auth_service.dart';
 import '../services/document.dart';
@@ -16,18 +17,19 @@ Future<void> setupDependencies() async {
     documentService,
   );
 
-  try {
-    final bool isConnected = await isConnectedToInternet();
-    if (isConnected) {
-      await documentViewModel.syncDocumentFromServer();
-    }
-  } catch (e) {
-    logError("Can't sync document from the server : ${e.toString()}");
-  }
   await documentViewModel.loadDocuments();
   final UserService userService = UserService();
   final userViewModel = UserViewModel(db, userService);
   await userViewModel.init();
+  try {
+    final bool isConnected = await isConnectedToInternet();
+    if (isConnected) {
+      await documentViewModel.syncDocumentFromServer();
+      await userViewModel.syncUploadPermission();
+    }
+  } catch (e) {
+    // logError("Can't sync document from the server : ${e.toString()}");
+  }
   getIt.registerSingleton<DocumentViewModel>(documentViewModel);
   getIt.registerSingleton<UserViewModel>(userViewModel);
   getIt.registerSingleton<DocumentService>(documentService);

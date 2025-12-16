@@ -58,7 +58,7 @@ async def can_upload(
 
     return {
         "user_id": user.id,
-        "can_upload": user.can_upload,
+        "can_upload": 1 if user.can_upload else 0,
     }
 
 
@@ -81,7 +81,6 @@ async def login_with_google(
 
     fcm_token = login_data.fcm_token
 
-    # user = await user_service.find_user_by_google_id(google_id=sub, session=session)
     user = await user_service.find_user_by_email(email=email, session=session)
     if user:
         await user_service.update_token(fcm_token, email, session)
@@ -99,6 +98,7 @@ async def login_with_google(
                     "classe": user.classe,
                     "picture_url": picture_url,
                     "number_contribution": number_contribution,
+                    "can_upload": 1 if user.can_upload else 0,
                 },
             }
         )
@@ -123,6 +123,7 @@ async def login_with_google(
                     "picture_url": new_user.picture_url,
                     "classe": new_user.classe,
                     "number_contribution": 0,
+                    "can_upload": 1 if new_user.can_upload else 0,
                 },
             }
         )
