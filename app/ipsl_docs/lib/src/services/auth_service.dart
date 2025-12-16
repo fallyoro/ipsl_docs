@@ -50,10 +50,14 @@ class UserService {
   }
 
   Future<Either<NetworkFailure, Map<String, dynamic>>> canUserUpload(
-    String email,
+    String userId,
   ) async {
     try {
-      final resp = await dio.get("/can-upload/${Uri.encodeComponent(email)}");
+      // final resp = await dio.get("/can-upload/${Uri.encodeComponent(email)}");
+      final resp = await dio.get(
+        "/can-upload",
+        queryParameters: {"user_id": userId},
+      );
 
       return Right({'can_upload': resp.data['can_upload']});
     } on DioException catch (e) {

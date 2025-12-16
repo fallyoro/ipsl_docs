@@ -43,12 +43,13 @@ async def allow_upload(user_id: str, session: AsyncSession = Depends(create_sess
     )
 
 
-@user_router.get("/can-upload/{email}")
+@user_router.get("/can-upload")
 async def can_upload(
-    email: str,
+    user_id: str,
     session: AsyncSession = Depends(create_session),
 ):
-    user = await user_service.get_user_by_email(email, session)
+    id = UUID(user_id)
+    user = await user_service.get_user_by_id(id, session)
 
     if not user:
         raise HTTPException(

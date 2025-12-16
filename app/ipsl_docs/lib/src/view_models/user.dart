@@ -138,13 +138,13 @@ class UserViewModel {
   }
 
   Future<void> syncUploadPermission() async {
-    final result = await _userService.canUserUpload(userNotifier.value!.email);
+    final result = await _userService.canUserUpload(userNotifier.value!.id);
     result.fold(
       (failure) {
         logError("Failed to check if the user can upload merde");
       },
       (data) async {
-        if (data['can_upload'] == true) {
+        if (data['can_upload'] == 1) {
           await _db.updateCanUploadField();
           userNotifier.value!.copyWith(canUpload: true);
         } else {
