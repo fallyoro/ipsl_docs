@@ -16,6 +16,12 @@ class UserService:
         user = result.first()
         return user
 
+    async def get_user_by_email(self, email: str, session: AsyncSession) -> User | None:
+        statement = select(User).where(User.email == email)
+        result = await session.exec(statement)
+        user = result.first()
+        return user
+
     async def find_user_by_email(
         self, email: str, session: AsyncSession
     ) -> User | None:
@@ -95,6 +101,12 @@ class UserService:
         statement = update(User).where(User.id == id).values(can_upload=True)  # type: ignore
         await session.exec(statement)  # type: ignore
         await session.commit()
+
+    async def can_upload(self, email: str, session: AsyncSession) -> bool | None:
+        user = await self.find_user_by_email(email, session)
+        if user != None:
+            return user.can_upload
+        return None
 
     async def get_tokens(
         self, session: AsyncSession, classe: str | None = None

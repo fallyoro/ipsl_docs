@@ -43,6 +43,25 @@ async def allow_upload(user_id: str, session: AsyncSession = Depends(create_sess
     )
 
 
+@user_router.get("/can-upload/{email}")
+async def can_upload(
+    email: str,
+    session: AsyncSession = Depends(create_session),
+):
+    user = await user_service.get_user_by_email(email, session)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Utilisateur introuvable",
+        )
+
+    return {
+        "user_id": user.id,
+        "can_upload": user.can_upload,
+    }
+
+
 @user_router.post("/google")
 async def login_with_google(
     login_data: GoogleLoginRequest, session=Depends(create_session)
