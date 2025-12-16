@@ -33,6 +33,16 @@ async def edit_profile(
     return user
 
 
+@user_router.patch("/allow-upload/{user_id}")
+async def allow_upload(user_id: str, session: AsyncSession = Depends(create_session)):
+    await user_service.enable_upload_access(user_id, session)
+    return JSONResponse(
+        content={
+            "message": "User can upload now",
+        }
+    )
+
+
 @user_router.post("/google")
 async def login_with_google(
     login_data: GoogleLoginRequest, session=Depends(create_session)

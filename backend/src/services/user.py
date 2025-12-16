@@ -90,8 +90,9 @@ class UserService:
         await session.exec(statement)  # type: ignore
         await session.commit()
 
-    async def enable_upload_access(self, user_id: UUID, session: AsyncSession):
-        statement = update(User).where(User.id == user_id).values(can_upload=True)  # type: ignore
+    async def enable_upload_access(self, user_id: str, session: AsyncSession):
+        id = UUID(user_id)
+        statement = update(User).where(User.id == id).values(can_upload=True)  # type: ignore
         await session.exec(statement)  # type: ignore
         await session.commit()
 
